@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { db } from "../lib/firebase"; // Firebase setup
 import { collection, addDoc } from "firebase/firestore"; // Firebase functions for adding data
+import Image from "next/image"; // Import next/image for image optimization
 
 const AddCarForm = () => {
   const [carData, setCarData] = useState({
@@ -221,7 +222,13 @@ const AddCarForm = () => {
         />
         {carData.image && (
           <div className="mt-4">
-            <img src={carData.image} alt="Car" className="max-w-full h-auto rounded-md" />
+            <Image 
+              src={carData.image} 
+              alt="Car" 
+              className="max-w-full h-auto rounded-md" 
+              width={500}  // Set appropriate width
+              height={300}  // Set appropriate height
+            />
           </div>
         )}
       </div>
@@ -234,7 +241,7 @@ const AddCarForm = () => {
         Add Car
       </button>
 
-      {/* Go Back Button using window.location */}
+      {/* Go Back Button */}
       <button
         type="button"
         onClick={() => window.location.href = '/'} // Redirect to the main page
