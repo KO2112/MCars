@@ -1,7 +1,7 @@
 // components/Navbar.tsx
 "use client";
 
-import { useState } from "react";
+
 import { signOut } from "firebase/auth";
 import { auth } from "../lib/firebase";
 import useAuth from "../hooks/useAuth"; // Import the custom hook

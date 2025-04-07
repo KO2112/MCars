@@ -2,7 +2,7 @@
 
 import { useKeenSlider } from "keen-slider/react";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 
 // Example mock data with images, year, mileage, and transmission
 const mockCars = [

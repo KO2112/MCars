@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../lib/firebase";
 import { useRouter } from "next/navigation"; // Change import to 'next/navigation' instead of 'next/router'
+import { FirebaseError } from "firebase/app"; // Import FirebaseError
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -34,11 +35,17 @@ const Login = () => {
       } else {
         setError("Failed to sign in. Please check your credentials.");
       }
-    } catch (error: any) {
-      // If there was an error, show a failure message
-      if (error?.code === "auth/wrong-password" || error?.code === "auth/user-not-found") {
-        setError("Failed to sign in. Please check your credentials.");
+    } catch (error: unknown) {
+      // Perform type narrowing on the error variable
+      if (error instanceof FirebaseError) {
+        // If it's a FirebaseError, handle it
+        if (error.code === "auth/wrong-password" || error.code === "auth/user-not-found") {
+          setError("Failed to sign in. Please check your credentials.");
+        } else {
+          setError("An unexpected error occurred. Please try again later.");
+        }
       } else {
+        // If it's not a FirebaseError, show a generic message
         setError("An unexpected error occurred. Please try again later.");
       }
     }
