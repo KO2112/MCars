@@ -1,14 +1,15 @@
 "use client"; // Ensures this component is rendered on the client-side
 
 import { useState } from "react";
-import { db } from "../lib/firebase"; // Firebase setup
+import { db, storage } from "../lib/firebase"; // Import Firebase Storage
 import { collection, addDoc } from "firebase/firestore"; // Firebase functions for adding data
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage"; // Firebase Storage functions
 import Image from "next/image"; // Import next/image for image optimization
 
 const AddCarForm = () => {
   const [carData, setCarData] = useState({
     title: "",
-    price: "", // Added price field
+    price: "",
     mileage: "",
     transmission: "",
     color: "",
@@ -36,42 +37,54 @@ const AddCarForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    try {
-      // Add the car data to Firestore
-      const docRef = await addDoc(collection(db, "cars"), {
-        title: carData.title,
-        price: carData.price, // Store the price in Firestore
-        mileage: carData.mileage,
-        transmission: carData.transmission,
-        color: carData.color,
-        engineSize: carData.engineSize,
-        fuelType: carData.fuelType,
-        doors: carData.doors,
-        image: carData.image, // Image URL can be added later after uploading to Firebase Storage
-      });
+    if (carData.image) {
+      try {
+        // Upload the image to Firebase Storage
+        const imageRef = ref(storage, `cars/${carData.title}/${Date.now()}`);
+        const file = carData.image ? await fetch(carData.image).then(res => res.blob()) : null;
 
-      console.log("Document written with ID: ", docRef.id);
-      setCarData({
-        title: "",
-        price: "", // Reset price after submit
-        mileage: "",
-        transmission: "",
-        color: "",
-        engineSize: "",
-        fuelType: "",
-        doors: "",
-        image: null,
-      });
-    } catch (e) {
-      console.error("Error adding document: ", e);
+        if (file) {
+          await uploadBytes(imageRef, file);
+
+          // Get the download URL of the uploaded image
+          const downloadURL = await getDownloadURL(imageRef);
+
+          // Add the car data to Firestore, including the image URL
+          const docRef = await addDoc(collection(db, "cars"), {
+            title: carData.title,
+            price: carData.price,
+            mileage: carData.mileage,
+            transmission: carData.transmission,
+            color: carData.color,
+            engineSize: carData.engineSize,
+            fuelType: carData.fuelType,
+            doors: carData.doors,
+            image: downloadURL, // Store the image URL from Firebase Storage
+          });
+
+          console.log("Document written with ID: ", docRef.id);
+
+          // Reset form
+          setCarData({
+            title: "",
+            price: "",
+            mileage: "",
+            transmission: "",
+            color: "",
+            engineSize: "",
+            fuelType: "",
+            doors: "",
+            image: null,
+          });
+        }
+      } catch (e) {
+        console.error("Error adding document: ", e);
+      }
     }
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-lg space-y-6"
-    >
+    <form onSubmit={handleSubmit} className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-lg space-y-6">
       <h2 className="text-2xl font-semibold text-center">Add New Car</h2>
 
       {/* Title */}
@@ -90,7 +103,7 @@ const AddCarForm = () => {
         />
       </div>
 
-      {/* Price */}
+      {/* Other form fields for price, mileage, etc. */}
       <div>
         <label htmlFor="price" className="block text-sm font-medium text-gray-700">
           Price (£)
@@ -105,8 +118,6 @@ const AddCarForm = () => {
           required
         />
       </div>
-
-      {/* Mileage */}
       <div>
         <label htmlFor="mileage" className="block text-sm font-medium text-gray-700">
           Mileage (in km)
@@ -121,8 +132,6 @@ const AddCarForm = () => {
           required
         />
       </div>
-
-      {/* Transmission */}
       <div>
         <label htmlFor="transmission" className="block text-sm font-medium text-gray-700">
           Transmission
@@ -140,8 +149,6 @@ const AddCarForm = () => {
           <option value="automatic">Automatic</option>
         </select>
       </div>
-
-      {/* Color */}
       <div>
         <label htmlFor="color" className="block text-sm font-medium text-gray-700">
           Car Color
@@ -156,8 +163,6 @@ const AddCarForm = () => {
           required
         />
       </div>
-
-      {/* Engine Size */}
       <div>
         <label htmlFor="engineSize" className="block text-sm font-medium text-gray-700">
           Engine Size (in liters)
@@ -172,8 +177,6 @@ const AddCarForm = () => {
           required
         />
       </div>
-
-      {/* Fuel Type */}
       <div>
         <label htmlFor="fuelType" className="block text-sm font-medium text-gray-700">
           Fuel Type
@@ -191,8 +194,6 @@ const AddCarForm = () => {
           <option value="diesel">Diesel</option>
         </select>
       </div>
-
-      {/* Doors */}
       <div>
         <label htmlFor="doors" className="block text-sm font-medium text-gray-700">
           Number of Doors
@@ -226,8 +227,8 @@ const AddCarForm = () => {
               src={carData.image} 
               alt="Car" 
               className="max-w-full h-auto rounded-md" 
-              width={500}  // Set appropriate width
-              height={300}  // Set appropriate height
+              width={500}
+              height={300}
             />
           </div>
         )}
@@ -239,15 +240,6 @@ const AddCarForm = () => {
         className="w-full py-3 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition duration-300"
       >
         Add Car
-      </button>
-
-      {/* Go Back Button */}
-      <button
-        type="button"
-        onClick={() => window.location.href = '/'} // Redirect to the main page
-        className="w-full py-3 bg-gray-500 text-white font-semibold rounded-md hover:bg-gray-600 transition duration-300 mt-4"
-      >
-        Go Back to Main Page
       </button>
     </form>
   );
