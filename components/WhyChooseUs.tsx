@@ -2,7 +2,7 @@
 "use client";
 
 import { MapPin, Star, Truck, PoundSterling } from "lucide-react";
-import Link from "next/link";
+
 
 export default function WhyChooseUs() {
   return (
