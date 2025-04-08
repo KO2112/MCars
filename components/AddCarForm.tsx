@@ -3,12 +3,8 @@
 import { useState } from "react";
 import { db } from "../lib/firebase"; // Firebase setup
 import { collection, addDoc } from "firebase/firestore"; // Firebase functions for adding data
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage"; // Add these imports
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage"; // Firebase storage
 import Image from "next/image"; // Import next/image for image optimization
-
-
-
-
 
 const AddCarForm = () => {
   const [carData, setCarData] = useState({
@@ -20,10 +16,10 @@ const AddCarForm = () => {
     engineSize: "",
     fuelType: "",
     doors: "",
-    image: null as string | null,
   });
   
-  const [imageFile, setImageFile] = useState<File | null>(null); // Store the actual file
+  const [imageFiles, setImageFiles] = useState<File[]>([]); // Store multiple image files
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]); // Store multiple preview URLs
   const [isSubmitting, setIsSubmitting] = useState(false); // Add loading state
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,43 +33,71 @@ const AddCarForm = () => {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files ? e.target.files[0] : null;
-    if (file) {
-      setImageFile(file); // Store the actual file
-      setCarData({ ...carData, image: URL.createObjectURL(file) }); // Set preview URL
+    if (e.target.files && e.target.files.length > 0) {
+      // Convert FileList to Array
+      const newFiles = Array.from(e.target.files);
+      
+      // Create preview URLs for all newly selected files
+      const newPreviews = newFiles.map(file => URL.createObjectURL(file));
+      
+      // Append new files and previews to existing arrays
+      setImageFiles(prevFiles => [...prevFiles, ...newFiles]);
+      setImagePreviews(prevPreviews => [...prevPreviews, ...newPreviews]);
     }
+    
+    // Reset the file input value so the same file can be selected again if needed
+    if (e.target instanceof HTMLInputElement) {
+      e.target.value = '';
+    }
+  };
+
+  const removeImage = (index: number) => {
+    // Remove the image at the specified index
+    const newFiles = [...imageFiles];
+    const newPreviews = [...imagePreviews];
+    
+    // Revoke the URL to prevent memory leaks
+    URL.revokeObjectURL(newPreviews[index]);
+    
+    newFiles.splice(index, 1);
+    newPreviews.splice(index, 1);
+    
+    setImageFiles(newFiles);
+    setImagePreviews(newPreviews);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate at least one image is selected
+    if (imageFiles.length === 0) {
+      alert("Please select at least one image for the car.");
+      return;
+    }
+    
     setIsSubmitting(true);
 
     try {
-      let imageUrl = null;
+      const imageUrls: string[] = [];
       
-      // Upload image to Firebase Storage if there is an image file
-      if (imageFile) {
+      // Upload all images to Firebase Storage
+      if (imageFiles.length > 0) {
         const storage = getStorage();
-        const storageRef = ref(storage, `car-images/${Date.now()}-${imageFile.name}`);
         
-        // Upload the file
-        const snapshot = await uploadBytes(storageRef, imageFile);
-        
-        // Get the download URL
-        imageUrl = await getDownloadURL(snapshot.ref);
+        // Upload each file and get its download URL
+        for (const file of imageFiles) {
+          const storageRef = ref(storage, `car-images/${Date.now()}-${file.name}`);
+          const snapshot = await uploadBytes(storageRef, file);
+          const downloadUrl = await getDownloadURL(snapshot.ref);
+          imageUrls.push(downloadUrl);
+        }
       }
 
-      // Add the car data to Firestore with the actual image URL from Storage
+      // Add the car data to Firestore with all image URLs
       const docRef = await addDoc(collection(db, "cars"), {
-        title: carData.title,
-        price: carData.price,
-        mileage: carData.mileage,
-        transmission: carData.transmission,
-        color: carData.color,
-        engineSize: carData.engineSize,
-        fuelType: carData.fuelType,
-        doors: carData.doors,
-        image: imageUrl, // Use the Firebase Storage URL
+        ...carData,
+        images: imageUrls, // Store array of image URLs
+        createdAt: new Date(), // Add timestamp
       });
 
       console.log("Document written with ID: ", docRef.id);
@@ -88,9 +112,12 @@ const AddCarForm = () => {
         engineSize: "",
         fuelType: "",
         doors: "",
-        image: null,
       });
-      setImageFile(null);
+      
+      // Revoke all object URLs to prevent memory leaks
+      imagePreviews.forEach(url => URL.revokeObjectURL(url));
+      setImageFiles([]);
+      setImagePreviews([]);
       
       alert("Car added successfully!");
     } catch (error) {
@@ -244,28 +271,55 @@ const AddCarForm = () => {
         />
       </div>
 
-      {/* Car Image */}
+      {/* Car Images */}
       <div>
-        <label htmlFor="image" className="block text-sm font-medium text-gray-700">
-          Car Image
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Car Images
         </label>
-        <input
-          type="file"
-          id="image"
-          name="image"
-          accept="image/*"
-          onChange={handleFileChange}
-          className="mt-1 w-full p-3 border border-gray-300 rounded-md"
-        />
-        {carData.image && (
-          <div className="mt-4">
-            <Image 
-              src={carData.image} 
-              alt="Car" 
-              className="max-w-full h-auto rounded-md" 
-              width={500}
-              height={300}
+        
+        {/* Add Image Button (styled as a button but uses file input) */}
+        <div className="flex flex-wrap gap-4 items-center">
+          <label className="flex items-center justify-center px-4 py-2 bg-blue-500 text-white rounded-md cursor-pointer hover:bg-blue-600 transition duration-300">
+            <span>Add Image</span>
+            <input
+              type="file"
+              id="images"
+              name="images"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="hidden" // Hide the actual input
             />
+          </label>
+          
+          {/* Image count display */}
+          {imageFiles.length > 0 && (
+            <span className="text-sm text-gray-600">
+              {imageFiles.length} {imageFiles.length === 1 ? 'image' : 'images'} selected
+            </span>
+          )}
+        </div>
+        
+        {/* Image Previews */}
+        {imagePreviews.length > 0 && (
+          <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-4">
+            {imagePreviews.map((preview, index) => (
+              <div key={index} className="relative">
+                <Image 
+                  src={preview} 
+                  alt={`Car image ${index + 1}`} 
+                  className="w-full rounded-md object-cover h-40" 
+                  width={200}
+                  height={150}
+                />
+                <button
+                  type="button"
+                  onClick={() => removeImage(index)}
+                  className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
           </div>
         )}
       </div>
