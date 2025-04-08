@@ -4,11 +4,11 @@ import { useState, useEffect } from "react";
 import { db, storage } from "../../../lib/firebase";
 import { doc, getDoc, deleteDoc } from "firebase/firestore";
 import { ref, deleteObject } from "firebase/storage";
-import Image from "next/image";
+
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import useAuth from "../../../hooks/useAuth"; // Import the custom hook
-import Navbar from "@/components/Navbar";
+
 // Car interface matching our data structure
 interface Car {
   id: string;
@@ -21,7 +21,7 @@ interface Car {
   fuelType: string;
   doors: string;
   images: string[];
-  createdAt?: any; // Optional timestamp
+  
 }
 
 // This component should be placed in app/cars/[id]/page.tsx
@@ -58,7 +58,7 @@ export default function CarDetails() {
             fuelType: data.fuelType || "",
             doors: data.doors || "",
             images: data.images || (data.image ? [data.image] : []),
-            createdAt: data.createdAt || null,
+            
           });
         } else {
           console.log("No such document!");

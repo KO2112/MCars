@@ -58,12 +58,6 @@ export default function Navbar() {
             <Link href="/cars" className="text-gray-600 hover:text-blue-600 font-medium transition-colors duration-200">
               Cars
             </Link>
-            <Link href="/about" className="text-gray-600 hover:text-blue-600 font-medium transition-colors duration-200">
-              About
-            </Link>
-            <Link href="/warranty" className="text-gray-600 hover:text-blue-600 font-medium transition-colors duration-200">
-              Warranty
-            </Link>
             <Link href="/contact" className="text-gray-600 hover:text-blue-600 font-medium transition-colors duration-200">
               Contact
             </Link>
@@ -130,20 +124,7 @@ export default function Navbar() {
               >
                 Cars
               </Link>
-              <Link
-                href="/about"
-                className="text-gray-900 py-2 border-b border-gray-100"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                About
-              </Link>
-              <Link
-                href="/warranty"
-                className="text-gray-900 py-2 border-b border-gray-100"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Warranty
-              </Link>
+              
               <Link
                 href="/contact"
                 className="text-gray-900 py-2 border-b border-gray-100"
