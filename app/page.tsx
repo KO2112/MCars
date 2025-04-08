@@ -1,6 +1,7 @@
 
 import Banner from "@/components/Banner";
 import CarCarousel from "@/components/CarCarousel";
+import Cu from "@/components/Cu";
 
 export default function HomePage() {
   return (
@@ -12,10 +13,11 @@ export default function HomePage() {
       <Banner />
 
       {/* Featured Cars Section */}
-      <section className="max-w-7xl mx-auto py-10">
+      <section className="max-w-7xl mx-auto py-2">
         
         <CarCarousel />
       </section>
+      <Cu/>
     </main>
   );
 }
