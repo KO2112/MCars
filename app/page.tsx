@@ -2,6 +2,7 @@
 import Banner from "@/components/Banner";
 import CarCarousel from "@/components/CarCarousel";
 import Cu from "@/components/Cu";
+import WhyChooseUs from "@/components/WhyChooseUs";
 
 export default function HomePage() {
   return (
@@ -17,7 +18,8 @@ export default function HomePage() {
         
         <CarCarousel />
       </section>
-      <Cu/>
-    </main>
+      <WhyChooseUs/>   
+      <Cu/>   
+      </main>
   );
 }

@@ -131,9 +131,9 @@ export default function CarCarousel() {
   if (loading) {
     return (
       <div className="relative py-10 px-4 max-w-7xl mx-auto">
-        <h2 className="text-3xl font-bold text-center text-black mb-8">Featured Vehicles</h2>
+        <h2 className="text-3xl font-bold text-center text-black mb-8">Latest Arrivals</h2>
         <div className="flex justify-center items-center h-64">
-          <div className="animate-pulse text-xl text-gray-600">Loading featured vehicles...</div>
+          <div className="animate-pulse text-xl text-gray-600">Loading latest vehicles...</div>
         </div>
       </div>
     );
@@ -142,9 +142,9 @@ export default function CarCarousel() {
   if (cars.length === 0) {
     return (
       <div className="relative py-10 px-4 max-w-7xl mx-auto">
-        <h2 className="text-3xl font-bold text-center text-black mb-8">Featured Vehicles</h2>
+        <h2 className="text-3xl font-bold text-center text-black mb-8">Latest Arrivals</h2>
         <div className="text-center py-12 bg-gray-50 rounded-lg">
-          <p className="text-gray-600">No featured vehicles available at this time.</p>
+          <p className="text-gray-600">No vehicles available at this time.</p>
         </div>
       </div>
     );
@@ -152,7 +152,12 @@ export default function CarCarousel() {
 
   return (
     <div className="relative py-10 px-4 max-w-7xl mx-auto">
-      <h2 className="text-3xl font-bold text-center text-black mb-8">Featured Vehicles</h2>
+      <div className="flex justify-between items-center mb-8">
+        <h2 className="text-3xl font-bold text-black">Latest Arrivals</h2>
+        <Link href="/cars" className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded transition duration-300 ease-in-out">
+          View All Cars
+        </Link>
+      </div>
       
       <div ref={sliderRef} className="keen-slider overflow-hidden rounded-lg">
         {cars.map((car) => (

@@ -4,7 +4,7 @@ import { Phone, Mail } from "lucide-react";
 
 export default function ContactUsSection() {
   return (
-    <div className="relative py-1 px-4 max-w-7xl mx-auto">
+    <div className="relative py-5 px-4 max-w-7xl mx-auto">
       <h2 className="text-3xl font-bold text-center text-black mb-8">Contact Us</h2>
       
       <div className="bg-white rounded-xl overflow-hidden shadow-lg mx-auto">
