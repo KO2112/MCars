@@ -1,10 +1,14 @@
 "use client"; // Ensures this component is rendered on the client-side
 
 import { useState } from "react";
-import { db, storage } from "../lib/firebase"; // Import Firebase Storage
+import { db } from "../lib/firebase"; // Firebase setup
 import { collection, addDoc } from "firebase/firestore"; // Firebase functions for adding data
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage"; // Firebase Storage functions
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage"; // Add these imports
 import Image from "next/image"; // Import next/image for image optimization
+
+
+
+
 
 const AddCarForm = () => {
   const [carData, setCarData] = useState({
@@ -18,6 +22,9 @@ const AddCarForm = () => {
     doors: "",
     image: null as string | null,
   });
+  
+  const [imageFile, setImageFile] = useState<File | null>(null); // Store the actual file
+  const [isSubmitting, setIsSubmitting] = useState(false); // Add loading state
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -31,60 +38,74 @@ const AddCarForm = () => {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null;
-    setCarData({ ...carData, image: file ? URL.createObjectURL(file) : null });
+    if (file) {
+      setImageFile(file); // Store the actual file
+      setCarData({ ...carData, image: URL.createObjectURL(file) }); // Set preview URL
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
-    if (carData.image) {
-      try {
-        // Upload the image to Firebase Storage
-        const imageRef = ref(storage, `cars/${carData.title}/${Date.now()}`);
-        const file = carData.image ? await fetch(carData.image).then(res => res.blob()) : null;
-
-        if (file) {
-          await uploadBytes(imageRef, file);
-
-          // Get the download URL of the uploaded image
-          const downloadURL = await getDownloadURL(imageRef);
-
-          // Add the car data to Firestore, including the image URL
-          const docRef = await addDoc(collection(db, "cars"), {
-            title: carData.title,
-            price: carData.price,
-            mileage: carData.mileage,
-            transmission: carData.transmission,
-            color: carData.color,
-            engineSize: carData.engineSize,
-            fuelType: carData.fuelType,
-            doors: carData.doors,
-            image: downloadURL, // Store the image URL from Firebase Storage
-          });
-
-          console.log("Document written with ID: ", docRef.id);
-
-          // Reset form
-          setCarData({
-            title: "",
-            price: "",
-            mileage: "",
-            transmission: "",
-            color: "",
-            engineSize: "",
-            fuelType: "",
-            doors: "",
-            image: null,
-          });
-        }
-      } catch (e) {
-        console.error("Error adding document: ", e);
+    try {
+      let imageUrl = null;
+      
+      // Upload image to Firebase Storage if there is an image file
+      if (imageFile) {
+        const storage = getStorage();
+        const storageRef = ref(storage, `car-images/${Date.now()}-${imageFile.name}`);
+        
+        // Upload the file
+        const snapshot = await uploadBytes(storageRef, imageFile);
+        
+        // Get the download URL
+        imageUrl = await getDownloadURL(snapshot.ref);
       }
+
+      // Add the car data to Firestore with the actual image URL from Storage
+      const docRef = await addDoc(collection(db, "cars"), {
+        title: carData.title,
+        price: carData.price,
+        mileage: carData.mileage,
+        transmission: carData.transmission,
+        color: carData.color,
+        engineSize: carData.engineSize,
+        fuelType: carData.fuelType,
+        doors: carData.doors,
+        image: imageUrl, // Use the Firebase Storage URL
+      });
+
+      console.log("Document written with ID: ", docRef.id);
+      
+      // Reset form
+      setCarData({
+        title: "",
+        price: "",
+        mileage: "",
+        transmission: "",
+        color: "",
+        engineSize: "",
+        fuelType: "",
+        doors: "",
+        image: null,
+      });
+      setImageFile(null);
+      
+      alert("Car added successfully!");
+    } catch (error) {
+      console.error("Error adding document: ", error);
+      alert("Error adding car. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-lg space-y-6">
+    <form
+      onSubmit={handleSubmit}
+      className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-lg space-y-6"
+    >
       <h2 className="text-2xl font-semibold text-center">Add New Car</h2>
 
       {/* Title */}
@@ -103,7 +124,7 @@ const AddCarForm = () => {
         />
       </div>
 
-      {/* Other form fields for price, mileage, etc. */}
+      {/* Price */}
       <div>
         <label htmlFor="price" className="block text-sm font-medium text-gray-700">
           Price (£)
@@ -118,6 +139,8 @@ const AddCarForm = () => {
           required
         />
       </div>
+
+      {/* Mileage */}
       <div>
         <label htmlFor="mileage" className="block text-sm font-medium text-gray-700">
           Mileage (in km)
@@ -132,6 +155,8 @@ const AddCarForm = () => {
           required
         />
       </div>
+
+      {/* Transmission */}
       <div>
         <label htmlFor="transmission" className="block text-sm font-medium text-gray-700">
           Transmission
@@ -149,6 +174,8 @@ const AddCarForm = () => {
           <option value="automatic">Automatic</option>
         </select>
       </div>
+
+      {/* Color */}
       <div>
         <label htmlFor="color" className="block text-sm font-medium text-gray-700">
           Car Color
@@ -163,6 +190,8 @@ const AddCarForm = () => {
           required
         />
       </div>
+
+      {/* Engine Size */}
       <div>
         <label htmlFor="engineSize" className="block text-sm font-medium text-gray-700">
           Engine Size (in liters)
@@ -177,6 +206,8 @@ const AddCarForm = () => {
           required
         />
       </div>
+
+      {/* Fuel Type */}
       <div>
         <label htmlFor="fuelType" className="block text-sm font-medium text-gray-700">
           Fuel Type
@@ -192,8 +223,12 @@ const AddCarForm = () => {
           <option value="">Select Fuel Type</option>
           <option value="petrol">Petrol</option>
           <option value="diesel">Diesel</option>
+          <option value="electric">Electric</option>
+          <option value="hybrid">Hybrid</option>
         </select>
       </div>
+
+      {/* Doors */}
       <div>
         <label htmlFor="doors" className="block text-sm font-medium text-gray-700">
           Number of Doors
@@ -218,6 +253,7 @@ const AddCarForm = () => {
           type="file"
           id="image"
           name="image"
+          accept="image/*"
           onChange={handleFileChange}
           className="mt-1 w-full p-3 border border-gray-300 rounded-md"
         />
@@ -237,9 +273,20 @@ const AddCarForm = () => {
       {/* Submit Button */}
       <button
         type="submit"
-        className="w-full py-3 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition duration-300"
+        disabled={isSubmitting}
+        className={`w-full py-3 ${isSubmitting ? 'bg-blue-300' : 'bg-blue-500 hover:bg-blue-600'} text-white font-semibold rounded-md transition duration-300`}
       >
-        Add Car
+        {isSubmitting ? 'Adding Car...' : 'Add Car'}
+      </button>
+
+      {/* Go Back Button */}
+      <button
+        type="button"
+        disabled={isSubmitting}
+        onClick={() => window.location.href = '/'} // Redirect to the main page
+        className="w-full py-3 bg-gray-500 text-white font-semibold rounded-md hover:bg-gray-600 transition duration-300 mt-4"
+      >
+        Go Back to Main Page
       </button>
     </form>
   );

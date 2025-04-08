@@ -1,0 +1,8 @@
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      // Allow read, write, and delete for everyone (authenticated or not)
+      allow read, write, delete: if true;
+    }
+  }
+}
