@@ -21,7 +21,6 @@ interface Car {
   fuelType: string;
   doors: string;
   images: string[];
-  
 }
 
 // This component should be placed in app/cars/[id]/page.tsx
@@ -128,7 +127,7 @@ export default function CarDetails() {
   if (loading) {
     return (
       <div className="min-h-screen flex justify-center items-center">
-        <div className="animate-pulse text-xl text-gray-600">Loading vehicle details...</div>
+        <div className="animate-pulse text-xl text-black">Loading vehicle details...</div>
       </div>
     );
   }
@@ -136,7 +135,7 @@ export default function CarDetails() {
   if (!car) {
     return (
       <div className="min-h-screen flex flex-col justify-center items-center">
-        <div className="text-xl text-gray-600 mb-4">Vehicle not found</div>
+        <div className="text-xl text-black mb-4">Vehicle not found</div>
         <Link href="/" className="text-indigo-600 hover:text-indigo-800 font-medium">
           Return to vehicle listings
         </Link>
@@ -251,9 +250,9 @@ export default function CarDetails() {
         
         {/* Vehicle Title and Price */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900">{car.title}</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-black">{car.title}</h1>
           <div className="mt-2 md:mt-0">
-            <div className="text-3xl font-bold text-indigo-600">£{Number(car.price).toLocaleString()}</div>
+            <div className="text-4xl font-bold text-indigo-600">£{Number(car.price).toLocaleString()}</div>
           </div>
         </div>
         
@@ -324,11 +323,11 @@ export default function CarDetails() {
             
             {/* Vehicle Description Section */}
             <div className="bg-white rounded-xl shadow-md p-6 mt-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Vehicle Description</h2>
+              <h2 className="text-2xl font-bold text-black mb-4">Vehicle Description</h2>
               <div className="prose max-w-none">
-                <p>This {car.title} is in excellent condition and ready for its new owner.</p>
-                <p className="mt-2">It features a {car.engineSize}L {car.fuelType} engine with {car.transmission} transmission. With only {Number(car.mileage).toLocaleString()} kilometers on the odometer, this {car.color} vehicle provides an excellent driving experience.</p>
-                <p className="mt-2">Contact us today to schedule a test drive and experience this amazing vehicle for yourself!</p>
+                <p className="text-black text-base">This {car.title} is in excellent condition and ready for its new owner.</p>
+                <p className="mt-2 text-black text-base">It features a {car.engineSize}L {car.fuelType} engine with {car.transmission} transmission. With only {Number(car.mileage).toLocaleString()} kilometers on the odometer, this {car.color} vehicle provides an excellent driving experience.</p>
+                <p className="mt-2 text-black text-base">Contact us today to schedule a test drive and experience this amazing vehicle for yourself!</p>
               </div>
             </div>
           </div>
@@ -337,96 +336,74 @@ export default function CarDetails() {
           <div className="lg:col-span-1">
             {/* Key Details Card */}
             <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Vehicle Details</h2>
+              <h2 className="text-xl font-bold text-black mb-4">Vehicle Details</h2>
               
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Engine Size</span>
-                  <span className="font-medium">{car.engineSize}L</span>
+                  <span className="text-black text-base">Engine Size</span>
+                  <span className="font-medium text-black text-base">{car.engineSize}L</span>
                 </div>
                 <div className="h-px bg-gray-200"></div>
                 
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Fuel Type</span>
-                  <span className="font-medium capitalize">{car.fuelType}</span>
+                  <span className="text-black text-base">Fuel Type</span>
+                  <span className="font-medium capitalize text-black text-base">{car.fuelType}</span>
                 </div>
                 <div className="h-px bg-gray-200"></div>
                 
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Mileage</span>
-                  <span className="font-medium">{Number(car.mileage).toLocaleString()} km</span>
+                  <span className="text-black text-base">Mileage</span>
+                  <span className="font-medium text-black text-base">{Number(car.mileage).toLocaleString()} km</span>
                 </div>
                 <div className="h-px bg-gray-200"></div>
                 
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Transmission</span>
-                  <span className="font-medium capitalize">{car.transmission}</span>
+                  <span className="text-black text-base">Transmission</span>
+                  <span className="font-medium capitalize text-black text-base">{car.transmission}</span>
                 </div>
                 <div className="h-px bg-gray-200"></div>
                 
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Color</span>
-                  <span className="font-medium capitalize">{car.color}</span>
+                  <span className="text-black text-base">Color</span>
+                  <span className="font-medium capitalize text-black text-base">{car.color}</span>
                 </div>
                 <div className="h-px bg-gray-200"></div>
                 
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Doors</span>
-                  <span className="font-medium">{car.doors}</span>
+                  <span className="text-black text-base">Doors</span>
+                  <span className="font-medium text-black text-base">{car.doors}</span>
                 </div>
               </div>
             </div>
             
-            {/* Contact/Inquiry Card */}
+            {/* Contact Information Card */}
             <div className="bg-white rounded-xl shadow-md p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Interested in this vehicle?</h2>
-              <p className="text-gray-600 mb-6">Fill in your details below and our team will contact you shortly.</p>
+              <h2 className="text-xl font-bold text-black mb-4">Interested in this vehicle?</h2>
+              <p className="text-black mb-6 text-base">Contact us directly using the information below:</p>
               
-              <form className="space-y-4">
-                <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                  <input 
-                    type="text" 
-                    id="name" 
-                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" 
-                    placeholder="Your name"
-                  />
+              <div className="space-y-4">
+                <div className="flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-indigo-600 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                  <a href="mailto:makgun.uk@gmail.com" className="text-indigo-600 hover:text-indigo-800 text-base">
+                    makgun.uk@gmail.com
+                  </a>
                 </div>
                 
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                  <input 
-                    type="email" 
-                    id="email" 
-                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" 
-                    placeholder="Your email address"
-                  />
+                <div className="flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-indigo-600 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  </svg>
+                  <a href="tel:+447476866745" className="text-indigo-600 hover:text-indigo-800 text-base">
+                    +44 7476 866745
+                  </a>
                 </div>
-                
-                <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                  <input 
-                    type="tel" 
-                    id="phone" 
-                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" 
-                    placeholder="Your phone number"
-                  />
-                </div>
-                
-                <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">Message</label>
-                  <textarea 
-                    id="message" 
-                    rows={4} 
-                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" 
-                    placeholder="I'm interested in this vehicle and would like more information..."
-                  ></textarea>
-                </div>
-                
-                <button type="submit" className="w-full bg-indigo-600 text-white py-3 px-4 rounded-md font-medium hover:bg-indigo-700 transition focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                  Send Inquiry
-                </button>
-              </form>
+              </div>
+              
+              <div className="mt-6 pt-6 border-t border-gray-200">
+                <p className="text-black text-base">We're available to answer your questions and arrange test drives.</p>
+              </div>
             </div>
           </div>
         </div>
