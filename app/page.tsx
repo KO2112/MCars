@@ -1,4 +1,4 @@
-import Navbar from "@/components/Navbar";  // Make sure to adjust the import path if necessary
+
 import Banner from "@/components/Banner";
 import CarCarousel from "@/components/CarCarousel";
 
