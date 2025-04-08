@@ -142,7 +142,7 @@ export default function CarCarousel() {
   if (cars.length === 0) {
     return (
       <div className="relative py-10 px-4 max-w-7xl mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-8">Featured Vehicles</h2>
+        <h2 className="text-3xl font-bold text-center text-black mb-8">Featured Vehicles</h2>
         <div className="text-center py-12 bg-gray-50 rounded-lg">
           <p className="text-gray-600">No featured vehicles available at this time.</p>
         </div>
