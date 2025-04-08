@@ -402,7 +402,7 @@ export default function CarDetails() {
               </div>
               
               <div className="mt-6 pt-6 border-t border-gray-200">
-                <p className="text-black text-base">We're available to answer your questions and arrange test drives.</p>
+                <p className="text-black text-base">We are available to answer your questions and arrange test drives.</p>
               </div>
             </div>
           </div>
