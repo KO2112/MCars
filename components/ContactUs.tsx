@@ -7,8 +7,8 @@ export default function ContactUs() {
   const [copiedEmail, setCopiedEmail] = useState(false);
   const [copiedPhone, setCopiedPhone] = useState(false);
 
-  const email = "support@premiumautodeals.com";
-  const phone = "(123) 456-7890";
+  const email = "makgun.uk@gmail.com";
+  const phone = "+44 7476 866745";
 
   const copyToClipboard = (text: string, type: 'email' | 'phone') => {
     navigator.clipboard.writeText(text);

@@ -11,7 +11,7 @@ export default function ContactUsSection() {
         <div className="p-6">
           <div className="text-center mb-6">
             <p className="text-gray-600">
-              We're here to help with any questions about our vehicles.
+              We are here to help with any questions about our vehicles.
               Feel free to reach out using the contact details below.
             </p>
           </div>
