@@ -130,7 +130,7 @@ export default function Navbar() {
                 className="text-gray-900 py-2 border-b border-gray-100"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                ContactUs
+                Contact Us
               </Link>
 
               {user && (

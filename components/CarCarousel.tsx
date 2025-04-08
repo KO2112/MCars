@@ -152,7 +152,7 @@ export default function CarCarousel() {
 
   return (
     <div className="relative py-10 px-4 max-w-7xl mx-auto">
-      <h2 className="text-3xl font-bold text-center mb-8">Featured Vehicles</h2>
+      <h2 className="text-3xl font-bold text-center text-black mb-8">Featured Vehicles</h2>
       
       <div ref={sliderRef} className="keen-slider overflow-hidden rounded-lg">
         {cars.map((car) => (
