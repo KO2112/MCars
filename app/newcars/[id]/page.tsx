@@ -21,7 +21,7 @@ interface Car {
   fuelType: string;
   doors: string;
   images: string[];
-  createdAt?: any; // Optional timestamp
+  
 }
 
 // This component should be placed in app/cars/[id]/page.tsx
@@ -57,8 +57,7 @@ export default function CarDetails() {
             engineSize: data.engineSize || "",
             fuelType: data.fuelType || "",
             doors: data.doors || "",
-            images: data.images || (data.image ? [data.image] : []),
-            createdAt: data.createdAt || null,
+            images: data.images || (data.image ? [data.image] : [])
           });
         } else {
           console.log("No such document!");
