@@ -28,7 +28,7 @@ export default function ContactUs() {
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Get in Touch</h1>
           <p className="text-blue-100 text-lg md:text-xl max-w-xl mx-auto">
-            We're here to answer any questions about our premium vehicles
+            We are here to answer any questions about our premium vehicles
           </p>
         </div>
       </div>
