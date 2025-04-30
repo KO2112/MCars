@@ -31,7 +31,7 @@ const ContactPage = () => {
     setIsSubmitting(true);
     
     try {
-      // Send email using Resend API
+     
       const result = await sendContactEmail({
         name: formData.name,
         email: formData.email,
