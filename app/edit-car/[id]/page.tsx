@@ -50,7 +50,7 @@ export default function EditCar() {
             
             // Check if the car belongs to the current user
             if (data.userId && data.userId !== user.uid) {
-              alert("You don't have permission to edit this car listing");
+              alert("You dont have permission to edit this car listing");
               router.push("/");
               return;
             }
