@@ -81,7 +81,7 @@ const ContactPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Company Details - Left Side */}
         <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-6">Iron's Auto</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-6">Irons Auto</h2>
           
           <div className="space-y-6">
             <div className="flex items-start">
@@ -134,7 +134,7 @@ const ContactPage = () => {
         <div className="bg-white rounded-lg shadow-md p-6">
           <h2 className="text-xl font-bold text-gray-900 mb-2">Send Us a Message</h2>
           <p className="text-gray-600 mb-6">
-            Fill out the form below and we'll get back to you as soon as possible.
+            Fill out the form below and we will get back to you as soon as possible.
           </p>
           
           {formStatus.submitted ? (

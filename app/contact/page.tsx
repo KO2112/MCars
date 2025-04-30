@@ -1,5 +1,5 @@
 import ContactUsContent from './ContactUscontent';
-import type { Metadata } from 'next';
+
 
 
 
