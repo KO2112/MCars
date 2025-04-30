@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../lib/firebase";
+import { auth } from "../firebase/firebase";
 import { useRouter } from "next/navigation"; // Change import to 'next/navigation' instead of 'next/router'
 import { FirebaseError } from "firebase/app"; // Import FirebaseError
 

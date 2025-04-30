@@ -1,7 +1,7 @@
 "use client"; // Ensures this component is rendered on the client-side
 
 import { useState, useEffect } from "react";
-import { db } from "../../lib/firebase"; // Firebase setup
+import { db } from "../firebase/firebase"; // Firebase setup
 import { collection, getDocs } from "firebase/firestore"; // Firebase function to get data
 import Link from "next/link"; // For navigation
 

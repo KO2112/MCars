@@ -2,7 +2,7 @@
 
 import { useKeenSlider } from "keen-slider/react";
 import { useEffect, useState } from "react";
-import { db } from "../../lib/firebase"; // Firebase setup
+import { db } from "../firebase/firebase"; // Firebase setup
 import { collection, getDocs, limit, query, orderBy } from "firebase/firestore";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Camera } from "lucide-react";

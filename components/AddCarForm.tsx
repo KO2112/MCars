@@ -1,7 +1,7 @@
 "use client"; // Ensures this component is rendered on the client-side
 
 import { useState } from "react";
-import { db } from "../../lib/firebase"; // Firebase setup
+import { db } from "../firebase/firebase"; // Firebase setup
 import { collection, addDoc } from "firebase/firestore"; // Firebase functions for adding data
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage"; // Firebase storage
 import Image from "next/image"; // Import next/image for image optimization

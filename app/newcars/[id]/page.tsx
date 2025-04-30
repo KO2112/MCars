@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, ChangeEvent, FormEvent } from "react";
-import { db, storage } from "../../../../lib/firebase";
+import { db, storage } from "../../../firebase/firebase";
 import { doc, getDoc, deleteDoc } from "firebase/firestore";
 import { ref, deleteObject } from "firebase/storage";
 import { sendContactEmail } from "../../lib/resend"; // Make sure this import matches your project structure
