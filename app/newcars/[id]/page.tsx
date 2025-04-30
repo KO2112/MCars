@@ -4,7 +4,7 @@ import { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { db, storage } from "../../../firebase/firebase";
 import { doc, getDoc, deleteDoc } from "firebase/firestore";
 import { ref, deleteObject } from "firebase/storage";
-import { sendContactEmail } from "../../../../lib/resend"; // Make sure this import matches your project structure
+import { sendContactEmail } from "../../../lib/resend"; // Make sure this import matches your project structure
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import useAuth from "../../../hooks/useAuth"; // Import the custom hook
