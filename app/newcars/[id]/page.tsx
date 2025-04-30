@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { db, storage } from "../../../lib/firebase";
 import { doc, getDoc, deleteDoc } from "firebase/firestore";
 import { ref, deleteObject } from "firebase/storage";
+import { sendContactEmail } from "../../lib/resend"; // Make sure this import matches your project structure
 
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -35,6 +36,23 @@ export default function CarDetails() {
   const [deleting, setDeleting] = useState(false);
   const [activeImage, setActiveImage] = useState(0);
   const [showFullGallery, setShowFullGallery] = useState(false);
+  
+  // Contact form states
+  const [formStatus, setFormStatus] = useState({
+    submitted: false,
+    error: false,
+    message: ''
+  });
+  
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    subject: `Inquiry about ${car?.title || 'vehicle'}`,
+    message: '',
+  });
 
   useEffect(() => {
     if (!id) return;
@@ -46,7 +64,7 @@ export default function CarDetails() {
 
         if (docSnap.exists()) {
           const data = docSnap.data();
-          setCar({
+          const carData = {
             id: docSnap.id,
             title: data.title || "",
             price: data.price || "",
@@ -57,7 +75,15 @@ export default function CarDetails() {
             fuelType: data.fuelType || "",
             doors: data.doors || "",
             images: data.images || (data.image ? [data.image] : [])
-          });
+          };
+          
+          setCar(carData);
+          
+          // Update the subject with the car title
+          setFormData(prev => ({
+            ...prev,
+            subject: `Inquiry about ${carData.title}`
+          }));
         } else {
           console.log("No such document!");
           router.push("/");
@@ -71,6 +97,60 @@ export default function CarDetails() {
 
     fetchCarDetails();
   }, [id, router]);
+
+  // Contact form handlers
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    try {
+      // Send email using Resend API
+      const result = await sendContactEmail({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        subject: formData.subject,
+        message: formData.message,
+      });
+      
+      if (result.success) {
+        setFormStatus({ 
+          submitted: true, 
+          error: false, 
+          message: 'Thank you! Your message has been sent successfully.' 
+        });
+        
+        // Reset form after successful submission
+        setFormData(prev => ({
+          ...prev,
+          name: '',
+          email: '',
+          phone: '',
+          message: '',
+        }));
+      } else {
+        setFormStatus({ 
+          submitted: false, 
+          error: true, 
+          message: 'There was an error sending your message. Please try again later.' 
+        });
+      }
+    } catch (error) {
+      console.error('Form submission error:', error);
+      setFormStatus({ 
+        submitted: false, 
+        error: true, 
+        message: 'There was an error sending your message. Please try again later.' 
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   // Function to delete car and associated images
   const handleDeleteCar = async () => {
@@ -220,7 +300,18 @@ export default function CarDetails() {
             </svg>
             Back to vehicles
           </Link>
-          
+          {/* Edit Button - Only visible for signed in users */}
+          {user && (
+            <Link
+              href={`/edit-car/${car.id}`}
+              className="inline-flex items-center bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition duration-300 mr-4"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+              Edit Vehicle
+            </Link>
+          )}
           {/* Delete Button - Only visible for signed in users */}
           {user && (
             <button
@@ -326,7 +417,7 @@ export default function CarDetails() {
               <h2 className="text-2xl font-bold text-black mb-4">Vehicle Description</h2>
               <div className="prose max-w-none">
                 <p className="text-black text-base">This {car.title} is in excellent condition and ready for its new owner.</p>
-                <p className="mt-2 text-black text-base">It features a {car.engineSize}L {car.fuelType} engine with {car.transmission} transmission. With only {Number(car.mileage).toLocaleString()} kilometers on the odometer, this {car.color} vehicle provides an excellent driving experience.</p>
+                <p className="mt-2 text-black text-base">It features a {car.engineSize}L {car.fuelType} engine with {car.transmission} transmission. With only {Number(car.mileage).toLocaleString()} Miles on the odometer, this {car.color} vehicle provides an excellent driving experience.</p>
                 <p className="mt-2 text-black text-base">Contact us today to schedule a test drive and experience this amazing vehicle for yourself!</p>
               </div>
             </div>
@@ -353,7 +444,7 @@ export default function CarDetails() {
                 
                 <div className="flex items-center justify-between">
                   <span className="text-black text-base">Mileage</span>
-                  <span className="font-medium text-black text-base">{Number(car.mileage).toLocaleString()} km</span>
+                  <span className="font-medium text-black text-base">{Number(car.mileage).toLocaleString()} Miles</span>
                 </div>
                 <div className="h-px bg-gray-200"></div>
                 
@@ -376,33 +467,146 @@ export default function CarDetails() {
               </div>
             </div>
             
-            {/* Contact Information Card */}
+            {/* Contact Form - Replacing the previous "Interested in this vehicle?" section */}
             <div className="bg-white rounded-xl shadow-md p-6">
               <h2 className="text-xl font-bold text-black mb-4">Interested in this vehicle?</h2>
-              <p className="text-black mb-6 text-base">Contact us directly using the information below:</p>
               
-              <div className="space-y-4">
-                <div className="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-indigo-600 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              {formStatus.submitted ? (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-start">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-600 mr-3 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                  <a href="mailto:makgun.uk@gmail.com" className="text-indigo-600 hover:text-indigo-800 text-base">
-                    makgun.uk@gmail.com
-                  </a>
+                  <div>
+                    <h3 className="font-medium text-green-800">Thank You!</h3>
+                    <p className="text-green-700">
+                      Your inquiry has been sent successfully. Our team will contact you shortly.
+                    </p>
+                    <button 
+                      onClick={() => setFormStatus({ submitted: false, error: false, message: '' })}
+                      className="mt-3 text-sm font-medium text-green-700 hover:text-green-900"
+                    >
+                      Send another message
+                    </button>
+                  </div>
                 </div>
-                
-                <div className="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-indigo-600 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                  </svg>
-                  <a href="tel:+447476866745" className="text-indigo-600 hover:text-indigo-800 text-base">
-                    +44 7476 866745
-                  </a>
-                </div>
-              </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  {formStatus.error && (
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-red-600 mr-3 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <div>
+                        <h3 className="font-medium text-red-800">Error</h3>
+                        <p className="text-red-700">{formStatus.message}</p>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Name Field */}
+                  <div>
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                      Full Name*
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      placeholder="John Smith"
+                    />
+                  </div>
+                  
+                  {/* Email Field */}
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                      Email Address*
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      placeholder="john@example.com"
+                    />
+                  </div>
+                  
+                  {/* Phone Field */}
+                  <div>
+                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                      Phone Number
+                    </label>
+                    <input
+                      type="tel"
+                      id="phone"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      placeholder="+44 7123 456789"
+                    />
+                  </div>
+                  
+                  {/* Subject Field - Pre-filled but editable */}
+                  <input
+                    type="hidden"
+                    id="subject"
+                    name="subject"
+                    value={formData.subject}
+                  />
+                  
+                  {/* Message Field */}
+                  <div>
+                    <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
+                      Message*
+                    </label>
+                    <textarea
+                      id="message"
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
+                      required
+                      rows={3}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      placeholder="I'm interested in scheduling a test drive for this vehicle..."
+                    ></textarea>
+                  </div>
+                  
+                  {/* Submit Button */}
+                  <div>
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className={`inline-flex items-center justify-center w-full px-4 py-2 border border-transparent rounded-md font-medium text-white transition-colors ${
+                        isSubmitting 
+                          ? 'bg-indigo-400 cursor-not-allowed' 
+                          : 'bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
+                      }`}
+                    >
+                      {isSubmitting ? 'Sending...' : 'Send Inquiry'}
+                      {!isSubmitting && (
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              )}
               
               <div className="mt-6 pt-6 border-t border-gray-200">
-                <p className="text-black text-base">We are available to answer your questions and arrange test drives.</p>
+                <div className="flex items-center text-sm text-gray-600">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-indigo-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  We'll get back to you as soon as possible.
+                </div>
               </div>
             </div>
           </div>

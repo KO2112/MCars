@@ -50,7 +50,7 @@ export default function Navbar() {
         <nav className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex-shrink-0">
-            <span className="text-xl font-bold text-gray-900">MA<span className="text-blue-600">Cars</span></span>
+            <span className="text-xl font-bold text-gray-900">Irons<span className="text-blue-600">Auto</span></span>
           </Link>
 
           {/* Desktop Navigation */}

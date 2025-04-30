@@ -1,7 +1,8 @@
+import ContactUsContent from './ContactUscontent';
+import type { Metadata } from 'next';
 
-import ContactUs from '../../components/ContactUs'; // This path should be correct
 
 
-export default function ContactPage() {
-  return <ContactUs />;
+export default function Page() {
+  return <ContactUsContent />;
 }
