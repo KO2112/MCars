@@ -25,7 +25,7 @@ export default function ContactUsSection() {
               <div>
                 <p className="text-sm text-gray-500 font-medium">Email Address</p>
                 <a href="mailto:makgun.uk@gmail.com" className="text-lg font-semibold text-gray-900 hover:text-indigo-600 transition-colors">
-                  makgun.uk@gmail.com
+                  info@ironsauto.co.uk
                 </a>
               </div>
             </div>

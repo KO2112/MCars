@@ -12,7 +12,7 @@ export default function Banner() {
       />
       <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
         <h1 className="text-white text-xl sm:text-3xl font-bold">
-          Welcome to MACars
+          Welcome to IRONSAUTO
         </h1>
       </div>
     </div>
