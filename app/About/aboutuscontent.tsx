@@ -22,7 +22,7 @@ export default function AboutUsContent() {
               <p>
                 IRONSAUTO was founded with a simple mission: to provide quality used vehicles at 
                 competitive prices with exceptional customer service. What started as a small 
-                family business has grown into one of Leicester's most trusted auto dealers.
+                family business has grown into one of Leicester most trusted auto dealers.
               </p>
               <p>
                 With over a decade of experience in the automotive industry, our team brings 
