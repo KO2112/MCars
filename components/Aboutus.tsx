@@ -34,7 +34,7 @@ export default function AboutUs() {
             <div className="bg-blue-50 border-l-4 border-blue-600 p-4 rounded shadow-sm mb-8">
               <h4 className="font-semibold text-gray-900 mb-2">Our Mission</h4>
               <p className="text-gray-700 italic">
-                "To provide our customers with the highest quality vehicles and service, ensuring complete satisfaction and building long-lasting relationships based on trust and integrity."
+                To provide our customers with the highest quality vehicles and service, ensuring complete satisfaction and building long-lasting relationships based on trust and integrity.
               </p>
             </div>
 
@@ -126,7 +126,7 @@ export default function AboutUs() {
                 <path d="M9.352 4C4.456 7.456 1 13.12 1 19.36c0 5.088 3.072 8.064 6.624 8.064 3.36 0 5.856-2.688 5.856-5.856 0-3.168-2.208-5.472-5.088-5.472-.576 0-1.344.096-1.536.192.48-3.264 3.552-7.104 6.624-9.024L9.352 4zm16.512 0c-4.8 3.456-8.256 9.12-8.256 15.36 0 5.088 3.072 8.064 6.624 8.064 3.264 0 5.856-2.688 5.856-5.856 0-3.168-2.304-5.472-5.184-5.472-.576 0-1.248.096-1.44.192.48-3.264 3.456-7.104 6.528-9.024L25.864 4z" />
               </svg>
               <p className="text-white/90 italic mb-4 leading-relaxed">
-                "The team at IronsAuto made buying my new car such a pleasant experience. Their knowledge, patience and no-pressure approach was exactly what I was looking for. I could not be happier with my purchase!"
+                The team at IronsAuto made buying my new car such a pleasant experience. Their knowledge, patience and no-pressure approach was exactly what I was looking for. I could not be happier with my purchase!
               </p>
               <div className="font-semibold">Sarah Thompson</div>
               <div className="text-white/70 text-sm">Loyal Customer since 2018</div>

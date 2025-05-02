@@ -1,88 +1,85 @@
 "use client";
 
+import Link from "next/link";
 import { Phone, Mail, Facebook, Instagram, Twitter, MapPin } from "lucide-react";
 
 export default function Footer() {
   return (
     <footer className="bg-gray-900 text-white">
-      <div className="max-w-7xl mx-auto px-4 pt-12 pb-8">
-        {/* Footer Top Section with Logo and Description */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+      <div className="container mx-auto px-4 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Brand Column */}
-          <div className="col-span-1">
-            <h3 className="text-xl font-bold mb-4">IRONSAUTO</h3>
-            <p className="text-gray-400 mb-4">
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold">IRONSAUTO</h2>
+            <p className="text-gray-300">
               Your trusted partner for quality used cars in Leicester since 2015.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+              <Link href="https://facebook.com" className="hover:text-blue-400">
                 <Facebook size={20} />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+              </Link>
+              <Link href="https://instagram.com" className="hover:text-pink-400">
                 <Instagram size={20} />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+              </Link>
+              <Link href="https://twitter.com" className="hover:text-blue-300">
                 <Twitter size={20} />
-              </a>
+              </Link>
             </div>
           </div>
 
           {/* Quick Links */}
-          <div className="col-span-1">
-            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
+          <div className="space-y-4">
+            <h3 className="text-xl font-semibold">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <a href="/" className="text-gray-400 hover:text-white transition-colors">Home</a>
+                <Link href="/" className="hover:text-gray-300 transition">
+                  Home
+                </Link>
               </li>
               <li>
-                <a href="/cars" className="text-gray-400 hover:text-white transition-colors">Cars</a>
+                <Link href="/cars" className="hover:text-gray-300 transition">
+                  Cars
+                </Link>
               </li>
-              
               <li>
-                <a href="/contact" className="text-gray-400 hover:text-white transition-colors">Contact Us</a>
+                <Link href="/contact" className="hover:text-gray-300 transition">
+                  Contact Us
+                </Link>
               </li>
             </ul>
           </div>
 
-
-
           {/* Contact Info */}
-          <div className="col-span-1">
-            <h3 className="text-lg font-semibold mb-4">Contact Us</h3>
+          <div className="space-y-4">
+            <h3 className="text-xl font-semibold">Contact Us</h3>
             <div className="space-y-3">
-              <div className="flex items-center">
-                <Phone className="h-5 w-5 text-indigo-400 mr-2" />
-                <a href="tel:+447476866745" className="text-gray-400 hover:text-white transition-colors">
-                  +44 7476 866745
-                </a>
-              </div>
-              <div className="flex items-center">
-                <Mail className="h-5 w-5 text-indigo-400 mr-2" />
-                <a href="mailto:info@ironsauto.co.uk" className="text-gray-400 hover:text-white transition-colors">
-                  info@ironsauto.co.uk
-                </a>
-              </div>
-              <div className="flex items-start">
-                <MapPin className="h-5 w-5 text-indigo-400 mr-2 mt-1" />
-                <p className="text-gray-400">
+              <p className="flex items-center gap-2">
+                <Phone size={16} />
+                <span>+44 7476 866745</span>
+              </p>
+              <p className="flex items-center gap-2">
+                <Mail size={16} />
+                <span>info@ironsauto.co.uk</span>
+              </p>
+              <p className="flex items-center gap-2">
+                <MapPin size={16} />
+                <span>
                   101-103 Margaret Road
+                  <br />
                   Leicester, LE5 5FW
                   <br />
-                  LE5 5FW, United Kingdom
-                </p>
-              </div>
+                  United Kingdom
+                </span>
+              </p>
             </div>
           </div>
         </div>
+      </div>
 
-        
-
-        {/* Copyright Section */}
-        <div className="border-t border-gray-800 pt-6 mt-6 text-center">
-          <p className="text-gray-500 text-sm">
-            © {new Date().getFullYear()} MACars. All rights reserved.
-          </p>
-          
+      {/* Copyright Section */}
+      <div className="bg-gray-800 py-4">
+        <div className="container mx-auto px-4 text-center">
+          <p>© {new Date().getFullYear()} IronsAuto. All rights reserved.</p>
         </div>
       </div>
     </footer>
