@@ -1,23 +1,25 @@
-"use client";
+"use client"
 
-import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { db, storage } from "../../../firebase/firebase";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import useAuth from "../../../hooks/useAuth";
-import Link from "next/link";
+import type React from "react"
+
+import { useState, useEffect } from "react"
+import { useParams, useRouter } from "next/navigation"
+import { db, storage } from "../../../firebase/firebase"
+import { doc, getDoc, updateDoc } from "firebase/firestore"
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
+import useAuth from "../../../hooks/useAuth"
+import Link from "next/link"
 
 export default function EditCar() {
-  const params = useParams();
-  const router = useRouter();
-  const id = params?.id as string;
-  const { user } = useAuth();
-  const [authChecked, setAuthChecked] = useState(false);
-  
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const params = useParams()
+  const router = useRouter()
+  const id = params?.id as string
+  const { user } = useAuth()
+  const [authChecked, setAuthChecked] = useState(false)
+
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [imageFiles, setImageFiles] = useState<File[]>([])
   const [carData, setCarData] = useState({
     title: "",
     price: "",
@@ -27,34 +29,37 @@ export default function EditCar() {
     engineSize: "",
     fuelType: "",
     doors: "",
-    images: [] as string[]
-  });
-  const [imagesToDelete, setImagesToDelete] = useState<number[]>([]);
+    description: "",
+    features: [] as string[], // Add this line
+    images: [] as string[],
+  })
+  const [imagesToDelete, setImagesToDelete] = useState<number[]>([])
+  const [featureInput, setFeatureInput] = useState("")
 
   useEffect(() => {
     // Mark authentication as checked once we have the user state
-    setAuthChecked(true);
-    
+    setAuthChecked(true)
+
     // If no user after checking, show the sign-in UI (handled in render)
-    if (!user) return;
+    if (!user) return
 
     // Only fetch car data if we have an ID and the user is authenticated
     if (id && user) {
       const fetchCarDetails = async () => {
         try {
-          const docRef = doc(db, "cars", id);
-          const docSnap = await getDoc(docRef);
+          const docRef = doc(db, "cars", id)
+          const docSnap = await getDoc(docRef)
 
           if (docSnap.exists()) {
-            const data = docSnap.data();
-            
+            const data = docSnap.data()
+
             // Check if the car belongs to the current user
             if (data.userId && data.userId !== user.uid) {
-              alert("You dont have permission to edit this car listing");
-              router.push("/");
-              return;
+              alert("You dont have permission to edit this car listing")
+              router.push("/")
+              return
             }
-            
+
             setCarData({
               title: data.title || "",
               price: data.price || "",
@@ -64,88 +69,107 @@ export default function EditCar() {
               engineSize: data.engineSize || "",
               fuelType: data.fuelType || "",
               doors: data.doors || "",
-              images: data.images || []
-            });
+              description: data.description || "",
+              features: data.features || [], // Add this line
+              images: data.images || [],
+            })
           } else {
-            console.log("No such document!");
-            router.push("/");
+            console.log("No such document!")
+            router.push("/")
           }
         } catch (error) {
-          console.error("Error fetching car details:", error);
+          console.error("Error fetching car details:", error)
         } finally {
-          setLoading(false);
+          setLoading(false)
         }
-      };
+      }
 
-      fetchCarDetails();
+      fetchCarDetails()
     }
-  }, [id, router, user]);
+  }, [id, router, user])
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setCarData({ ...carData, [name]: value });
-  };
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    setCarData({ ...carData, [name]: value })
+  }
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setCarData({ ...carData, [name]: value });
-  };
+    const { name, value } = e.target
+    setCarData({ ...carData, [name]: value })
+  }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       // Append to existing imageFiles rather than replacing them
-      setImageFiles(prev => [...prev, ...Array.from(e.target.files || [])]);
+      setImageFiles((prev) => [...prev, ...Array.from(e.target.files || [])])
     }
-  };
-  
+  }
+
   const handleDeleteImage = (index: number) => {
-    setImagesToDelete(prev => [...prev, index]);
-  };
-  
+    setImagesToDelete((prev) => [...prev, index])
+  }
+
   const removeSelectedFile = (index: number) => {
-    setImageFiles(prev => prev.filter((_, i) => i !== index));
-  };
+    setImageFiles((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  const handleAddFeature = () => {
+    if (featureInput.trim() === "") return
+
+    setCarData({
+      ...carData,
+      features: [...carData.features, featureInput.trim()],
+    })
+    setFeatureInput("")
+  }
+
+  const handleRemoveFeature = (indexToRemove: number) => {
+    setCarData({
+      ...carData,
+      features: carData.features.filter((_, index) => index !== indexToRemove),
+    })
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSaving(true);
+    e.preventDefault()
+    setSaving(true)
 
     try {
       // Create a copy of the car data to update
-      const updatedData = { ...carData };
-      
+      const updatedData = { ...carData }
+
       // Filter out images marked for deletion
       if (imagesToDelete.length > 0) {
-        updatedData.images = carData.images.filter((_, index) => !imagesToDelete.includes(index));
+        updatedData.images = carData.images.filter((_, index) => !imagesToDelete.includes(index))
       }
-      
+
       // Upload new images if any are selected
       if (imageFiles.length > 0) {
-        const newImageUrls = [];
-        
+        const newImageUrls = []
+
         for (const file of imageFiles) {
-          const storageRef = ref(storage, `car-images/${Date.now()}-${file.name}`);
-          const snapshot = await uploadBytes(storageRef, file);
-          const downloadUrl = await getDownloadURL(snapshot.ref);
-          newImageUrls.push(downloadUrl);
+          const storageRef = ref(storage, `car-images/${Date.now()}-${file.name}`)
+          const snapshot = await uploadBytes(storageRef, file)
+          const downloadUrl = await getDownloadURL(snapshot.ref)
+          newImageUrls.push(downloadUrl)
         }
-        
+
         // Append new images to the filtered images array
-        updatedData.images = [...updatedData.images, ...newImageUrls];
+        updatedData.images = [...updatedData.images, ...newImageUrls]
       }
 
       // Update the document in Firestore
-      await updateDoc(doc(db, "cars", id), updatedData);
-      
-      alert("Car updated successfully!");
-      router.push(`/newcars/${id}`); // Redirect to car details page
+      await updateDoc(doc(db, "cars", id), updatedData)
+
+      alert("Car updated successfully!")
+      router.push(`/newcars/${id}`) // Redirect to car details page
     } catch (error) {
-      console.error("Error updating car:", error);
-      alert("Failed to update car. Please try again.");
+      console.error("Error updating car:", error)
+      alert("Failed to update car. Please try again.")
     } finally {
-      setSaving(false);
+      setSaving(false)
     }
-  };
+  }
 
   // Show loading state before we've checked authentication or while car data is being fetched
   if (!authChecked || (loading && user)) {
@@ -155,7 +179,7 @@ export default function EditCar() {
           {!authChecked ? "Checking authentication..." : "Loading vehicle details..."}
         </div>
       </div>
-    );
+    )
   }
 
   // If not authenticated, show sign-in options
@@ -172,20 +196,26 @@ export default function EditCar() {
           </Link>
         </div>
       </div>
-    );
+    )
   }
 
   return (
     <div className="py-8 px-4 max-w-4xl mx-auto">
       <Link href={`/newcars/${id}`} className="inline-flex items-center text-indigo-600 mb-6">
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-5 w-5 mr-2"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
         </svg>
         Back to vehicle details
       </Link>
-      
+
       <h1 className="text-2xl font-bold mb-6">Edit Vehicle</h1>
-      
+
       <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md">
         {/* Title */}
         <div className="mb-4">
@@ -326,17 +356,81 @@ export default function EditCar() {
           </div>
         </div>
 
+        {/* Description */}
+        <div className="mb-4">
+          <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+            Vehicle Description
+          </label>
+          <textarea
+            id="description"
+            name="description"
+            value={carData.description}
+            onChange={handleInputChange}
+            rows={4}
+            className="w-full p-2 border border-gray-300 rounded"
+            placeholder="Enter a detailed description of the vehicle..."
+          />
+        </div>
+
+        {/* Features */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">Vehicle Features</label>
+          <div className="flex items-center space-x-2 mb-2">
+            <input
+              type="text"
+              value={featureInput}
+              onChange={(e) => setFeatureInput(e.target.value)}
+              className="flex-grow p-2 border border-gray-300 rounded"
+              placeholder="e.g., Full MOT, ULEZ Compliant, Bluetooth"
+            />
+            <button
+              type="button"
+              onClick={handleAddFeature}
+              className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+            >
+              Add
+            </button>
+          </div>
+
+          {/* Display added features */}
+          {carData.features.length > 0 && (
+            <div className="mt-3">
+              <p className="text-sm text-gray-600 mb-2">Current features:</p>
+              <div className="flex flex-wrap gap-2">
+                {carData.features.map((feature, index) => (
+                  <div
+                    key={index}
+                    className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800"
+                  >
+                    {feature}
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveFeature(index)}
+                      className="ml-1.5 text-indigo-600 hover:text-indigo-800 focus:outline-none"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
         {/* Current Images */}
         {carData.images.length > 0 && (
           <div className="mb-4">
             <h3 className="text-sm font-medium text-gray-700 mb-2">Current Images</h3>
             <div className="grid grid-cols-3 gap-2">
               {carData.images.map((img, index) => (
-                <div key={index} className={`relative h-20 bg-gray-100 rounded ${imagesToDelete.includes(index) ? 'opacity-40' : ''}`}>
-                  <img 
-                    src={img} 
-                    alt={`Car image ${index + 1}`} 
-                    className="h-full w-full object-cover rounded" 
+                <div
+                  key={index}
+                  className={`relative h-20 bg-gray-100 rounded ${imagesToDelete.includes(index) ? "opacity-40" : ""}`}
+                >
+                  <img
+                    src={img || "/placeholder.svg"}
+                    alt={`Car image ${index + 1}`}
+                    className="h-full w-full object-cover rounded"
                   />
                   {!imagesToDelete.includes(index) ? (
                     <button
@@ -350,7 +444,7 @@ export default function EditCar() {
                   ) : (
                     <button
                       type="button"
-                      onClick={() => setImagesToDelete(prev => prev.filter(i => i !== index))}
+                      onClick={() => setImagesToDelete((prev) => prev.filter((i) => i !== index))}
                       className="absolute top-1 right-1 bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-green-600"
                       title="Restore image"
                     >
@@ -385,7 +479,7 @@ export default function EditCar() {
           <p className="text-sm text-gray-500 mt-1">
             New images will be added to the existing ones. You can add multiple batches of images.
           </p>
-          
+
           {/* Selected New Images Preview */}
           {imageFiles.length > 0 && (
             <div className="mt-4">
@@ -393,10 +487,10 @@ export default function EditCar() {
               <div className="grid grid-cols-3 gap-2">
                 {imageFiles.map((file, index) => (
                   <div key={index} className="relative h-20 bg-gray-100 rounded">
-                    <img 
-                      src={URL.createObjectURL(file)} 
-                      alt={`New image ${index + 1}`} 
-                      className="h-full w-full object-cover rounded" 
+                    <img
+                      src={URL.createObjectURL(file) || "/placeholder.svg"}
+                      alt={`New image ${index + 1}`}
+                      className="h-full w-full object-cover rounded"
                     />
                     <button
                       type="button"
@@ -415,21 +509,18 @@ export default function EditCar() {
 
         {/* Submit Button */}
         <div className="flex justify-end space-x-4">
-          <Link
-            href={`/newcars/${id}`}
-            className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-          >
+          <Link href={`/newcars/${id}`} className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
             Cancel
           </Link>
           <button
             type="submit"
             disabled={saving}
-            className={`px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 ${saving ? 'opacity-75 cursor-not-allowed' : ''}`}
+            className={`px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 ${saving ? "opacity-75 cursor-not-allowed" : ""}`}
           >
-            {saving ? 'Saving...' : 'Save Changes'}
+            {saving ? "Saving..." : "Save Changes"}
           </button>
         </div>
       </form>
     </div>
-  );
+  )
 }
