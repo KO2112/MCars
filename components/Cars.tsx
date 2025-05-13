@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from "react"
 import { db } from "../firebase/firebase"
 import { collection, getDocs, query, orderBy } from "firebase/firestore"
 import Link from "next/link"
-import { Search, Filter, ChevronDown, Sliders, MapPin, Calendar, Gauge, Fuel } from "lucide-react"
+import { Search, Filter, ChevronDown, Sliders, MapPin, Gauge, Fuel } from "lucide-react"
 
 interface Car {
   id: string
