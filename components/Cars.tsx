@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from "react"
 import { db } from "../firebase/firebase"
 import { collection, getDocs, query, orderBy } from "firebase/firestore"
 import Link from "next/link"
-import { Search, Filter, ChevronDown, Sliders, MapPin, Gauge, Fuel, FuelIcon as Engine, Camera, CarFront } from "lucide-react"
+import { Search, Filter, ChevronDown, Sliders, MapPin, Gauge, Fuel, Camera, CarFront } from "lucide-react"
 
 interface Car {
   id: string
@@ -416,7 +416,7 @@ const Cars = () => {
           <div className="p-6">
             <h3 className="text-lg font-medium text-gray-900 mb-2">How do I schedule a test drive?</h3>
             <p className="text-gray-600">
-              You can schedule a test drive by clicking on the vehicle details page and using the "Schedule Test Drive"
+              You can schedule a test drive by clicking on the vehicle details page and using the Schedule Test Drive
               button. Alternatively, you can call our dealership directly at the number provided on the contact page.
             </p>
           </div>
@@ -432,8 +432,8 @@ const Cars = () => {
           <div className="p-6">
             <h3 className="text-lg font-medium text-gray-900 mb-2">What documents do I need to purchase a vehicle?</h3>
             <p className="text-gray-600">
-              To purchase a vehicle, you'll need a valid driver's license, proof of insurance, and proof of income. If
-              you're financing, additional documentation may be required by the lender.
+              To purchase a vehicle, you will need a valid drivers license, proof of insurance, and proof of income. If
+              you are financing, additional documentation may be required by the lender.
             </p>
           </div>
 
@@ -448,7 +448,7 @@ const Cars = () => {
           <div className="p-6">
             <h3 className="text-lg font-medium text-gray-900 mb-2">What is your return policy?</h3>
             <p className="text-gray-600">
-              We offer a 7-day/500-mile return policy on most vehicles. If you're not completely satisfied with your
+              We offer a 7-day/500-mile return policy on most vehicles. If you are not completely satisfied with your
               purchase, you can return it within this period for a full refund or exchange it for another vehicle.
             </p>
           </div>
