@@ -7,7 +7,8 @@ import { useEffect, useState } from "react"
 import { db } from "../firebase/firebase" // Firebase setup
 import { collection, getDocs, limit, query, orderBy } from "firebase/firestore"
 import Link from "next/link"
-import { ChevronLeft, ChevronRight, Camera } from "lucide-react"
+import { ChevronLeft, ChevronRight, Camera, ArrowRight } from "lucide-react"
+import { FuelIcon, Gauge, ArrowUpDown, Car } from "lucide-react"
 
 // Updated Car interface with features array
 interface Car {
@@ -92,16 +93,16 @@ export default function CarCarousel() {
     loop: true,
     slides: {
       perView: () => {
-        // Responsive slides per view
+        // Responsive slides per view - back to 4 as requested
         if (typeof window !== "undefined") {
           if (window.innerWidth < 640) return 1
           if (window.innerWidth < 1024) return 2
           if (window.innerWidth < 1280) return 3
-          return 4
+          return 4 // Show 4 cars at larger screens as requested
         }
         return 4
       },
-      spacing: 16,
+      spacing: 16, // Reduced spacing to fit 4 cards
     },
     slideChanged(slider) {
       setCurrentSlide(slider.track.details.rel)
@@ -134,10 +135,15 @@ export default function CarCarousel() {
 
   if (loading) {
     return (
-      <div className="relative py-10 px-4 max-w-7xl mx-auto">
-        <h2 className="text-3xl font-bold text-center text-black mb-8">Latest Arrivals</h2>
+      <div className="py-16 bg-gray-50 w-full">
+        <div className="text-center mb-10 px-4">
+          <h2 className="text-3xl font-bold text-gray-800">Latest Arrivals</h2>
+        </div>
         <div className="flex justify-center items-center h-64">
-          <div className="animate-pulse text-xl text-gray-600">Loading latest vehicles...</div>
+          <div className="animate-pulse flex flex-col items-center">
+            <div className="w-12 h-12 border-4 border-t-blue-600 border-r-blue-600 border-b-transparent border-l-transparent rounded-full animate-spin mb-4"></div>
+            <div className="text-xl text-gray-600">Loading latest vehicles...</div>
+          </div>
         </div>
       </div>
     )
@@ -145,9 +151,11 @@ export default function CarCarousel() {
 
   if (cars.length === 0) {
     return (
-      <div className="relative py-10 px-4 max-w-7xl mx-auto">
-        <h2 className="text-3xl font-bold text-center text-black mb-8">Latest Arrivals</h2>
-        <div className="text-center py-12 bg-gray-50 rounded-lg">
+      <div className="py-16 bg-gray-50 w-full">
+        <div className="text-center mb-10 px-4">
+          <h2 className="text-3xl font-bold text-gray-800">Latest Arrivals</h2>
+        </div>
+        <div className="text-center py-16 bg-white rounded-lg shadow-sm mx-4">
           <p className="text-gray-600">No vehicles available at this time.</p>
         </div>
       </div>
@@ -155,206 +163,164 @@ export default function CarCarousel() {
   }
 
   return (
-    <div className="relative py-10 px-4 max-w-7xl mx-auto">
-      <div className="flex justify-between items-center mb-8">
-        <h2 className="text-3xl font-bold text-black">Latest Arrivals</h2>
+    <div className="py-8 bg-gray-50 w-full">
+      {/* Section Header - Full width with padding on sides */}
+      <div className="flex justify-between items-center mb-10 px-4 sm:px-6 lg:px-8 max-w-[2000px] mx-auto">
+        <div>
+          <h2 className="text-3xl font-bold text-gray-800">Latest Arrivals</h2>
+        </div>
+        {/* Improved button design */}
         <Link
           href="/cars"
-          className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded transition duration-300 ease-in-out"
+          className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-5 rounded-md shadow-sm transition-all duration-300 flex items-center group"
         >
-          View All Cars
+          View all vehicles
+          <ArrowRight size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
         </Link>
       </div>
 
-      <div ref={sliderRef} className="keen-slider overflow-hidden rounded-lg">
-        {cars.map((car) => (
-          <div key={car.id} className="keen-slider__slide">
-            <Link href={`/newcars/${car.id}`}>
-              <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 h-full flex flex-col">
-                {/* Car Image with Gradient Overlay */}
-                <div className="relative h-48 md:h-56 lg:h-64 w-full overflow-hidden">
-                  {car.images && car.images.length > 0 ? (
-                    <>
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10" />
-                      <img
-                        src={car.images[0] || "/placeholder.svg"}
-                        alt={car.title}
-                        className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-                      />
-                    </>
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gray-200">
-                      <span className="text-gray-500">No image available</span>
-                    </div>
-                  )}
+      {/* Carousel - Full width */}
+      <div className="relative w-full">
+        <div ref={sliderRef} className="keen-slider">
+          {cars.map((car) => (
+            <div key={car.id} className="keen-slider__slide">
+              <Link href={`/newcars/${car.id}`} className="block h-full mx-2">
+                <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 h-full flex flex-col group border border-gray-100 hover:border-blue-200">
+                  {/* Car Image */}
+                  <div className="relative h-72 overflow-hidden">
+                    {car.images && car.images.length > 0 ? (
+                      <>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10"></div>
+                        <img
+                          src={car.images[0] || "/placeholder.svg"}
+                          alt={car.title}
+                          className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                        />
+                      </>
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                        <span className="text-gray-500">No image available</span>
+                      </div>
+                    )}
 
-                  {/* Price Tag */}
-                  <div className="absolute top-4 right-4 bg-white px-3 py-1 rounded-full text-gray-900 font-semibold shadow-md z-20">
-                    £{Number(car.price).toLocaleString()}
+                    {/* Price Tag */}
+                    <div className="absolute top-3 right-3 bg-blue-700 text-white px-3 py-1 rounded-md font-semibold shadow-sm z-20">
+                      £{Number(car.price).toLocaleString()}
+                    </div>
+
+                    {/* Photo Count Badge */}
+                    {car.images && car.images.length > 1 && (
+                      <div className="absolute bottom-3 right-3 bg-black/60 text-white px-2 py-1 rounded text-xs font-medium flex items-center z-20">
+                        <Camera size={12} className="mr-1" />
+                        {car.images.length}
+                      </div>
+                    )}
                   </div>
 
-                  {/* Multiple Images Badge */}
-                  {car.images && car.images.length > 1 && (
-                    <div className="absolute bottom-4 right-4 bg-white bg-opacity-90 px-2 py-1 rounded-md text-xs font-medium text-gray-800 z-20 flex items-center">
-                      <Camera size={14} className="mr-1" />
-                      {car.images.length} photos
-                    </div>
-                  )}
-                </div>
+                  {/* Car Details */}
+                  <div className="p-4 flex-1 flex flex-col">
+                    {/* Car Title */}
+                    <h3 className="text-lg font-bold text-gray-800 mb-2 line-clamp-1 group-hover:text-blue-600 transition-colors">
+                      {car.title}
+                    </h3>
 
-                {/* Car Details */}
-                <div className="p-4 flex-1 flex flex-col">
-                  <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-1">{car.title}</h3>
+                    {/* Key Specs */}
+                    <div className="grid grid-cols-2 gap-2 mb-3 text-sm">
+                      <div className="flex items-center text-gray-600">
+                        <span className="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-blue-50 rounded-full mr-2">
+                          <FuelIcon size={12} className="text-blue-600" />
+                        </span>
+                        {car.engineSize}L {car.fuelType}
+                      </div>
+                      <div className="flex items-center text-gray-600">
+                        <span className="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-blue-50 rounded-full mr-2">
+                          <Gauge size={12} className="text-blue-600" />
+                        </span>
+                        {Number(car.mileage).toLocaleString()} miles
+                      </div>
+                      <div className="flex items-center text-gray-600">
+                        <span className="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-blue-50 rounded-full mr-2">
+                          <ArrowUpDown size={12} className="text-blue-600" />
+                        </span>
+                        {car.transmission.charAt(0).toUpperCase() + car.transmission.slice(1)}
+                      </div>
+                      <div className="flex items-center text-gray-600">
+                        <span className="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-blue-50 rounded-full mr-2">
+                          <Car size={12} className="text-blue-600" />
+                        </span>
+                        {car.doors} door {car.color}
+                      </div>
+                    </div>
 
-                  {/* Key Specs */}
-                  <div className="grid grid-cols-2 gap-y-2 gap-x-4 mb-3 text-sm">
-                    <div className="flex items-center text-gray-600">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-4 w-4 mr-1"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M13 10V3L4 14h7v7l9-11h-7z"
-                        />
-                      </svg>
-                      {car.engineSize}L
-                    </div>
-                    <div className="flex items-center text-gray-600">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-4 w-4 mr-1"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                      {Number(car.mileage).toLocaleString()} km
-                    </div>
-                    <div className="flex items-center text-gray-600">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-4 w-4 mr-1"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"
-                        />
-                      </svg>
-                      {car.transmission.charAt(0).toUpperCase() + car.transmission.slice(1)}
-                    </div>
-                    <div className="flex items-center text-gray-600">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-4 w-4 mr-1"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"
-                        />
-                      </svg>
-                      {car.fuelType.charAt(0).toUpperCase() + car.fuelType.slice(1)}
-                    </div>
-                  </div>
-
-                  {/* Feature Tags - Now using features from database */}
-                  <div className="mt-auto flex flex-wrap gap-2">
-                    {car.features && car.features.length > 0 ? (
-                      // Display up to 2 features from the database (carousel has less space)
-                      car.features
-                        .slice(0, 2)
-                        .map((feature, index) => (
+                    {/* Feature Tags */}
+                    <div className="mt-auto pt-3 border-t border-gray-100 flex flex-wrap gap-2">
+                      {car.features && car.features.length > 0 ? (
+                        car.features.slice(0, 2).map((feature, index) => (
                           <span
                             key={index}
-                            className="inline-block px-2 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700"
+                            className="inline-block px-2 py-1 rounded-md text-xs font-medium bg-blue-50 text-blue-700"
                           >
                             {feature}
                           </span>
                         ))
-                    ) : (
-                      // Fallback if no features are available
-                      <>
-                        <span className="inline-block px-2 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
-                          {car.doors} Doors
+                      ) : (
+                        <span className="inline-block px-2 py-1 rounded-md text-xs font-medium bg-blue-50 text-blue-700">
+                          Available now
                         </span>
-                        <span className="inline-block px-2 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700">
-                          {car.color}
-                        </span>
-                      </>
-                    )}
+                      )}
 
-                    {/* Show "+X more" if there are more than 2 features */}
-                    {car.features && car.features.length > 2 && (
-                      <span className="inline-block px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
-                        +{car.features.length - 2} more
-                      </span>
-                    )}
+                      {car.features && car.features.length > 2 && (
+                        <span className="inline-block px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-800">
+                          +{car.features.length - 2} more
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* View Details Button */}
+                  <div className="px-4 pb-4">
+                    <div className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-center font-medium rounded transition-all duration-300 flex items-center justify-center group-hover:shadow-md">
+                      View Details
+                      <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                    </div>
                   </div>
                 </div>
+              </Link>
+            </div>
+          ))}
+        </div>
 
-                {/* View Details Button */}
-                <div className="px-4 pb-4">
-                  <div className="w-full py-2 bg-indigo-600 text-white text-center font-medium rounded-md hover:bg-indigo-700 transition">
-                    View Details
-                  </div>
-                </div>
-              </div>
-            </Link>
-          </div>
-        ))}
+        {/* Navigation Controls - Positioned at the edges */}
+        {loaded && cars.length > 0 && (
+          <>
+            <button
+              onClick={handlePrev}
+              className="absolute left-2 top-1/2 -translate-y-1/2 bg-white p-3 rounded-full shadow-lg hover:bg-gray-50 z-10 focus:outline-none border border-gray-200 transition-transform duration-300 hover:scale-110"
+              aria-label="Previous slide"
+            >
+              <ChevronLeft size={24} className="text-blue-600" />
+            </button>
+            <button
+              onClick={handleNext}
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-white p-3 rounded-full shadow-lg hover:bg-gray-50 z-10 focus:outline-none border border-gray-200 transition-transform duration-300 hover:scale-110"
+              aria-label="Next slide"
+            >
+              <ChevronRight size={24} className="text-blue-600" />
+            </button>
+          </>
+        )}
       </div>
-
-      {/* Navigation Controls */}
-      {loaded && cars.length > 0 && (
-        <>
-          <button
-            onClick={handlePrev}
-            className="absolute left-0 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full shadow-md hover:bg-white ml-2 z-10"
-            aria-label="Previous slide"
-          >
-            <ChevronLeft size={24} />
-          </button>
-          <button
-            onClick={handleNext}
-            className="absolute right-0 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full shadow-md hover:bg-white mr-2 z-10"
-            aria-label="Next slide"
-          >
-            <ChevronRight size={24} />
-          </button>
-        </>
-      )}
 
       {/* Pagination Dots */}
       {loaded && cars.length > 0 && (
-        <div className="flex justify-center gap-2 mt-6">
-          {[...Array(cars.length).keys()].map((idx) => (
+        <div className="flex justify-center gap-1 mt-6">
+          {[...Array(Math.min(cars.length, 8)).keys()].map((idx) => (
             <button
               key={idx}
               onClick={() => instanceRef.current?.moveToIdx(idx)}
-              className={`w-2 h-2 rounded-full ${
-                currentSlide === idx ? "bg-indigo-600 w-4" : "bg-gray-300"
-              } transition-all`}
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                currentSlide === idx ? "bg-blue-600 w-6" : "bg-gray-300 hover:bg-gray-400"
+              }`}
               aria-label={`Go to slide ${idx + 1}`}
             />
           ))}

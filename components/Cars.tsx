@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from "react"
 import { db } from "../firebase/firebase"
 import { collection, getDocs, query, orderBy } from "firebase/firestore"
 import Link from "next/link"
-import { Search, Filter, ChevronDown, Sliders, MapPin, Gauge, Fuel } from "lucide-react"
+import { Search, Filter, ChevronDown, Sliders, MapPin, Gauge, Fuel, FuelIcon as Engine, Camera, CarFront } from "lucide-react"
 
 interface Car {
   id: string
@@ -146,9 +146,6 @@ const Cars = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen pb-16">
-      
-      
-
       {/* Search and Filter Bar */}
       <div className="bg-white shadow-md py-4 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -307,7 +304,7 @@ const Cars = () => {
               <Link href={`/newcars/${car.id}`} key={car.id} className="group">
                 <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 h-full flex flex-col">
                   {/* Car Image */}
-                  <div className="relative h-56 overflow-hidden">
+                  <div className="relative h-72 overflow-hidden">
                     {car.images && car.images.length > 0 ? (
                       <img
                         src={car.images[0] || "/placeholder.svg"}
@@ -328,20 +325,7 @@ const Cars = () => {
                     {/* Multiple Images Badge */}
                     {car.images && car.images.length > 1 && (
                       <div className="absolute bottom-3 right-3 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs font-medium flex items-center">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-4 w-4 mr-1"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14"
-                          />
-                        </svg>
+                        <Camera className="h-4 w-4 mr-1" />
                         {car.images.length} photos
                       </div>
                     )}
@@ -357,7 +341,6 @@ const Cars = () => {
                     <div className="flex items-center text-gray-600 mb-4">
                       <MapPin className="h-4 w-4 mr-1 text-blue-600" />
                       <span className="text-sm">Leicester</span>
-                      
                     </div>
 
                     {/* Key Specs */}
@@ -384,20 +367,7 @@ const Cars = () => {
                         <span className="text-sm capitalize">{car.transmission}</span>
                       </div>
                       <div className="flex items-center text-gray-700">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-4 w-4 mr-2 text-blue-600"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M13 10V3L4 14h7v7l9-11h-7z"
-                          />
-                        </svg>
+                        <CarFront className="h-4 w-4 mr-2 text-blue-600" />
                         <span className="text-sm">{car.engineSize}L</span>
                       </div>
                       <div className="flex items-center text-gray-700">
@@ -437,6 +407,52 @@ const Cars = () => {
             ))}
           </div>
         )}
+      </div>
+      {/* FAQ Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
+        <h2 className="text-2xl font-bold text-gray-900 mb-8">Frequently Asked Questions</h2>
+
+        <div className="bg-white rounded-lg shadow-md divide-y divide-gray-200">
+          <div className="p-6">
+            <h3 className="text-lg font-medium text-gray-900 mb-2">How do I schedule a test drive?</h3>
+            <p className="text-gray-600">
+              You can schedule a test drive by clicking on the vehicle details page and using the "Schedule Test Drive"
+              button. Alternatively, you can call our dealership directly at the number provided on the contact page.
+            </p>
+          </div>
+
+          <div className="p-6">
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Do you offer financing options?</h3>
+            <p className="text-gray-600">
+              Yes, we offer a variety of financing options to suit different budgets and credit situations. Our finance
+              team works with multiple lenders to find the best rates for our customers.
+            </p>
+          </div>
+
+          <div className="p-6">
+            <h3 className="text-lg font-medium text-gray-900 mb-2">What documents do I need to purchase a vehicle?</h3>
+            <p className="text-gray-600">
+              To purchase a vehicle, you'll need a valid driver's license, proof of insurance, and proof of income. If
+              you're financing, additional documentation may be required by the lender.
+            </p>
+          </div>
+
+          <div className="p-6">
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Do you offer vehicle delivery?</h3>
+            <p className="text-gray-600">
+              Yes, we offer vehicle delivery within a 50-mile radius of our dealership. For customers outside this area,
+              delivery may be available for an additional fee.
+            </p>
+          </div>
+
+          <div className="p-6">
+            <h3 className="text-lg font-medium text-gray-900 mb-2">What is your return policy?</h3>
+            <p className="text-gray-600">
+              We offer a 7-day/500-mile return policy on most vehicles. If you're not completely satisfied with your
+              purchase, you can return it within this period for a full refund or exchange it for another vehicle.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   )

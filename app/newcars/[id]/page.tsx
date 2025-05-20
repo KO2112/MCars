@@ -8,6 +8,25 @@ import { sendContactEmail } from "../../../lib/resend" // Make sure this import 
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
 import useAuth from "../../../hooks/useAuth" // Import the custom hook
+import {
+  ChevronLeft,
+  ChevronRight,
+  ArrowLeft,
+  Edit,
+  Trash2,
+  Maximize2,
+  FuelIcon as Engine,
+  Fuel,
+  Gauge,
+  Settings,
+  Palette,
+  DoorOpen,
+  Check,
+  AlertCircle,
+  Send,
+  Info,
+  CarFront
+} from "lucide-react"
 
 // Car interface matching our data structure
 interface Car {
@@ -211,17 +230,21 @@ export default function CarDetails() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex justify-center items-center">
-        <div className="animate-pulse text-xl text-black">Loading vehicle details...</div>
+      <div className="min-h-screen flex justify-center items-center bg-gray-50">
+        <div className="flex flex-col items-center">
+          <div className="w-16 h-16 border-4 border-t-blue-600 border-r-blue-600 border-b-transparent border-l-transparent rounded-full animate-spin mb-4"></div>
+          <div className="text-xl text-gray-700 font-medium">Loading vehicle details...</div>
+        </div>
       </div>
     )
   }
 
   if (!car) {
     return (
-      <div className="min-h-screen flex flex-col justify-center items-center">
-        <div className="text-xl text-black mb-4">Vehicle not found</div>
-        <Link href="/" className="text-indigo-600 hover:text-indigo-800 font-medium">
+      <div className="min-h-screen flex flex-col justify-center items-center bg-gray-50">
+        <div className="text-xl text-gray-800 mb-4">Vehicle not found</div>
+        <Link href="/cars" className="text-blue-600 hover:text-blue-800 font-medium flex items-center">
+          <ArrowLeft className="h-4 w-4 mr-2" />
           Return to vehicle listings
         </Link>
       </div>
@@ -230,10 +253,10 @@ export default function CarDetails() {
 
   // Full screen gallery modal
   const GalleryModal = () => (
-    <div className="fixed inset-0 z-50 bg-black bg-opacity-90 flex justify-center items-center p-4">
+    <div className="fixed inset-0 z-50 bg-black bg-opacity-95 flex justify-center items-center p-4">
       <button
         onClick={() => setShowFullGallery(false)}
-        className="absolute top-4 right-4 text-white text-4xl hover:text-gray-300"
+        className="absolute top-4 right-4 text-white text-4xl hover:text-gray-300 focus:outline-none"
       >
         ×
       </button>
@@ -250,31 +273,15 @@ export default function CarDetails() {
           {/* Navigation Arrows */}
           <button
             onClick={() => navigateImage("prev")}
-            className="absolute left-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-2 rounded-full"
+            className="absolute left-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-3 rounded-full transition-all duration-300 hover:scale-110 focus:outline-none"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
+            <ChevronLeft className="h-6 w-6" />
           </button>
           <button
             onClick={() => navigateImage("next")}
-            className="absolute right-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-2 rounded-full"
+            className="absolute right-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-3 rounded-full transition-all duration-300 hover:scale-110 focus:outline-none"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
+            <ChevronRight className="h-6 w-6" />
           </button>
 
           {/* Image Counter */}
@@ -289,7 +296,9 @@ export default function CarDetails() {
             <div
               key={index}
               onClick={() => changeImage(index)}
-              className={`flex-shrink-0 w-24 h-16 cursor-pointer ${activeImage === index ? "ring-2 ring-indigo-500" : ""}`}
+              className={`flex-shrink-0 w-24 h-16 cursor-pointer transition-all duration-300 ${
+                activeImage === index ? "ring-2 ring-blue-500 opacity-100" : "opacity-60 hover:opacity-100"
+              }`}
             >
               <img
                 src={img || "/placeholder.svg"}
@@ -311,107 +320,73 @@ export default function CarDetails() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Back Button */}
         <div className="flex justify-between items-center mb-6">
-          <Link href="/cars" className="inline-flex items-center text-indigo-600 hover:text-indigo-800">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 mr-2"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
+          <Link href="/cars" className="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors">
+            <ArrowLeft className="h-5 w-5 mr-2" />
             Back to vehicles
           </Link>
           {/* Edit Button - Only visible for signed in users */}
           {user && (
-            <Link
-              href={`/edit-car/${car.id}`}
-              className="inline-flex items-center bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition duration-300 mr-4"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 mr-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+            <div className="flex gap-3">
+              <Link
+                href={`/edit-car/${car.id}`}
+                className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition duration-300 shadow-sm"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                />
-              </svg>
-              Edit Vehicle
-            </Link>
-          )}
-          {/* Delete Button - Only visible for signed in users */}
-          {user && (
-            <button
-              onClick={handleDeleteCar}
-              disabled={deleting}
-              className="inline-flex items-center bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md transition duration-300"
-            >
-              {deleting ? (
-                <>
-                  <svg
-                    className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  Deleting...
-                </>
-              ) : (
-                <>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 mr-2"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                    />
-                  </svg>
-                  Delete Vehicle
-                </>
-              )}
-            </button>
+                <Edit className="h-4 w-4 mr-2" />
+                Edit Vehicle
+              </Link>
+              {/* Delete Button - Only visible for signed in users */}
+              <button
+                onClick={handleDeleteCar}
+                disabled={deleting}
+                className="inline-flex items-center bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md transition duration-300 shadow-sm"
+              >
+                {deleting ? (
+                  <>
+                    <svg
+                      className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete Vehicle
+                  </>
+                )}
+              </button>
+            </div>
           )}
         </div>
 
         {/* Vehicle Title and Price */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-          <h1 className="text-3xl md:text-4xl font-bold text-black">{car.title}</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900">{car.title}</h1>
           <div className="mt-2 md:mt-0">
-            <div className="text-4xl font-bold text-indigo-600">£{Number(car.price).toLocaleString()}</div>
+            <div className="text-4xl font-bold text-blue-600">£{Number(car.price).toLocaleString()}</div>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Image Gallery - Left Side (2/3 width on large screens) */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-xl shadow-md overflow-hidden">
+            <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
               {/* Main Featured Image */}
               <div className="relative h-90 sm:h-[550px]">
                 <img
@@ -423,22 +398,9 @@ export default function CarDetails() {
                 {/* Expand button */}
                 <button
                   onClick={() => setShowFullGallery(true)}
-                  className="absolute top-4 right-4 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-2 rounded-full"
+                  className="absolute top-4 right-4 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-2 rounded-full transition-all duration-300 hover:scale-110 focus:outline-none"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 0h-4m4 0l-5-5"
-                    />
-                  </svg>
+                  <Maximize2 className="h-5 w-5" />
                 </button>
 
                 {/* Navigation Arrows - Only visible if more than one image */}
@@ -446,31 +408,15 @@ export default function CarDetails() {
                   <>
                     <button
                       onClick={() => navigateImage("prev")}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-2 rounded-full"
+                      className="absolute left-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-3 rounded-full transition-all duration-300 hover:scale-110 focus:outline-none"
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                      </svg>
+                      <ChevronLeft className="h-5 w-5" />
                     </button>
                     <button
                       onClick={() => navigateImage("next")}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-2 rounded-full"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-3 rounded-full transition-all duration-300 hover:scale-110 focus:outline-none"
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
+                      <ChevronRight className="h-5 w-5" />
                     </button>
                   </>
                 )}
@@ -483,7 +429,11 @@ export default function CarDetails() {
                     <div
                       key={index}
                       onClick={() => changeImage(index)}
-                      className={`flex-shrink-0 w-24 h-16 cursor-pointer rounded ${activeImage === index ? "ring-2 ring-indigo-500" : "opacity-70 hover:opacity-100"}`}
+                      className={`flex-shrink-0 w-24 h-16 cursor-pointer rounded transition-all duration-300 ${
+                        activeImage === index
+                          ? "ring-2 ring-blue-500 opacity-100"
+                          : "opacity-70 hover:opacity-100 hover:ring-1 hover:ring-blue-300"
+                      }`}
                     >
                       <img
                         src={img || "/placeholder.svg"}
@@ -497,22 +447,25 @@ export default function CarDetails() {
             </div>
 
             {/* Vehicle Description Section */}
-            <div className="bg-white rounded-xl shadow-md p-6 mt-6">
-              <h2 className="text-2xl font-bold text-black mb-4">Vehicle Description</h2>
+            <div className="bg-white rounded-xl shadow-md p-6 mt-6 border border-gray-100">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+                <Info className="h-5 w-5 mr-2 text-blue-600" />
+                Vehicle Description
+              </h2>
               <div className="prose max-w-none">
                 {car.description ? (
-                  <div className="text-black text-base whitespace-pre-line">{car.description}</div>
+                  <div className="text-gray-700 text-base whitespace-pre-line leading-relaxed">{car.description}</div>
                 ) : (
                   <>
-                    <p className="text-black text-base">
+                    <p className="text-gray-700 text-base leading-relaxed">
                       This {car.title} is in excellent condition and ready for its new owner.
                     </p>
-                    <p className="mt-2 text-black text-base">
+                    <p className="mt-2 text-gray-700 text-base leading-relaxed">
                       It features a {car.engineSize}L {car.fuelType} engine with {car.transmission} transmission. With
                       only {Number(car.mileage).toLocaleString()} Miles on the odometer, this {car.color} vehicle
                       provides an excellent driving experience.
                     </p>
-                    <p className="mt-2 text-black text-base">
+                    <p className="mt-2 text-gray-700 text-base leading-relaxed">
                       Contact us today to schedule a test drive and experience this amazing vehicle for yourself!
                     </p>
                   </>
@@ -522,14 +475,18 @@ export default function CarDetails() {
 
             {/* Vehicle Features Section - Only show if there are features */}
             {car.features && car.features.length > 0 && (
-              <div className="bg-white rounded-xl shadow-md p-6 mt-6">
-                <h2 className="text-2xl font-bold text-black mb-4">Vehicle Features</h2>
+              <div className="bg-white rounded-xl shadow-md p-6 mt-6 border border-gray-100">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+                  <Check className="h-5 w-5 mr-2 text-blue-600" />
+                  Vehicle Features
+                </h2>
                 <div className="flex flex-wrap gap-2">
                   {car.features.map((feature, index) => (
                     <span
                       key={index}
-                      className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800"
+                      className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
                     >
+                      <Check className="h-3 w-3 mr-1" />
                       {feature}
                     </span>
                   ))}
@@ -541,164 +498,80 @@ export default function CarDetails() {
           {/* Vehicle Specifications - Right Side (1/3 width on large screens) */}
           <div className="lg:col-span-1">
             {/* Key Details Card */}
-            <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-              <h2 className="text-xl font-bold text-black mb-4">Vehicle Details</h2>
+            <div className="bg-white rounded-xl shadow-md p-6 mb-6 border border-gray-100">
+              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                
+                Vehicle Details
+              </h2>
 
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-black text-base flex items-center">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5 mr-2 text-indigo-600"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13 10V3L4 14h7v7l9-11h-7z"
-                      />
-                    </svg>
+                  <span className="text-gray-700 text-base flex items-center">
+                    <CarFront className="h-5 w-5 mr-2 text-blue-600" />
                     Engine Size
                   </span>
-                  <span className="font-medium text-black text-base">{car.engineSize}L</span>
+                  <span className="font-medium text-gray-900 text-base">{car.engineSize}L</span>
                 </div>
                 <div className="h-px bg-gray-200"></div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-black text-base flex items-center">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5 mr-2 text-indigo-600"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                      />
-                    </svg>
+                  <span className="text-gray-700 text-base flex items-center">
+                    <Fuel className="h-5 w-5 mr-2 text-blue-600" />
                     Fuel Type
                   </span>
-                  <span className="font-medium capitalize text-black text-base">{car.fuelType}</span>
+                  <span className="font-medium capitalize text-gray-900 text-base">{car.fuelType}</span>
                 </div>
                 <div className="h-px bg-gray-200"></div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-black text-base flex items-center">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5 mr-2 text-indigo-600"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
-                      />
-                    </svg>
+                  <span className="text-gray-700 text-base flex items-center">
+                    <Gauge className="h-5 w-5 mr-2 text-blue-600" />
                     Mileage
                   </span>
-                  <span className="font-medium text-black text-base">{Number(car.mileage).toLocaleString()} Miles</span>
+                  <span className="font-medium text-gray-900 text-base">
+                    {Number(car.mileage).toLocaleString()} Miles
+                  </span>
                 </div>
                 <div className="h-px bg-gray-200"></div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-black text-base flex items-center">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5 mr-2 text-indigo-600"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                    </svg>
+                  <span className="text-gray-700 text-base flex items-center">
+                    <Settings className="h-5 w-5 mr-2 text-blue-600" />
                     Transmission
                   </span>
-                  <span className="font-medium capitalize text-black text-base">{car.transmission}</span>
+                  <span className="font-medium capitalize text-gray-900 text-base">{car.transmission}</span>
                 </div>
                 <div className="h-px bg-gray-200"></div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-black text-base flex items-center">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5 mr-2 text-indigo-600"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
-                      />
-                    </svg>
+                  <span className="text-gray-700 text-base flex items-center">
+                    <Palette className="h-5 w-5 mr-2 text-blue-600" />
                     Color
                   </span>
-                  <span className="font-medium capitalize text-black text-base">{car.color}</span>
+                  <span className="font-medium capitalize text-gray-900 text-base">{car.color}</span>
                 </div>
                 <div className="h-px bg-gray-200"></div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-black text-base flex items-center">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5 mr-2 text-indigo-600"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
-                      />
-                    </svg>
+                  <span className="text-gray-700 text-base flex items-center">
+                    <DoorOpen className="h-5 w-5 mr-2 text-blue-600" />
                     Doors
                   </span>
-                  <span className="font-medium text-black text-base">{car.doors}</span>
+                  <span className="font-medium text-gray-900 text-base">{car.doors}</span>
                 </div>
               </div>
             </div>
 
             {/* Contact Form - Replacing the previous "Interested in this vehicle?" section */}
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <h2 className="text-xl font-bold text-black mb-4">Interested in this vehicle?</h2>
+            <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                <Send className="h-5 w-5 mr-2 text-blue-600" />
+                Interested in this vehicle?
+              </h2>
 
               {formStatus.submitted ? (
                 <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-start">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 text-green-600 mr-3 flex-shrink-0 mt-0.5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
+                  <Check className="h-5 w-5 text-green-600 mr-3 flex-shrink-0 mt-0.5" />
                   <div>
                     <h3 className="font-medium text-green-800">Thank You!</h3>
                     <p className="text-green-700">
@@ -716,20 +589,7 @@ export default function CarDetails() {
                 <form onSubmit={handleSubmit} className="space-y-4">
                   {formStatus.error && (
                     <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5 text-red-600 mr-3 flex-shrink-0 mt-0.5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
+                      <AlertCircle className="h-5 w-5 text-red-600 mr-3 flex-shrink-0 mt-0.5" />
                       <div>
                         <h3 className="font-medium text-red-800">Error</h3>
                         <p className="text-red-700">{formStatus.message}</p>
@@ -749,7 +609,7 @@ export default function CarDetails() {
                       value={formData.name}
                       onChange={handleChange}
                       required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       placeholder="John Smith"
                     />
                   </div>
@@ -766,7 +626,7 @@ export default function CarDetails() {
                       value={formData.email}
                       onChange={handleChange}
                       required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       placeholder="john@example.com"
                     />
                   </div>
@@ -782,7 +642,7 @@ export default function CarDetails() {
                       name="phone"
                       value={formData.phone}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       placeholder="+44 7123 456789"
                     />
                   </div>
@@ -802,7 +662,7 @@ export default function CarDetails() {
                       onChange={handleChange}
                       required
                       rows={3}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       placeholder="I'm interested in scheduling a test drive for this vehicle..."
                     ></textarea>
                   </div>
@@ -814,22 +674,12 @@ export default function CarDetails() {
                       disabled={isSubmitting}
                       className={`inline-flex items-center justify-center w-full px-4 py-2 border border-transparent rounded-md font-medium text-white transition-colors ${
                         isSubmitting
-                          ? "bg-indigo-400 cursor-not-allowed"
-                          : "bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                          ? "bg-blue-400 cursor-not-allowed"
+                          : "bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                       }`}
                     >
                       {isSubmitting ? "Sending..." : "Send Inquiry"}
-                      {!isSubmitting && (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-4 w-4 ml-2"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                      )}
+                      {!isSubmitting && <Send className="h-4 w-4 ml-2" />}
                     </button>
                   </div>
                 </form>
@@ -837,20 +687,7 @@ export default function CarDetails() {
 
               <div className="mt-6 pt-6 border-t border-gray-200">
                 <div className="flex items-center text-sm text-gray-600">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 text-indigo-600 mr-2"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
+                  <Info className="h-5 w-5 text-blue-600 mr-2" />
                   We will get back to you as soon as possible.
                 </div>
               </div>
