@@ -15,7 +15,7 @@ export default function HomePage() {
       <Banner />
 
       {/* Featured Cars Section */}
-      <section className="max-w-7xl mx-auto py-2">
+      <section className="max-w-400 mx-auto py-2">
         
         <CarCarousel />
       </section>

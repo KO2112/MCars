@@ -165,7 +165,7 @@ export default function CarCarousel() {
   return (
     <div className="py-8 bg-gray-50 w-full">
       {/* Section Header - Full width with padding on sides */}
-      <div className="flex justify-between items-center mb-10 px-4 sm:px-6 lg:px-8 max-w-[2000px] mx-auto">
+      <div className="flex justify-between items-center mb-8 px-4 sm:px-6 lg:px-8 max-w-[2000px] mx-auto">
         <div>
           <h2 className="text-3xl font-bold text-gray-800">Latest Arrivals</h2>
         </div>
