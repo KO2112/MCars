@@ -15,7 +15,7 @@ import {
   Edit,
   Trash2,
   Maximize2,
-  FuelIcon as Engine,
+  
   Fuel,
   Gauge,
   Settings,
