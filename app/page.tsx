@@ -19,8 +19,9 @@ export default function HomePage() {
         
         <CarCarousel />
       </section>
-      <WhyChooseUs/>   
       <AboutUs/>
+      <WhyChooseUs/>   
+      
       <Cu/>   
       
       
