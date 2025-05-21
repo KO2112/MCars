@@ -25,7 +25,7 @@ export default function AboutUs() {
           {/* Left Column - Company Story */}
           <div>
             <h3 className="text-3xl font-bold text-gray-900 mb-6 border-b-4 border-blue-600 pb-2 inline-block">
-              Leicester's Premier Auto Dealership
+              Leicesters Premier Auto Dealership
             </h3>
             
             <p className="text-gray-700 mb-6 leading-relaxed text-lg">
