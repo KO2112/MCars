@@ -282,7 +282,7 @@ const Cars = () => {
               <div className="text-6xl mb-6">🔍</div>
               <h3 className="text-2xl font-bold text-gray-900 mb-4">No Vehicles Found</h3>
               <p className="text-gray-600 mb-8 max-w-md mx-auto">
-                We couldn't find any vehicles matching your criteria. Try adjusting your search or filters.
+                We couldnt find any vehicles matching your criteria. Try adjusting your search or filters.
               </p>
               <button
                 className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-800 text-white rounded-xl hover:from-blue-600 hover:to-blue-900 transition-all duration-200 shadow-lg"
@@ -396,7 +396,7 @@ const Cars = () => {
       {/* FAQ Section */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mt-20 pb-20">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Questions? We're Here to Help</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Questions? We are Here to Help</h2>
           <p className="text-gray-600">Everything you need to know about your premium car buying experience</p>
         </div>
 
