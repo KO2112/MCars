@@ -49,7 +49,7 @@ export default function Banner() {
               >
                 Welcome to{" "}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-blue-100">
-                  IRONSAUTO
+                  IRON AUTO
                 </span>
               </motion.h1>
             </motion.div>
