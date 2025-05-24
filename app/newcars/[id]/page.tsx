@@ -8,7 +8,24 @@ import { sendContactEmail } from "../../../lib/resend" // Make sure this import 
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
 import useAuth from "../../../hooks/useAuth" // Import the custom hook
-import { ChevronLeft, ChevronRight, ArrowLeft, Edit, Trash2, Maximize2, Fuel, Gauge, Settings, Palette, DoorOpen, Check, AlertCircle, Send, Info, CarFront } from 'lucide-react'
+import {
+  ChevronLeft,
+  ChevronRight,
+  ArrowLeft,
+  Edit,
+  Trash2,
+  Maximize2,
+  Fuel,
+  Gauge,
+  Settings,
+  Palette,
+  DoorOpen,
+  Check,
+  AlertCircle,
+  Send,
+  Info,
+  CarFront,
+} from "lucide-react"
 
 // Car interface matching our data structure
 interface Car {
@@ -358,11 +375,9 @@ export default function CarDetails() {
         </div>
 
         {/* Vehicle Title and Price */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+        {/* Vehicle Title */}
+        <div className="mb-6">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900">{car.title}</h1>
-          <div className="mt-2 md:mt-0">
-            <div className="text-4xl font-bold text-blue-600">£{Number(car.price).toLocaleString()}</div>
-          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -428,8 +443,84 @@ export default function CarDetails() {
               )}
             </div>
 
+            {/* Combined Pricing and Vehicle Details Card */}
+            <div className="bg-white rounded-xl shadow-md p-6 mt-6 mb-6 border border-gray-100 lg:hidden">
+              {/* Pricing Section */}
+              <div className="flex items-center justify-between gap-4 mb-6">
+                <div>
+                  <div className="text-4xl font-bold text-blue-700">£{Number(car.price).toLocaleString()}</div>
+                </div>
+                <button className="bg-green-100 hover:bg-green-200 text-green-800 font-semibold py-2 px-6 rounded-lg transition duration-300 border border-green-200">
+                  Available Now
+                </button>
+              </div>
+
+              {/* Divider Line */}
+              <div className="h-px bg-gray-200 mb-6"></div>
+
+              {/* Vehicle Details Section */}
+              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">Vehicle Details</h2>
+
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-700 text-base flex items-center">
+                    <CarFront className="h-5 w-5 mr-2 text-blue-600" />
+                    Engine Size
+                  </span>
+                  <span className="font-medium text-gray-900 text-base">{car.engineSize}L</span>
+                </div>
+                <div className="h-px bg-gray-200"></div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-700 text-base flex items-center">
+                    <Fuel className="h-5 w-5 mr-2 text-blue-600" />
+                    Fuel Type
+                  </span>
+                  <span className="font-medium capitalize text-gray-900 text-base">{car.fuelType}</span>
+                </div>
+                <div className="h-px bg-gray-200"></div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-700 text-base flex items-center">
+                    <Gauge className="h-5 w-5 mr-2 text-blue-600" />
+                    Mileage
+                  </span>
+                  <span className="font-medium text-gray-900 text-base">
+                    {Number(car.mileage).toLocaleString()} Miles
+                  </span>
+                </div>
+                <div className="h-px bg-gray-200"></div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-700 text-base flex items-center">
+                    <Settings className="h-5 w-5 mr-2 text-blue-600" />
+                    Transmission
+                  </span>
+                  <span className="font-medium capitalize text-gray-900 text-base">{car.transmission}</span>
+                </div>
+                <div className="h-px bg-gray-200"></div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-700 text-base flex items-center">
+                    <Palette className="h-5 w-5 mr-2 text-blue-600" />
+                    Color
+                  </span>
+                  <span className="font-medium capitalize text-gray-900 text-base">{car.color}</span>
+                </div>
+                <div className="h-px bg-gray-200"></div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-700 text-base flex items-center">
+                    <DoorOpen className="h-5 w-5 mr-2 text-blue-600" />
+                    Doors
+                  </span>
+                  <span className="font-medium text-gray-900 text-base">{car.doors}</span>
+                </div>
+              </div>
+            </div>
+
             {/* Vehicle Description Section */}
-            <div className="bg-white rounded-xl shadow-md p-6 mt-6 border border-gray-100">
+            <div className="bg-white rounded-xl shadow-md p-6 mt-6 border border-gray-100 order-3 lg:order-none">
               <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center">
                 <Info className="h-5 w-5 mr-2 text-blue-600" />
                 Vehicle Description
@@ -457,7 +548,7 @@ export default function CarDetails() {
 
             {/* Vehicle Features Section - Only show if there are features */}
             {car.features && car.features.length > 0 && (
-              <div className="bg-white rounded-xl shadow-md p-6 mt-6 border border-gray-100">
+              <div className="bg-white rounded-xl shadow-md p-6 mt-6 border border-gray-100 order-4 lg:order-none">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center">
                   <Check className="h-5 w-5 mr-2 text-blue-600" />
                   Vehicle Features
@@ -478,13 +569,24 @@ export default function CarDetails() {
           </div>
 
           {/* Vehicle Specifications - Right Side (1/3 width on large screens) */}
-          <div className="lg:col-span-1">
-            {/* Key Details Card */}
-            <div className="bg-white rounded-xl shadow-md p-6 mb-6 border border-gray-100">
-              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-                
-                Vehicle Details
-              </h2>
+          <div className="lg:col-span-1 order-2 lg:order-none">
+            {/* Combined Pricing and Vehicle Details Card */}
+            <div className="bg-white rounded-xl shadow-md p-6 mb-6 border border-gray-100 hidden lg:block">
+              {/* Pricing Section */}
+              <div className="flex items-center justify-between gap-4 mb-6">
+                <div>
+                  <div className="text-4xl font-bold text-blue-700">£{Number(car.price).toLocaleString()}</div>
+                </div>
+                <button className="bg-green-100 hover:bg-green-200 text-green-800 font-semibold py-2 px-6 rounded-lg transition duration-300 border border-green-200">
+                  Available Now
+                </button>
+              </div>
+
+              {/* Divider Line */}
+              <div className="h-px bg-gray-200 mb-6"></div>
+
+              {/* Vehicle Details Section */}
+              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">Vehicle Details</h2>
 
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
