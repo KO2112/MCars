@@ -112,10 +112,15 @@ export default function Navbar() {
             {/* Contact Info - Right */}
             <div className="hidden md:flex items-center space-x-6 text-white ml-auto">
               {/* Postcode */}
-              <div className="flex items-center">
+              <a
+                href="https://maps.app.goo.gl/TgJQRCYr8btpkBWH9"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center hover:text-blue-100 transition-colors"
+              >
                 <MapPin size={18} className="mr-2" />
                 <span className="font-medium">LE5 5FW</span>
-              </div>
+              </a>
               <div className="h-6 w-px bg-blue-300/50"></div>
               <a href="tel:+447476866745" className="flex items-center hover:text-blue-100 transition-colors">
                 <Phone size={18} className="mr-2" />
@@ -251,10 +256,15 @@ export default function Navbar() {
             <div className="border-t border-gray-100 pt-4 mt-2">
               <div className="text-sm text-gray-500 mb-2 px-4">Contact Us</div>
               {/* Postcode in Mobile Menu */}
-              <div className="text-gray-800 py-3 px-4 flex items-center">
+              <a
+                href="https://maps.app.goo.gl/TgJQRCYr8btpkBWH9"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-800 hover:text-blue-600 py-3 px-4 hover:bg-blue-50 rounded-lg transition-colors duration-200 flex items-center"
+              >
                 <MapPin size={16} className="mr-3 text-blue-500" />
                 LE5 5FW
-              </div>
+              </a>
               <a
                 href="tel:+447476866745"
                 className="text-gray-800 hover:text-blue-600 py-3 px-4 hover:bg-blue-50 rounded-lg transition-colors duration-200 flex items-center"

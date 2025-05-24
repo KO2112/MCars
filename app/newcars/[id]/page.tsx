@@ -8,25 +8,7 @@ import { sendContactEmail } from "../../../lib/resend" // Make sure this import 
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
 import useAuth from "../../../hooks/useAuth" // Import the custom hook
-import {
-  ChevronLeft,
-  ChevronRight,
-  ArrowLeft,
-  Edit,
-  Trash2,
-  Maximize2,
-  
-  Fuel,
-  Gauge,
-  Settings,
-  Palette,
-  DoorOpen,
-  Check,
-  AlertCircle,
-  Send,
-  Info,
-  CarFront
-} from "lucide-react"
+import { ChevronLeft, ChevronRight, ArrowLeft, Edit, Trash2, Maximize2, Fuel, Gauge, Settings, Palette, DoorOpen, Check, AlertCircle, Send, Info, CarFront } from 'lucide-react'
 
 // Car interface matching our data structure
 interface Car {
@@ -317,7 +299,7 @@ export default function CarDetails() {
       {/* Show gallery modal if enabled */}
       {showFullGallery && <GalleryModal />}
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-5">
         {/* Back Button */}
         <div className="flex justify-between items-center mb-6">
           <Link href="/cars" className="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors">
@@ -388,11 +370,11 @@ export default function CarDetails() {
           <div className="lg:col-span-2">
             <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
               {/* Main Featured Image */}
-              <div className="relative h-90 sm:h-[550px]">
+              <div className="relative h-[300px] sm:h-[650px]">
                 <img
                   src={car.images[activeImage] || "/placeholder-car.jpg"}
                   alt={car.title}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain sm:object-cover"
                 />
 
                 {/* Expand button */}
