@@ -299,9 +299,9 @@ const Cars = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
             {filteredAndSortedCars.map((car) => (
               <Link href={`/newcars/${car.id}`} key={car.id} className="group">
-                <div className="bg-white rounded-2xl overflow-hidden border border-gray-200 hover:border-blue-300 transition-all duration-300 hover:transform hover:-translate-y-2 hover:shadow-2xl shadow-lg">
-                  {/* Image Section */}
-                  <div className="relative h-64 overflow-hidden">
+                <div className="bg-white rounded-2xl overflow-hidden border border-gray-200 hover:border-blue-300 transition-all duration-300 hover:transform hover:-translate-y-2 hover:shadow-2xl shadow-lg h-[550px] flex flex-col">
+                  {/* Image Section - Fixed Height */}
+                  <div className="relative h-64 flex-shrink-0 overflow-hidden">
                     {car.images && car.images.length > 0 ? (
                       <img
                         src={car.images[0] || "/placeholder.svg"}
@@ -329,60 +329,63 @@ const Cars = () => {
                     )}
                   </div>
 
-                  {/* Content */}
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                  {/* Content - Flexible Height */}
+                  <div className="p-6 flex-1 flex flex-col min-h-0">
+                    {/* Title with line clamping */}
+                    <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors line-clamp-2 leading-tight">
                       {car.title}
                     </h3>
 
                     <div className="flex items-center text-gray-500 mb-4">
-                      <MapPin className="h-4 w-4 mr-2 text-blue-500" />
+                      <MapPin className="h-4 w-4 mr-2 text-blue-500 flex-shrink-0" />
                       <span className="text-sm">Leicester Showroom</span>
                     </div>
 
                     {/* Specs Grid */}
-                    <div className="grid grid-cols-2 gap-4 mb-6">
+                    <div className="grid grid-cols-2 gap-4 mb-4">
                       <div className="flex items-center text-gray-700">
-                        <Gauge className="h-4 w-4 mr-2 text-blue-500" />
+                        <Gauge className="h-4 w-4 mr-2 text-blue-500 flex-shrink-0" />
                         <span className="text-sm">{Number(car.mileage).toLocaleString()} mi</span>
                       </div>
                       <div className="flex items-center text-gray-700">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2 text-blue-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
                         </svg>
                         <span className="text-sm capitalize">{car.transmission}</span>
                       </div>
                       <div className="flex items-center text-gray-700">
-                        <CarFront className="h-4 w-4 mr-2 text-blue-500" />
+                        <CarFront className="h-4 w-4 mr-2 text-blue-500 flex-shrink-0" />
                         <span className="text-sm">{car.engineSize}L</span>
                       </div>
                       <div className="flex items-center text-gray-700">
-                        <Fuel className="h-4 w-4 mr-2 text-blue-500" />
+                        <Fuel className="h-4 w-4 mr-2 text-blue-500 flex-shrink-0" />
                         <span className="text-sm capitalize">{car.fuelType}</span>
                       </div>
                     </div>
 
-                    {/* Features */}
-                    {car.features && car.features.length > 0 && (
-                      <div className="flex flex-wrap gap-2 mb-6">
-                        {car.features.slice(0, 3).map((feature, index) => (
-                          <span
-                            key={index}
-                            className={`px-3 py-1 rounded-full text-xs font-medium ${getFeatureTagColor(index)} shadow-sm`}
-                          >
-                            {feature}
-                          </span>
-                        ))}
-                        {car.features.length > 3 && (
-                          <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">
-                            +{car.features.length - 3} more
-                          </span>
-                        )}
-                      </div>
-                    )}
+                    {/* Features - Flexible */}
+                    <div className="flex-1 min-h-0 mb-4">
+                      {car.features && car.features.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                          {car.features.slice(0, 3).map((feature, index) => (
+                            <span
+                              key={index}
+                              className={`px-3 py-1 rounded-full text-xs font-medium ${getFeatureTagColor(index)} shadow-sm`}
+                            >
+                              {feature}
+                            </span>
+                          ))}
+                          {car.features.length > 3 && (
+                            <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">
+                              +{car.features.length - 3} more
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
 
-                    {/* CTA Button */}
-                    <div className="w-full py-3 bg-gradient-to-r from-blue-500 to-blue-800 text-white font-medium rounded-xl hover:from-blue-600 hover:to-blue-900 transition-all duration-200 shadow-lg hover:shadow-xl text-center">
+                    {/* CTA Button - Always at bottom */}
+                    <div className="w-full py-3 bg-gradient-to-r from-blue-500 to-blue-800 text-white font-medium rounded-xl hover:from-blue-600 hover:to-blue-900 transition-all duration-200 shadow-lg hover:shadow-xl text-center flex-shrink-0">
                       View Details & Book Test Drive
                     </div>
                   </div>
