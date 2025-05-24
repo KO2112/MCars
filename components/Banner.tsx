@@ -38,7 +38,7 @@ export default function Banner() {
                 className="text-blue-200 text-sm sm:text-lg font-medium mb-2 sm:mb-4 flex items-center"
               >
                 <Star className="mr-2" size={16} />
-                Leicester's Premier Auto Dealership
+                Leicesters Premier Auto Dealership
               </motion.p>
 
               <motion.h1
