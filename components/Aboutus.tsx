@@ -162,7 +162,7 @@ export default function AboutUs() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.7 }}
             >
-              At IronsAuto, we believe that buying a car should be one of lifes great experiences. Since our foundation
+              At Iron Auto, we believe that buying a car should be one of lifes great experiences. Since our foundation
               in 2022, we have helped our customers find their perfect vehicle, combining exceptional customer
               service with an outstanding selection of quality cars.
             </motion.p>
@@ -257,7 +257,7 @@ export default function AboutUs() {
               whileTap={{ scale: 0.98 }}
             >
               <img
-                src="/m3.jpg"
+                src="/BMWM8.jpg"
                 alt="IronsAuto Showroom"
                 className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
               />

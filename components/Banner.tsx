@@ -9,7 +9,7 @@ export default function Banner() {
   return (
     <div className="relative h-[400px] sm:h-[500px] md:h-[600px] lg:h-[700px] overflow-hidden">
       {/* Background Image */}
-      <Image src="/m3.jpg" alt="Dealership Banner" fill priority className="object-cover object-center" />
+      <Image src="/BMWM8.jpg" alt="Dealership Banner" fill priority className="object-cover object-center" />
 
       {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-r from-blue-900/90 via-blue-800/70 to-blue-900/40 sm:from-blue-900/80 sm:via-blue-800/60 sm:to-transparent"></div>
