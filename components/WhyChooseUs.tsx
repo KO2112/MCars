@@ -101,7 +101,7 @@ export default function WhyChooseUs() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4, duration: 0.6 }}
           >
-            Why Choose <span className="text-blue-700">IRONSAUTO?</span>
+            Why Choose <span className="text-blue-700">IRON AUTO?</span>
           </motion.h2>
           <motion.p
             className="text-xl text-gray-700 max-w-3xl mx-auto"
@@ -109,7 +109,7 @@ export default function WhyChooseUs() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6, duration: 0.6 }}
           >
-            Experience the IRONSAUTO difference. We are dedicated to delivering not just cars, but complete
+            Experience the IRON AUTO difference. We are dedicated to delivering not just cars, but complete
             satisfaction.
           </motion.p>
         </motion.div>

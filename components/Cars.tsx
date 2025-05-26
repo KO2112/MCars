@@ -420,10 +420,6 @@ const Cars = () => {
             {
               question: "Do you offer white-glove delivery?",
               answer: "Absolutely. We provide complimentary delivery within 50 miles, with extended delivery available. Your vehicle arrives detailed and ready for the road."
-            },
-            {
-              question: "What is your satisfaction guarantee?",
-              answer: "We offer a 7-day satisfaction guarantee. If you're not completely thrilled with your purchase, we'll make it right with a full refund or exchange."
             }
           ].map((faq, index) => (
             <div key={index} className="bg-white rounded-xl border border-gray-200 p-6 hover:border-blue-300 transition-colors shadow-sm hover:shadow-md">

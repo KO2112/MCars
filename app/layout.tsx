@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     default: "Ironsauto - Premium Used Cars & Car Dealership UK",
     template: "%s | Ironsauto"
   },
-  description: "Discover quality used cars at Ironsauto. Wide selection of inspected vehicles, competitive prices, and excellent customer service. Your trusted car dealership in the UK.",
+  description: "Discover quality used cars at Iron auto. Wide selection of inspected vehicles, competitive prices, and excellent customer service. Your trusted car dealership in the UK.",
   keywords: [
     "used cars",
     "car dealership", 
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     "UK cars",
     "car sales",
     "vehicle finance",
-    "Ironsauto",
+    "Iron auto",
     "affordable cars",
     "inspected vehicles"
   ],

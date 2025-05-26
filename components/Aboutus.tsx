@@ -18,8 +18,8 @@ export default function AboutUs() {
     },
     {
       icon: Award,
-      title: "Award-Winning Service",
-      description: "Recognized for excellence in customer satisfaction.",
+      title: "Low Cost Service",
+      description: "Lower maintenance fees for customer satisfaction.",
       color: "#F59E0B", // Amber
       lightColor: "#FFFBEB",
     },
@@ -42,16 +42,16 @@ export default function AboutUs() {
   const stats = [
     {
       icon: Clock,
-      value: "15+",
-      label: "Years Experience",
+      value: "Satisfactory",
+      label: "Tailored vehicles for each customer",
       color: "#2563EB", // Blue
       gradientFrom: "#1E40AF",
       gradientTo: "#3B82F6",
     },
     {
       icon: CheckCircle,
-      value: "2,500+",
-      label: "Cars Sold",
+      value: "Part Exchange",
+      label: "Taking any vehicle for your convienence",
       color: "#10B981", // Green
       gradientFrom: "#047857",
       gradientTo: "#34D399",
@@ -121,7 +121,7 @@ export default function AboutUs() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4, duration: 0.6 }}
           >
-            Driving Excellence Since <span className="text-blue-700">2010</span>
+            Driving Excellence Since <span className="text-blue-700">2022</span>
           </motion.h2>
           <motion.p
             className="text-xl text-gray-700 max-w-3xl mx-auto"
@@ -129,7 +129,7 @@ export default function AboutUs() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6, duration: 0.6 }}
           >
-            At IRONSAUTO, we do not just sell cars; we build relationships. Learn about our journey and what makes us
+            At IRON AUTO, we do not just sell cars; we build relationships. Learn about our journey and what makes us
             unique.
           </motion.p>
         </motion.div>
@@ -163,7 +163,7 @@ export default function AboutUs() {
               transition={{ duration: 0.5, delay: 0.7 }}
             >
               At IronsAuto, we believe that buying a car should be one of lifes great experiences. Since our foundation
-              in 2010, we have helped thousands of customers find their perfect vehicle, combining exceptional customer
+              in 2022, we have helped our customers find their perfect vehicle, combining exceptional customer
               service with an outstanding selection of quality cars.
             </motion.p>
 

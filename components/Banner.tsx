@@ -97,16 +97,16 @@ export default function Banner() {
               className="grid grid-cols-3 gap-3 sm:gap-6"
             >
               <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 sm:p-4 border border-white/20 text-center">
-                <div className="text-lg sm:text-2xl font-bold text-white mb-1">15+</div>
-                <div className="text-blue-200 text-xs sm:text-sm">Years Experience</div>
+                <div className="text-lg sm:text-2xl font-bold text-white mb-1">Trusted Local Dealership</div>
+                <div className="text-blue-200 text-xs sm:text-sm">We promise %100 honesty throughout your purchace</div>
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 sm:p-4 border border-white/20 text-center">
-                <div className="text-lg sm:text-2xl font-bold text-white mb-1">2,500+</div>
-                <div className="text-blue-200 text-xs sm:text-sm">Cars Sold</div>
+                <div className="text-lg sm:text-2xl font-bold text-white mb-1">Exceptional Value & Service</div>
+                <div className="text-blue-200 text-xs sm:text-sm">We provide quality vehicles and maintenance service</div>
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 sm:p-4 border border-white/20 text-center">
-                <div className="text-lg sm:text-2xl font-bold text-white mb-1">98%</div>
-                <div className="text-blue-200 text-xs sm:text-sm">Satisfied Customers</div>
+                <div className="text-lg sm:text-2xl font-bold text-white mb-1">Part Exchance Accepted</div>
+                <div className="text-blue-200 text-xs sm:text-sm">We offer part exchange to your any vehicle</div>
               </div>
             </motion.div>
           </div>

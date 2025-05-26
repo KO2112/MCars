@@ -7,9 +7,9 @@ export default function AboutUsContent() {
     <div className="max-w-7xl mx-auto px-4 py-12">
       {/* Hero Section */}
       <div className="mb-16 text-center">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">About IRONSAUTO</h1>
+        <h1 className="text-4xl font-bold text-gray-900 mb-4">About IRON AUTO</h1>
         <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-          Your trusted partner for quality used vehicles in Leicester since 2015.
+          Your trusted partner for quality used vehicles in Leicester since 2022.
         </p>
       </div>
 
@@ -20,7 +20,7 @@ export default function AboutUsContent() {
             <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Story</h2>
             <div className="text-gray-600 space-y-4">
               <p>
-                IRONSAUTO was founded with a simple mission: to provide quality used vehicles at 
+                IRON AUTO was founded with a simple mission: to provide quality used vehicles at 
                 competitive prices with exceptional customer service. What started as a small 
                 family business has grown into one of Leicester most trusted auto dealers.
               </p>
