@@ -41,7 +41,7 @@ export default function Banner() {
                 className="text-blue-200 text-xs sm:text-lg font-medium mb-1 sm:mb-4 flex items-center justify-center sm:justify-start" // Smaller text, centered on mobile
               >
                 <Star className="mr-2" size={14} /> {/* Smaller icon */}
-                Leicester's Premier Auto Dealership
+                Leicesters Premier Auto Dealership
               </motion.p>
 
               <motion.h1
