@@ -30,8 +30,9 @@ export default function EditCar() {
     fuelType: "",
     doors: "",
     description: "",
-    features: [] as string[], // Add this line
+    features: [] as string[],
     images: [] as string[],
+    make: "",
   })
   const [imagesToDelete, setImagesToDelete] = useState<number[]>([])
   const [featureInput, setFeatureInput] = useState("")
@@ -70,8 +71,9 @@ export default function EditCar() {
               fuelType: data.fuelType || "",
               doors: data.doors || "",
               description: data.description || "",
-              features: data.features || [], // Add this line
+              features: data.features || [],
               images: data.images || [],
+              make: data.make || "",
             })
           } else {
             console.log("No such document!")
@@ -229,6 +231,23 @@ export default function EditCar() {
             value={carData.title}
             onChange={handleInputChange}
             className="w-full p-2 border border-gray-300 rounded"
+            required
+          />
+        </div>
+
+        {/* Make */}
+        <div className="mb-4">
+          <label htmlFor="make" className="block text-sm font-medium text-gray-700 mb-1">
+            Car Make
+          </label>
+          <input
+            type="text"
+            id="make"
+            name="make"
+            value={carData.make}
+            onChange={handleInputChange}
+            className="w-full p-2 border border-gray-300 rounded"
+            placeholder="e.g., BMW, Mercedes, Audi"
             required
           />
         </div>

@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from "react"
 import { db } from "../firebase/firebase"
 import { collection, getDocs, query, orderBy } from "firebase/firestore"
 import Link from "next/link"
-import { Search, Filter, ChevronDown, Sliders, MapPin, Gauge, Fuel, Camera, CarFront } from "lucide-react"
+import { Search, Filter, ChevronDown, Sliders, MapPin, Gauge, Fuel, Camera, CarFront } from 'lucide-react'
 
 interface Car {
   id: string
@@ -20,6 +20,7 @@ interface Car {
   image?: string
   features: string[]
   createdAt?: string
+  make?: string
 }
 
 const Cars = () => {
@@ -31,6 +32,7 @@ const Cars = () => {
   const [filters, setFilters] = useState({
     transmission: "",
     fuelType: "",
+    make: "",
   })
 
   // Fetch car data from Firestore
@@ -59,6 +61,7 @@ const Cars = () => {
               image: data.image || "",
               features: data.features || [],
               createdAt: data.createdAt,
+              make: data.make || "",
             }
             carList.push(car)
           }
@@ -91,6 +94,10 @@ const Cars = () => {
       result = result.filter((car) => car.fuelType === filters.fuelType)
     }
 
+    if (filters.make) {
+      result = result.filter((car) => car.make === filters.make)
+    }
+
     return result.sort((a, b) => {
       switch (sortOption) {
         case "price-low":
@@ -106,13 +113,18 @@ const Cars = () => {
   }, [cars, searchTerm, sortOption, filters])
 
   const transmissionOptions = useMemo(() => {
-    const options = new Set(cars.map((car) => car.transmission))
-    return Array.from(options).filter(Boolean)
+    const options = new Set(cars.map((car) => car.transmission).filter((transmission): transmission is string => Boolean(transmission)))
+    return Array.from(options)
   }, [cars])
 
   const fuelTypeOptions = useMemo(() => {
-    const options = new Set(cars.map((car) => car.fuelType))
-    return Array.from(options).filter(Boolean)
+    const options = new Set(cars.map((car) => car.fuelType).filter((fuelType): fuelType is string => Boolean(fuelType)))
+    return Array.from(options)
+  }, [cars])
+
+  const makeOptions = useMemo(() => {
+    const options = new Set(cars.map((car) => car.make).filter((make): make is string => Boolean(make)))
+    return Array.from(options)
   }, [cars])
 
   const getFeatureTagColor = (index: number) => {
@@ -166,6 +178,25 @@ const Cars = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10">
         <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-xl">
           <div className="flex flex-col lg:flex-row gap-4">
+            {/* Make Filter */}
+            <div className="relative w-full lg:w-48">
+              <select
+                className="block w-full px-4 py-4 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
+                value={filters.make}
+                onChange={(e) => setFilters({ ...filters, make: e.target.value })}
+              >
+                <option value="">All Makes</option>
+                {makeOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option.charAt(0).toUpperCase() + option.slice(1)}
+                  </option>
+                ))}
+              </select>
+              <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                <ChevronDown className="h-5 w-5 text-gray-400" />
+              </div>
+            </div>
+
             {/* Search */}
             <div className="relative flex-grow">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -209,7 +240,7 @@ const Cars = () => {
 
           {/* Expanded Filters */}
           {showFilters && (
-            <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 pt-6 border-t border-gray-200">
+            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 pt-6 border-t border-gray-200">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Transmission</label>
                 <select
@@ -242,11 +273,11 @@ const Cars = () => {
                 </select>
               </div>
 
-              <div className="flex items-end">
+              <div className="flex items-end md:col-span-2">
                 <button
                   className="w-full px-4 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors border border-gray-300"
                   onClick={() => {
-                    setFilters({ transmission: "", fuelType: "" })
+                    setFilters({ transmission: "", fuelType: "", make: "" })
                     setSearchTerm("")
                   }}
                 >
@@ -287,7 +318,7 @@ const Cars = () => {
               <button
                 className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-800 text-white rounded-xl hover:from-blue-600 hover:to-blue-900 transition-all duration-200 shadow-lg"
                 onClick={() => {
-                  setFilters({ transmission: "", fuelType: "" })
+                  setFilters({ transmission: "", fuelType: "", make: "" })
                   setSearchTerm("")
                 }}
               >

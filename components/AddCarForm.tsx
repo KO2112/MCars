@@ -19,7 +19,8 @@ const AddCarForm = () => {
     fuelType: "",
     doors: "",
     description: "",
-    features: [] as string[], // Add this line
+    features: [] as string[],
+    make: "", // Add this line
   })
 
   const [featureInput, setFeatureInput] = useState("")
@@ -136,7 +137,8 @@ const AddCarForm = () => {
         fuelType: "",
         doors: "",
         description: "",
-        features: [], // Add this line
+        features: [],
+        make: "", // Add this line
       })
 
       // Revoke all object URLs to prevent memory leaks
@@ -169,6 +171,23 @@ const AddCarForm = () => {
           value={carData.title}
           onChange={handleInputChange}
           className="mt-1 w-full p-3 border border-gray-300 rounded-md"
+          required
+        />
+      </div>
+
+      {/* Make */}
+      <div>
+        <label htmlFor="make" className="block text-sm font-medium text-gray-700">
+          Car Make
+        </label>
+        <input
+          type="text"
+          id="make"
+          name="make"
+          value={carData.make}
+          onChange={handleInputChange}
+          className="mt-1 w-full p-3 border border-gray-300 rounded-md"
+          placeholder="e.g., BMW, Mercedes, Audi"
           required
         />
       </div>
