@@ -165,7 +165,7 @@ const Cars = () => {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
             <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">
-              Available in stock
+              Available Cars
             </h1>
             <p className="text-xl text-blue-100 max-w-2xl mx-auto">
               Discover exceptional vehicles crafted for the extraordinary journey ahead

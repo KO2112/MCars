@@ -6,8 +6,8 @@ import WhyChooseUs from "@/components/WhyChooseUs";
 import AboutUs from "@/components/Aboutus";
 
 export const metadata: Metadata = {
-  title: "Premium Used Cars & Car Dealership - Ironsauto UK",
-  description: "Find your perfect used car at Ironsauto. Quality inspected vehicles, competitive prices, financing options available. Browse our extensive collection of reliable second-hand cars.",
+  title: "Premium Used Cars & Dealership - Iron auto UK",
+  description: "Find your perfect used car at Iron auto. Quality vehicles, competitive prices, financing options available. Browse our collection of reliable second-hand cars.",
   keywords: [
     "used cars UK",
     "second hand cars", 

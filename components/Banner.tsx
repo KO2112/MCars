@@ -51,7 +51,7 @@ export default function Banner() {
                 // Smaller text for xs, then scales up
                 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight"
               >
-                Welcome to{" "}
+                Cars for Sale{" "}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-blue-100">
                   IRON AUTO
                 </span>
