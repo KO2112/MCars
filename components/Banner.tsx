@@ -1,16 +1,22 @@
-"use client"
+"use client";
 
-import Image from "next/image"
-import Link from "next/link"
-import { motion } from "framer-motion"
-import { ArrowRight, Star, Phone } from "lucide-react"
+import Image from "next/image";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { ArrowRight, Star, Phone } from "lucide-react";
 
 export default function Banner() {
   return (
     // Reduced default height for mobile (h-[380px]), scales up for larger screens
     <div className="relative h-[380px] sm:h-[500px] md:h-[600px] lg:h-[700px] overflow-hidden">
       {/* Background Image */}
-      <Image src="/BMWM8.jpg" alt="Dealership Banner" fill priority className="object-cover object-center" />
+      <Image
+        src="/BMWM8.jpg"
+        alt="Dealership Banner"
+        fill
+        priority
+        className="object-cover object-center"
+      />
 
       {/* Gradient Overlay - adjusted opacity for mobile clarity */}
       <div className="absolute inset-0 bg-gradient-to-r from-blue-900/95 via-blue-800/70 to-blue-900/40"></div>
@@ -66,8 +72,8 @@ export default function Banner() {
               // Smaller text for xs, then scales up
               className="text-sm sm:text-xl md:text-2xl text-blue-100 mb-5 sm:mb-8 leading-relaxed" // Reduced margin for mobile
             >
-              Discover your perfect vehicle from our premium collection. Quality cars, exceptional service, and
-              unbeatable value.
+              Discover your perfect vehicle from our premium collection. Quality
+              cars, exceptional service, and unbeatable value.
             </motion.p>
 
             {/* CTA Buttons */}
@@ -83,7 +89,11 @@ export default function Banner() {
                 className="group bg-white text-blue-800 px-5 sm:px-8 py-2.5 sm:py-4 rounded-lg font-bold text-sm sm:text-lg shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center justify-center hover:scale-105 active:scale-95 w-full max-w-[250px] sm:w-auto sm:max-w-none" // Smaller padding and text, full width, max-width for mobile
               >
                 Browse Our Cars
-                <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={16} /> {/* Smaller icon */}
+                <ArrowRight
+                  className="ml-2 group-hover:translate-x-1 transition-transform"
+                  size={16}
+                />{" "}
+                {/* Smaller icon */}
               </Link>
 
               <Link
@@ -91,7 +101,11 @@ export default function Banner() {
                 className="group bg-blue-600/20 backdrop-blur-sm border-2 border-white/30 text-white px-5 sm:px-8 py-2.5 sm:py-4 rounded-lg font-bold text-sm sm:text-lg hover:bg-white/10 transition-all duration-300 flex items-center justify-center hover:scale-105 active:scale-95 w-full max-w-[250px] sm:w-auto sm:max-w-none" // Smaller padding and text, full width, max-width for mobile
               >
                 Contact Us
-                <Phone className="ml-2 group-hover:rotate-12 transition-transform" size={16} /> {/* Smaller icon */}
+                <Phone
+                  className="ml-2 group-hover:rotate-12 transition-transform"
+                  size={16}
+                />{" "}
+                {/* Smaller icon */}
               </Link>
             </motion.div>
 
@@ -103,16 +117,28 @@ export default function Banner() {
               className="hidden sm:grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6" // Completely hidden on mobile
             >
               <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 sm:p-4 border border-white/20 text-center">
-                <div className="text-base sm:text-2xl font-bold text-white mb-1">Trusted Local Dealership</div>
-                <div className="text-blue-200 text-xs sm:text-sm">We promise 100% honesty throughout your purchase</div>
+                <div className="text-base sm:text-2xl font-bold text-white mb-1">
+                  Trusted Local Dealership
+                </div>
+                <div className="text-blue-200 text-xs sm:text-sm">
+                  We promise 100% honesty throughout your purchase
+                </div>
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 sm:p-4 border border-white/20 text-center">
-                <div className="text-base sm:text-2xl font-bold text-white mb-1">Exceptional Value & Service</div>
-                <div className="text-blue-200 text-xs sm:text-sm">We provide quality vehicles and maintenance service</div>
+                <div className="text-base sm:text-2xl font-bold text-white mb-1">
+                  Warranty up to 12 months
+                </div>
+                <div className="text-blue-200 text-xs sm:text-sm">
+                  We provide quality vehicles and maintenance service
+                </div>
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 sm:p-4 border border-white/20 text-center">
-                <div className="text-base sm:text-2xl font-bold text-white mb-1">Part Exchange Accepted</div>
-                <div className="text-blue-200 text-xs sm:text-sm">We offer part exchange for your vehicle</div>
+                <div className="text-base sm:text-2xl font-bold text-white mb-1">
+                  Part Exchange Accepted
+                </div>
+                <div className="text-blue-200 text-xs sm:text-sm">
+                  We offer part exchange for your vehicle
+                </div>
               </div>
             </motion.div>
           </div>
@@ -137,5 +163,5 @@ export default function Banner() {
         }
       `}</style>
     </div>
-  )
+  );
 }
