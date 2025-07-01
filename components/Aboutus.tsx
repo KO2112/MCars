@@ -274,7 +274,7 @@ export default function AboutUs() {
                   transition={{ duration: 0.5, delay: 0.8 }}
                 >
                   <h3 className="text-xl sm:text-3xl font-bold mb-1 sm:mb-2">Our Modern Showroom</h3> {/* Smaller text */}
-                  <p className="text-gray-200 text-sm sm:text-base">Experience our vehicles in a comfortable and welcoming environment.</p> {/* Smaller text */}
+                  <p className="text-gray-200 text-sm sm:text-base">Experience our vehicles in a comfortable and welcoming environment</p> {/* Smaller text */}
                 </motion.div>
               </div>
             </motion.div>
