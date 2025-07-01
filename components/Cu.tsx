@@ -28,14 +28,14 @@ export default function ContactUsSection() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"> {/* Tighter gap */}
             {/* Phone Contact */}
             <a
-              href="tel:+447476866745"
+              href="tel:+447467866745"
               className="group flex flex-col items-center p-5 bg-gray-700 rounded-xl transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-700/50 border border-gray-600" /* Smaller padding, less aggressive hover */
             >
               <div className="bg-blue-600 p-3 rounded-full mb-3 transition-all duration-300 group-hover:bg-blue-500 group-hover:scale-105"> {/* Smaller icon circle */}
                 <Phone className="h-6 w-6 text-white" strokeWidth={2} /> {/* Smaller icon size */}
               </div>
               <p className="text-xs text-gray-400 font-medium uppercase tracking-wide mb-1">Call Us Directly</p> {/* Smaller text */}
-              <h3 className="text-xl font-bold text-white mb-1">+44 7476 866745</h3> {/* Smaller text */}
+              <h3 className="text-xl font-bold text-white mb-1">+44 7467 866745</h3> {/* Smaller text */}
               <span className="text-blue-400 font-semibold text-xs flex items-center"> {/* Smaller text */}
                 Get Instant Support
               </span>
