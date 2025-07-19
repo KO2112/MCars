@@ -266,7 +266,7 @@ export default function EditCar() {
             <option value="Available Now">Available Now</option>
             <option value="Sale in progress">Sale in progress</option>
             <option value="Sold">Sold</option>
-            <option value="Comming Soon">Comming Soon</option>
+            <option value="Coming Soon">Coming Soon</option>
           </select>
         </div>
         {/* Title */}
