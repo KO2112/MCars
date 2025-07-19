@@ -1,12 +1,12 @@
-"use client" // Ensures this component is rendered on the client-side
+"use client"; // Ensures this component is rendered on the client-side
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { db } from "../firebase/firebase" // Firebase setup
-import { collection, addDoc } from "firebase/firestore" // Firebase functions for adding data
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage" // Firebase storage
-import Image from "next/image" // Import next/image for image optimization
+import { useState } from "react";
+import { db } from "../firebase/firebase"; // Firebase setup
+import { collection, addDoc } from "firebase/firestore"; // Firebase functions for adding data
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage"; // Firebase storage
+import Image from "next/image"; // Import next/image for image optimization
 
 const AddCarForm = () => {
   const [carData, setCarData] = useState({
@@ -20,100 +20,106 @@ const AddCarForm = () => {
     doors: "",
     description: "",
     features: [] as string[],
-    make: "", // Add this line
-  })
+    make: "",
+    status: "Available Now", // Add status field
+  });
 
-  const [featureInput, setFeatureInput] = useState("")
+  const [featureInput, setFeatureInput] = useState("");
 
-  const [imageFiles, setImageFiles] = useState<File[]>([]) // Store multiple image files
-  const [imagePreviews, setImagePreviews] = useState<string[]>([]) // Store multiple preview URLs
-  const [isSubmitting, setIsSubmitting] = useState(false) // Add loading state
+  const [imageFiles, setImageFiles] = useState<File[]>([]); // Store multiple image files
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]); // Store multiple preview URLs
+  const [isSubmitting, setIsSubmitting] = useState(false); // Add loading state
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setCarData({ ...carData, [name]: value })
-  }
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setCarData({ ...carData, [name]: value });
+  };
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setCarData({ ...carData, [name]: value })
-  }
+    const { name, value } = e.target;
+    setCarData({ ...carData, [name]: value });
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       // Convert FileList to Array
-      const newFiles = Array.from(e.target.files)
+      const newFiles = Array.from(e.target.files);
 
       // Create preview URLs for all newly selected files
-      const newPreviews = newFiles.map((file) => URL.createObjectURL(file))
+      const newPreviews = newFiles.map((file) => URL.createObjectURL(file));
 
       // Append new files and previews to existing arrays
-      setImageFiles((prevFiles) => [...prevFiles, ...newFiles])
-      setImagePreviews((prevPreviews) => [...prevPreviews, ...newPreviews])
+      setImageFiles((prevFiles) => [...prevFiles, ...newFiles]);
+      setImagePreviews((prevPreviews) => [...prevPreviews, ...newPreviews]);
     }
 
     // Reset the file input value so the same file can be selected again if needed
     if (e.target instanceof HTMLInputElement) {
-      e.target.value = ""
+      e.target.value = "";
     }
-  }
+  };
 
   const removeImage = (index: number) => {
     // Remove the image at the specified index
-    const newFiles = [...imageFiles]
-    const newPreviews = [...imagePreviews]
+    const newFiles = [...imageFiles];
+    const newPreviews = [...imagePreviews];
 
     // Revoke the URL to prevent memory leaks
-    URL.revokeObjectURL(newPreviews[index])
+    URL.revokeObjectURL(newPreviews[index]);
 
-    newFiles.splice(index, 1)
-    newPreviews.splice(index, 1)
+    newFiles.splice(index, 1);
+    newPreviews.splice(index, 1);
 
-    setImageFiles(newFiles)
-    setImagePreviews(newPreviews)
-  }
+    setImageFiles(newFiles);
+    setImagePreviews(newPreviews);
+  };
 
   const handleAddFeature = () => {
-    if (featureInput.trim() === "") return
+    if (featureInput.trim() === "") return;
 
     setCarData({
       ...carData,
       features: [...carData.features, featureInput.trim()],
-    })
-    setFeatureInput("")
-  }
+    });
+    setFeatureInput("");
+  };
 
   const handleRemoveFeature = (indexToRemove: number) => {
     setCarData({
       ...carData,
       features: carData.features.filter((_, index) => index !== indexToRemove),
-    })
-  }
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     // Validate at least one image is selected
     if (imageFiles.length === 0) {
-      alert("Please select at least one image for the car.")
-      return
+      alert("Please select at least one image for the car.");
+      return;
     }
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
     try {
-      const imageUrls: string[] = []
+      const imageUrls: string[] = [];
 
       // Upload all images to Firebase Storage
       if (imageFiles.length > 0) {
-        const storage = getStorage()
+        const storage = getStorage();
 
         // Upload each file and get its download URL
         for (const file of imageFiles) {
-          const storageRef = ref(storage, `car-images/${Date.now()}-${file.name}`)
-          const snapshot = await uploadBytes(storageRef, file)
-          const downloadUrl = await getDownloadURL(snapshot.ref)
-          imageUrls.push(downloadUrl)
+          const storageRef = ref(
+            storage,
+            `car-images/${Date.now()}-${file.name}`
+          );
+          const snapshot = await uploadBytes(storageRef, file);
+          const downloadUrl = await getDownloadURL(snapshot.ref);
+          imageUrls.push(downloadUrl);
         }
       }
 
@@ -122,9 +128,10 @@ const AddCarForm = () => {
         ...carData,
         images: imageUrls, // Store array of image URLs
         createdAt: new Date(), // Add timestamp
-      })
+        status: carData.status || "Available Now", // Ensure status is set
+      });
 
-      console.log("Document written with ID: ", docRef.id)
+      console.log("Document written with ID: ", docRef.id);
 
       // Reset form
       setCarData({
@@ -138,30 +145,37 @@ const AddCarForm = () => {
         doors: "",
         description: "",
         features: [],
-        make: "", // Add this line
-      })
+        make: "",
+        status: "Available Now", // Add status field to reset
+      });
 
       // Revoke all object URLs to prevent memory leaks
-      imagePreviews.forEach((url) => URL.revokeObjectURL(url))
-      setImageFiles([])
-      setImagePreviews([])
+      imagePreviews.forEach((url) => URL.revokeObjectURL(url));
+      setImageFiles([]);
+      setImagePreviews([]);
 
-      alert("Car added successfully!")
+      alert("Car added successfully!");
     } catch (error) {
-      console.error("Error adding document: ", error)
-      alert("Error adding car. Please try again.")
+      console.error("Error adding document: ", error);
+      alert("Error adding car. Please try again.");
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-lg space-y-6">
+    <form
+      onSubmit={handleSubmit}
+      className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-lg space-y-6"
+    >
       <h2 className="text-2xl font-semibold text-center">Add New Car</h2>
 
       {/* Title */}
       <div>
-        <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="title"
+          className="block text-sm font-medium text-gray-700"
+        >
           Car Title
         </label>
         <input
@@ -177,7 +191,10 @@ const AddCarForm = () => {
 
       {/* Make */}
       <div>
-        <label htmlFor="make" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="make"
+          className="block text-sm font-medium text-gray-700"
+        >
           Car Make
         </label>
         <input
@@ -194,7 +211,10 @@ const AddCarForm = () => {
 
       {/* Price */}
       <div>
-        <label htmlFor="price" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="price"
+          className="block text-sm font-medium text-gray-700"
+        >
           Price (£)
         </label>
         <input
@@ -210,7 +230,10 @@ const AddCarForm = () => {
 
       {/* Mileage */}
       <div>
-        <label htmlFor="mileage" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="mileage"
+          className="block text-sm font-medium text-gray-700"
+        >
           Mileage (in km)
         </label>
         <input
@@ -226,7 +249,10 @@ const AddCarForm = () => {
 
       {/* Transmission */}
       <div>
-        <label htmlFor="transmission" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="transmission"
+          className="block text-sm font-medium text-gray-700"
+        >
           Transmission
         </label>
         <select
@@ -245,7 +271,10 @@ const AddCarForm = () => {
 
       {/* Color */}
       <div>
-        <label htmlFor="color" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="color"
+          className="block text-sm font-medium text-gray-700"
+        >
           Car Color
         </label>
         <input
@@ -261,7 +290,10 @@ const AddCarForm = () => {
 
       {/* Engine Size */}
       <div>
-        <label htmlFor="engineSize" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="engineSize"
+          className="block text-sm font-medium text-gray-700"
+        >
           Engine Size (in liters)
         </label>
         <input
@@ -277,7 +309,10 @@ const AddCarForm = () => {
 
       {/* Fuel Type */}
       <div>
-        <label htmlFor="fuelType" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="fuelType"
+          className="block text-sm font-medium text-gray-700"
+        >
           Fuel Type
         </label>
         <select
@@ -298,7 +333,10 @@ const AddCarForm = () => {
 
       {/* Doors */}
       <div>
-        <label htmlFor="doors" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="doors"
+          className="block text-sm font-medium text-gray-700"
+        >
           Number of Doors
         </label>
         <input
@@ -314,7 +352,10 @@ const AddCarForm = () => {
 
       {/* Description */}
       <div>
-        <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="description"
+          className="block text-sm font-medium text-gray-700"
+        >
           Car Description
         </label>
         <textarea
@@ -330,7 +371,9 @@ const AddCarForm = () => {
 
       {/* Features */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Vehicle Features</label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Vehicle Features
+        </label>
         <div className="flex items-center space-x-2 mb-2">
           <input
             type="text"
@@ -375,7 +418,9 @@ const AddCarForm = () => {
 
       {/* Car Images */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Car Images</label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Car Images
+        </label>
 
         {/* Add Image Button (styled as a button but uses file input) */}
         <div className="flex flex-wrap gap-4 items-center">
@@ -394,7 +439,8 @@ const AddCarForm = () => {
           {/* Image count display */}
           {imageFiles.length > 0 && (
             <span className="text-sm text-gray-600">
-              {imageFiles.length} {imageFiles.length === 1 ? "image" : "images"} selected
+              {imageFiles.length} {imageFiles.length === 1 ? "image" : "images"}{" "}
+              selected
             </span>
           )}
         </div>
@@ -443,7 +489,7 @@ const AddCarForm = () => {
         Go Back to Main Page
       </button>
     </form>
-  )
-}
+  );
+};
 
-export default AddCarForm
+export default AddCarForm;

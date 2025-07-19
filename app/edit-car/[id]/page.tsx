@@ -1,25 +1,25 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useEffect } from "react"
-import { useParams, useRouter } from "next/navigation"
-import { db, storage } from "../../../firebase/firebase"
-import { doc, getDoc, updateDoc } from "firebase/firestore"
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
-import useAuth from "../../../hooks/useAuth"
-import Link from "next/link"
+import { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { db, storage } from "../../../firebase/firebase";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import useAuth from "../../../hooks/useAuth";
+import Link from "next/link";
 
 export default function EditCar() {
-  const params = useParams()
-  const router = useRouter()
-  const id = params?.id as string
-  const { user } = useAuth()
-  const [authChecked, setAuthChecked] = useState(false)
+  const params = useParams();
+  const router = useRouter();
+  const id = params?.id as string;
+  const { user } = useAuth();
+  const [authChecked, setAuthChecked] = useState(false);
 
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
-  const [imageFiles, setImageFiles] = useState<File[]>([])
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [carData, setCarData] = useState({
     title: "",
     price: "",
@@ -33,32 +33,33 @@ export default function EditCar() {
     features: [] as string[],
     images: [] as string[],
     make: "",
-  })
-  const [imagesToDelete, setImagesToDelete] = useState<number[]>([])
-  const [featureInput, setFeatureInput] = useState("")
+    status: "Available Now", // Add status field
+  });
+  const [imagesToDelete, setImagesToDelete] = useState<number[]>([]);
+  const [featureInput, setFeatureInput] = useState("");
 
   useEffect(() => {
     // Mark authentication as checked once we have the user state
-    setAuthChecked(true)
+    setAuthChecked(true);
 
     // If no user after checking, show the sign-in UI (handled in render)
-    if (!user) return
+    if (!user) return;
 
     // Only fetch car data if we have an ID and the user is authenticated
     if (id && user) {
       const fetchCarDetails = async () => {
         try {
-          const docRef = doc(db, "cars", id)
-          const docSnap = await getDoc(docRef)
+          const docRef = doc(db, "cars", id);
+          const docSnap = await getDoc(docRef);
 
           if (docSnap.exists()) {
-            const data = docSnap.data()
+            const data = docSnap.data();
 
             // Check if the car belongs to the current user
             if (data.userId && data.userId !== user.uid) {
-              alert("You dont have permission to edit this car listing")
-              router.push("/")
-              return
+              alert("You dont have permission to edit this car listing");
+              router.push("/");
+              return;
             }
 
             setCarData({
@@ -74,114 +75,124 @@ export default function EditCar() {
               features: data.features || [],
               images: data.images || [],
               make: data.make || "",
-            })
+              status: data.status || "Available Now", // Load status
+            });
           } else {
-            console.log("No such document!")
-            router.push("/")
+            console.log("No such document!");
+            router.push("/");
           }
         } catch (error) {
-          console.error("Error fetching car details:", error)
+          console.error("Error fetching car details:", error);
         } finally {
-          setLoading(false)
+          setLoading(false);
         }
-      }
+      };
 
-      fetchCarDetails()
+      fetchCarDetails();
     }
-  }, [id, router, user])
+  }, [id, router, user]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setCarData({ ...carData, [name]: value })
-  }
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setCarData({ ...carData, [name]: value });
+  };
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setCarData({ ...carData, [name]: value })
-  }
+    const { name, value } = e.target;
+    setCarData({ ...carData, [name]: value });
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       // Append to existing imageFiles rather than replacing them
-      setImageFiles((prev) => [...prev, ...Array.from(e.target.files || [])])
+      setImageFiles((prev) => [...prev, ...Array.from(e.target.files || [])]);
     }
-  }
+  };
 
   const handleDeleteImage = (index: number) => {
-    setImagesToDelete((prev) => [...prev, index])
-  }
+    setImagesToDelete((prev) => [...prev, index]);
+  };
 
   const removeSelectedFile = (index: number) => {
-    setImageFiles((prev) => prev.filter((_, i) => i !== index))
-  }
+    setImageFiles((prev) => prev.filter((_, i) => i !== index));
+  };
 
   const handleAddFeature = () => {
-    if (featureInput.trim() === "") return
+    if (featureInput.trim() === "") return;
 
     setCarData({
       ...carData,
       features: [...carData.features, featureInput.trim()],
-    })
-    setFeatureInput("")
-  }
+    });
+    setFeatureInput("");
+  };
 
   const handleRemoveFeature = (indexToRemove: number) => {
     setCarData({
       ...carData,
       features: carData.features.filter((_, index) => index !== indexToRemove),
-    })
-  }
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setSaving(true)
+    e.preventDefault();
+    setSaving(true);
 
     try {
       // Create a copy of the car data to update
-      const updatedData = { ...carData }
+      const updatedData = { ...carData };
 
       // Filter out images marked for deletion
       if (imagesToDelete.length > 0) {
-        updatedData.images = carData.images.filter((_, index) => !imagesToDelete.includes(index))
+        updatedData.images = carData.images.filter(
+          (_, index) => !imagesToDelete.includes(index)
+        );
       }
 
       // Upload new images if any are selected
       if (imageFiles.length > 0) {
-        const newImageUrls = []
+        const newImageUrls = [];
 
         for (const file of imageFiles) {
-          const storageRef = ref(storage, `car-images/${Date.now()}-${file.name}`)
-          const snapshot = await uploadBytes(storageRef, file)
-          const downloadUrl = await getDownloadURL(snapshot.ref)
-          newImageUrls.push(downloadUrl)
+          const storageRef = ref(
+            storage,
+            `car-images/${Date.now()}-${file.name}`
+          );
+          const snapshot = await uploadBytes(storageRef, file);
+          const downloadUrl = await getDownloadURL(snapshot.ref);
+          newImageUrls.push(downloadUrl);
         }
 
         // Append new images to the filtered images array
-        updatedData.images = [...updatedData.images, ...newImageUrls]
+        updatedData.images = [...updatedData.images, ...newImageUrls];
       }
 
       // Update the document in Firestore
-      await updateDoc(doc(db, "cars", id), updatedData)
+      await updateDoc(doc(db, "cars", id), updatedData);
 
-      alert("Car updated successfully!")
-      router.push(`/newcars/${id}`) // Redirect to car details page
+      alert("Car updated successfully!");
+      router.push(`/newcars/${id}`); // Redirect to car details page
     } catch (error) {
-      console.error("Error updating car:", error)
-      alert("Failed to update car. Please try again.")
+      console.error("Error updating car:", error);
+      alert("Failed to update car. Please try again.");
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
 
   // Show loading state before we've checked authentication or while car data is being fetched
   if (!authChecked || (loading && user)) {
     return (
       <div className="min-h-screen flex justify-center items-center">
         <div className="animate-pulse text-xl">
-          {!authChecked ? "Checking authentication..." : "Loading vehicle details..."}
+          {!authChecked
+            ? "Checking authentication..."
+            : "Loading vehicle details..."}
         </div>
       </div>
-    )
+    );
   }
 
   // If not authenticated, show sign-in options
@@ -190,20 +201,29 @@ export default function EditCar() {
       <div className="min-h-screen flex justify-center items-center flex-col">
         <div className="text-xl mb-4">Please sign in to edit this vehicle</div>
         <div className="flex space-x-4">
-          <Link href="/login" className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
+          <Link
+            href="/login"
+            className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+          >
             Sign In
           </Link>
-          <Link href="/" className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
+          <Link
+            href="/"
+            className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+          >
             Go to Home
           </Link>
         </div>
       </div>
-    )
+    );
   }
 
   return (
     <div className="py-8 px-4 max-w-4xl mx-auto">
-      <Link href={`/newcars/${id}`} className="inline-flex items-center text-indigo-600 mb-6">
+      <Link
+        href={`/newcars/${id}`}
+        className="inline-flex items-center text-indigo-600 mb-6"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="h-5 w-5 mr-2"
@@ -211,17 +231,50 @@ export default function EditCar() {
           viewBox="0 0 24 24"
           stroke="currentColor"
         >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M10 19l-7-7m0 0l7-7m-7 7h18"
+          />
         </svg>
         Back to vehicle details
       </Link>
 
       <h1 className="text-2xl font-bold mb-6">Edit Vehicle</h1>
 
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-6 rounded-lg shadow-md"
+      >
+        {/* Status Dropdown */}
+        <div className="mb-4">
+          <label
+            htmlFor="status"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Status
+          </label>
+          <select
+            id="status"
+            name="status"
+            value={carData.status}
+            onChange={handleSelectChange}
+            className="w-full p-2 border border-gray-300 rounded"
+            required
+          >
+            <option value="Available Now">Available Now</option>
+            <option value="Sale in progress">Sale in progress</option>
+            <option value="Sold">Sold</option>
+            <option value="Comming Soon">Comming Soon</option>
+          </select>
+        </div>
         {/* Title */}
         <div className="mb-4">
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="title"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Car Title
           </label>
           <input
@@ -237,7 +290,10 @@ export default function EditCar() {
 
         {/* Make */}
         <div className="mb-4">
-          <label htmlFor="make" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="make"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Car Make
           </label>
           <input
@@ -254,7 +310,10 @@ export default function EditCar() {
 
         {/* Price */}
         <div className="mb-4">
-          <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="price"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Price (£)
           </label>
           <input
@@ -272,7 +331,10 @@ export default function EditCar() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           {/* Mileage */}
           <div>
-            <label htmlFor="mileage" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="mileage"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Mileage (km)
             </label>
             <input
@@ -288,7 +350,10 @@ export default function EditCar() {
 
           {/* Transmission */}
           <div>
-            <label htmlFor="transmission" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="transmission"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Transmission
             </label>
             <select
@@ -307,7 +372,10 @@ export default function EditCar() {
 
           {/* Color */}
           <div>
-            <label htmlFor="color" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="color"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Color
             </label>
             <input
@@ -323,7 +391,10 @@ export default function EditCar() {
 
           {/* Engine Size */}
           <div>
-            <label htmlFor="engineSize" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="engineSize"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Engine Size (L)
             </label>
             <input
@@ -339,7 +410,10 @@ export default function EditCar() {
 
           {/* Fuel Type */}
           <div>
-            <label htmlFor="fuelType" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="fuelType"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Fuel Type
             </label>
             <select
@@ -360,7 +434,10 @@ export default function EditCar() {
 
           {/* Doors */}
           <div>
-            <label htmlFor="doors" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="doors"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Number of Doors
             </label>
             <input
@@ -377,7 +454,10 @@ export default function EditCar() {
 
         {/* Description */}
         <div className="mb-4">
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="description"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Vehicle Description
           </label>
           <textarea
@@ -393,7 +473,9 @@ export default function EditCar() {
 
         {/* Features */}
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Vehicle Features</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Vehicle Features
+          </label>
           <div className="flex items-center space-x-2 mb-2">
             <input
               type="text"
@@ -439,7 +521,9 @@ export default function EditCar() {
         {/* Current Images */}
         {carData.images.length > 0 && (
           <div className="mb-4">
-            <h3 className="text-sm font-medium text-gray-700 mb-2">Current Images</h3>
+            <h3 className="text-sm font-medium text-gray-700 mb-2">
+              Current Images
+            </h3>
             <div className="grid grid-cols-3 gap-2">
               {carData.images.map((img, index) => (
                 <div
@@ -463,7 +547,11 @@ export default function EditCar() {
                   ) : (
                     <button
                       type="button"
-                      onClick={() => setImagesToDelete((prev) => prev.filter((i) => i !== index))}
+                      onClick={() =>
+                        setImagesToDelete((prev) =>
+                          prev.filter((i) => i !== index)
+                        )
+                      }
                       className="absolute top-1 right-1 bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-green-600"
                       title="Restore image"
                     >
@@ -475,7 +563,8 @@ export default function EditCar() {
             </div>
             {imagesToDelete.length > 0 && (
               <p className="text-sm text-red-500 mt-2">
-                {imagesToDelete.length} image(s) marked for deletion. Changes will be applied when you save.
+                {imagesToDelete.length} image(s) marked for deletion. Changes
+                will be applied when you save.
               </p>
             )}
           </div>
@@ -483,7 +572,10 @@ export default function EditCar() {
 
         {/* Add more images */}
         <div className="mb-6">
-          <label htmlFor="images" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="images"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Add More Images
           </label>
           <input
@@ -496,16 +588,22 @@ export default function EditCar() {
             multiple
           />
           <p className="text-sm text-gray-500 mt-1">
-            New images will be added to the existing ones. You can add multiple batches of images.
+            New images will be added to the existing ones. You can add multiple
+            batches of images.
           </p>
 
           {/* Selected New Images Preview */}
           {imageFiles.length > 0 && (
             <div className="mt-4">
-              <h3 className="text-sm font-medium text-gray-700 mb-2">New Images to Upload ({imageFiles.length})</h3>
+              <h3 className="text-sm font-medium text-gray-700 mb-2">
+                New Images to Upload ({imageFiles.length})
+              </h3>
               <div className="grid grid-cols-3 gap-2">
                 {imageFiles.map((file, index) => (
-                  <div key={index} className="relative h-20 bg-gray-100 rounded">
+                  <div
+                    key={index}
+                    className="relative h-20 bg-gray-100 rounded"
+                  >
                     <img
                       src={URL.createObjectURL(file) || "/placeholder.svg"}
                       alt={`New image ${index + 1}`}
@@ -528,7 +626,10 @@ export default function EditCar() {
 
         {/* Submit Button */}
         <div className="flex justify-end space-x-4">
-          <Link href={`/newcars/${id}`} className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
+          <Link
+            href={`/newcars/${id}`}
+            className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+          >
             Cancel
           </Link>
           <button
@@ -541,5 +642,5 @@ export default function EditCar() {
         </div>
       </form>
     </div>
-  )
+  );
 }

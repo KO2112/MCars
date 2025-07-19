@@ -1,13 +1,13 @@
-"use client"
+"use client";
 
-import { useState, useEffect, type ChangeEvent, type FormEvent } from "react"
-import { db, storage } from "../../../firebase/firebase"
-import { doc, getDoc, deleteDoc } from "firebase/firestore"
-import { ref, deleteObject } from "firebase/storage"
-import { sendContactEmail } from "../../../lib/resend" // Make sure this import matches your project structure
-import Link from "next/link"
-import { useParams, useRouter } from "next/navigation"
-import useAuth from "../../../hooks/useAuth" // Import the custom hook
+import { useState, useEffect, type ChangeEvent, type FormEvent } from "react";
+import { db, storage } from "../../../firebase/firebase";
+import { doc, getDoc, deleteDoc } from "firebase/firestore";
+import { ref, deleteObject } from "firebase/storage";
+import { sendContactEmail } from "../../../lib/resend"; // Make sure this import matches your project structure
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import useAuth from "../../../hooks/useAuth"; // Import the custom hook
 import {
   ChevronLeft,
   ChevronRight,
@@ -25,45 +25,46 @@ import {
   Send,
   Info,
   CarFront,
-} from "lucide-react"
+} from "lucide-react";
 
 // Car interface matching our data structure
 interface Car {
-  id: string
-  title: string
-  price: string
-  mileage: string
-  transmission: string
-  color: string
-  engineSize: string
-  fuelType: string
-  doors: string
-  images: string[]
-  description: string
-  features: string[] // Add this line
+  id: string;
+  title: string;
+  price: string;
+  mileage: string;
+  transmission: string;
+  color: string;
+  engineSize: string;
+  fuelType: string;
+  doors: string;
+  images: string[];
+  description: string;
+  features: string[];
+  status?: string; // Add status field
 }
 
 // This component should be placed in app/cars/[id]/page.tsx
 export default function CarDetails() {
-  const params = useParams()
-  const router = useRouter()
-  const id = params?.id as string
-  const { user } = useAuth() // Get current user from your existing auth system
+  const params = useParams();
+  const router = useRouter();
+  const id = params?.id as string;
+  const { user } = useAuth(); // Get current user from your existing auth system
 
-  const [car, setCar] = useState<Car | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [deleting, setDeleting] = useState(false)
-  const [activeImage, setActiveImage] = useState(0)
-  const [showFullGallery, setShowFullGallery] = useState(false)
+  const [car, setCar] = useState<Car | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState(false);
+  const [activeImage, setActiveImage] = useState(0);
+  const [showFullGallery, setShowFullGallery] = useState(false);
 
   // Contact form states
   const [formStatus, setFormStatus] = useState({
     submitted: false,
     error: false,
     message: "",
-  })
+  });
 
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -71,18 +72,18 @@ export default function CarDetails() {
     phone: "",
     subject: `Inquiry about ${car?.title || "vehicle"}`,
     message: "",
-  })
+  });
 
   useEffect(() => {
-    if (!id) return
+    if (!id) return;
 
     const fetchCarDetails = async () => {
       try {
-        const docRef = doc(db, "cars", id)
-        const docSnap = await getDoc(docRef)
+        const docRef = doc(db, "cars", id);
+        const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-          const data = docSnap.data()
+          const data = docSnap.data();
           const carData = {
             id: docSnap.id,
             title: data.title || "",
@@ -95,39 +96,42 @@ export default function CarDetails() {
             doors: data.doors || "",
             images: data.images || (data.image ? [data.image] : []),
             description: data.description || "",
-            features: data.features || [], // Add this line
-          }
+            features: data.features || [],
+            status: data.status || "Available Now", // Load status
+          };
 
-          setCar(carData)
+          setCar(carData);
 
           // Update the subject with the car title
           setFormData((prev) => ({
             ...prev,
             subject: `Inquiry about ${carData.title}`,
-          }))
+          }));
         } else {
-          console.log("No such document!")
-          router.push("/")
+          console.log("No such document!");
+          router.push("/");
         }
       } catch (error) {
-        console.error("Error fetching car details:", error)
+        console.error("Error fetching car details:", error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchCarDetails()
-  }, [id, router])
+    fetchCarDetails();
+  }, [id, router]);
 
   // Contact form handlers
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+    e.preventDefault();
+    setIsSubmitting(true);
 
     try {
       // Send email using Resend API
@@ -137,14 +141,14 @@ export default function CarDetails() {
         phone: formData.phone,
         subject: formData.subject,
         message: formData.message,
-      })
+      });
 
       if (result.success) {
         setFormStatus({
           submitted: true,
           error: false,
           message: "Thank you! Your message has been sent successfully.",
-        })
+        });
 
         // Reset form after successful submission
         setFormData((prev) => ({
@@ -153,33 +157,40 @@ export default function CarDetails() {
           email: "",
           phone: "",
           message: "",
-        }))
+        }));
       } else {
         setFormStatus({
           submitted: false,
           error: true,
-          message: "There was an error sending your message. Please try again later.",
-        })
+          message:
+            "There was an error sending your message. Please try again later.",
+        });
       }
     } catch (error) {
-      console.error("Form submission error:", error)
+      console.error("Form submission error:", error);
       setFormStatus({
         submitted: false,
         error: true,
-        message: "There was an error sending your message. Please try again later.",
-      })
+        message:
+          "There was an error sending your message. Please try again later.",
+      });
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   // Function to delete car and associated images
   const handleDeleteCar = async () => {
-    if (!car || !window.confirm("Are you sure you want to delete this vehicle? This action cannot be undone.")) {
-      return
+    if (
+      !car ||
+      !window.confirm(
+        "Are you sure you want to delete this vehicle? This action cannot be undone."
+      )
+    ) {
+      return;
     }
 
-    setDeleting(true)
+    setDeleting(true);
 
     try {
       // Delete all images from storage
@@ -187,67 +198,74 @@ export default function CarDetails() {
         car.images.map(async (imageUrl) => {
           try {
             // Extract the file path from the URL
-            const filePathMatch = imageUrl.match(/\/o\/(.+)\?alt=/)
+            const filePathMatch = imageUrl.match(/\/o\/(.+)\?alt=/);
             if (filePathMatch && filePathMatch[1]) {
-              const filePath = decodeURIComponent(filePathMatch[1])
-              const imageRef = ref(storage, filePath)
-              await deleteObject(imageRef)
+              const filePath = decodeURIComponent(filePathMatch[1]);
+              const imageRef = ref(storage, filePath);
+              await deleteObject(imageRef);
             }
           } catch (error) {
-            console.error("Error deleting image:", error)
+            console.error("Error deleting image:", error);
           }
-        }),
-      )
+        })
+      );
 
       // Delete the car document from Firestore
-      await deleteDoc(doc(db, "cars", car.id))
+      await deleteDoc(doc(db, "cars", car.id));
 
       // Redirect to home page
-      router.push("/")
+      router.push("/");
     } catch (error) {
-      console.error("Error deleting car:", error)
-      alert("Failed to delete vehicle. Please try again.")
-      setDeleting(false)
+      console.error("Error deleting car:", error);
+      alert("Failed to delete vehicle. Please try again.");
+      setDeleting(false);
     }
-  }
+  };
 
   // Function to handle image navigation
   const changeImage = (index: number) => {
-    setActiveImage(index)
-  }
+    setActiveImage(index);
+  };
 
   // Function to navigate to next/prev image
   const navigateImage = (direction: "next" | "prev") => {
-    if (!car?.images.length) return
+    if (!car?.images.length) return;
 
     if (direction === "next") {
-      setActiveImage((prev) => (prev + 1) % car.images.length)
+      setActiveImage((prev) => (prev + 1) % car.images.length);
     } else {
-      setActiveImage((prev) => (prev - 1 + car.images.length) % car.images.length)
+      setActiveImage(
+        (prev) => (prev - 1 + car.images.length) % car.images.length
+      );
     }
-  }
+  };
 
   if (loading) {
     return (
       <div className="min-h-screen flex justify-center items-center bg-gray-50">
         <div className="flex flex-col items-center">
           <div className="w-16 h-16 border-4 border-t-blue-600 border-r-blue-600 border-b-transparent border-l-transparent rounded-full animate-spin mb-4"></div>
-          <div className="text-xl text-gray-700 font-medium">Loading vehicle details...</div>
+          <div className="text-xl text-gray-700 font-medium">
+            Loading vehicle details...
+          </div>
         </div>
       </div>
-    )
+    );
   }
 
   if (!car) {
     return (
       <div className="min-h-screen flex flex-col justify-center items-center bg-gray-50">
         <div className="text-xl text-gray-800 mb-4">Vehicle not found</div>
-        <Link href="/cars" className="text-blue-600 hover:text-blue-800 font-medium flex items-center">
+        <Link
+          href="/cars"
+          className="text-blue-600 hover:text-blue-800 font-medium flex items-center"
+        >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Return to vehicle listings
         </Link>
       </div>
-    )
+    );
   }
 
   // Full screen gallery modal
@@ -296,7 +314,9 @@ export default function CarDetails() {
               key={index}
               onClick={() => changeImage(index)}
               className={`flex-shrink-0 w-24 h-16 cursor-pointer transition-all duration-300 ${
-                activeImage === index ? "ring-2 ring-blue-500 opacity-100" : "opacity-60 hover:opacity-100"
+                activeImage === index
+                  ? "ring-2 ring-blue-500 opacity-100"
+                  : "opacity-60 hover:opacity-100"
               }`}
             >
               <img
@@ -309,7 +329,7 @@ export default function CarDetails() {
         </div>
       </div>
     </div>
-  )
+  );
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -319,7 +339,10 @@ export default function CarDetails() {
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-5">
         {/* Back Button */}
         <div className="flex justify-between items-center mb-6">
-          <Link href="/cars" className="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors">
+          <Link
+            href="/cars"
+            className="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors"
+          >
             <ArrowLeft className="h-5 w-5 mr-2" />
             Back to vehicles
           </Link>
@@ -377,7 +400,9 @@ export default function CarDetails() {
         {/* Vehicle Title and Price */}
         {/* Vehicle Title */}
         <div className="mb-6">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900">{car.title}</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
+            {car.title}
+          </h1>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -448,10 +473,14 @@ export default function CarDetails() {
               {/* Pricing Section */}
               <div className="flex items-center justify-between gap-4 mb-6">
                 <div>
-                  <div className="text-4xl font-bold text-blue-700">£{Number(car.price).toLocaleString()}</div>
+                  <div className="text-4xl font-bold text-blue-700">
+                    £{Number(car.price).toLocaleString()}
+                  </div>
                 </div>
-                <button className="bg-green-100 hover:bg-green-200 text-green-800 font-semibold py-2 px-6 rounded-lg transition duration-300 border border-green-200">
-                  Available Now
+                <button
+                  className={`bg-green-100 hover:bg-green-200 text-green-800 font-semibold py-2 px-6 rounded-lg transition duration-300 border border-green-200 ${car.status === "Sold" ? "bg-gray-300 text-gray-600 cursor-not-allowed" : ""}`}
+                >
+                  {car.status || "Available Now"}
                 </button>
               </div>
 
@@ -459,7 +488,9 @@ export default function CarDetails() {
               <div className="h-px bg-gray-200 mb-6"></div>
 
               {/* Vehicle Details Section */}
-              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">Vehicle Details</h2>
+              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                Vehicle Details
+              </h2>
 
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -467,7 +498,9 @@ export default function CarDetails() {
                     <CarFront className="h-5 w-5 mr-2 text-blue-600" />
                     Engine Size
                   </span>
-                  <span className="font-medium text-gray-900 text-base">{car.engineSize}L</span>
+                  <span className="font-medium text-gray-900 text-base">
+                    {car.engineSize}L
+                  </span>
                 </div>
                 <div className="h-px bg-gray-200"></div>
 
@@ -476,7 +509,9 @@ export default function CarDetails() {
                     <Fuel className="h-5 w-5 mr-2 text-blue-600" />
                     Fuel Type
                   </span>
-                  <span className="font-medium capitalize text-gray-900 text-base">{car.fuelType}</span>
+                  <span className="font-medium capitalize text-gray-900 text-base">
+                    {car.fuelType}
+                  </span>
                 </div>
                 <div className="h-px bg-gray-200"></div>
 
@@ -496,7 +531,9 @@ export default function CarDetails() {
                     <Settings className="h-5 w-5 mr-2 text-blue-600" />
                     Transmission
                   </span>
-                  <span className="font-medium capitalize text-gray-900 text-base">{car.transmission}</span>
+                  <span className="font-medium capitalize text-gray-900 text-base">
+                    {car.transmission}
+                  </span>
                 </div>
                 <div className="h-px bg-gray-200"></div>
 
@@ -505,7 +542,9 @@ export default function CarDetails() {
                     <Palette className="h-5 w-5 mr-2 text-blue-600" />
                     Color
                   </span>
-                  <span className="font-medium capitalize text-gray-900 text-base">{car.color}</span>
+                  <span className="font-medium capitalize text-gray-900 text-base">
+                    {car.color}
+                  </span>
                 </div>
                 <div className="h-px bg-gray-200"></div>
 
@@ -514,7 +553,9 @@ export default function CarDetails() {
                     <DoorOpen className="h-5 w-5 mr-2 text-blue-600" />
                     Doors
                   </span>
-                  <span className="font-medium text-gray-900 text-base">{car.doors}</span>
+                  <span className="font-medium text-gray-900 text-base">
+                    {car.doors}
+                  </span>
                 </div>
               </div>
             </div>
@@ -527,19 +568,25 @@ export default function CarDetails() {
               </h2>
               <div className="prose max-w-none">
                 {car.description ? (
-                  <div className="text-gray-700 text-base whitespace-pre-line leading-relaxed">{car.description}</div>
+                  <div className="text-gray-700 text-base whitespace-pre-line leading-relaxed">
+                    {car.description}
+                  </div>
                 ) : (
                   <>
                     <p className="text-gray-700 text-base leading-relaxed">
-                      This {car.title} is in excellent condition and ready for its new owner.
+                      This {car.title} is in excellent condition and ready for
+                      its new owner.
                     </p>
                     <p className="mt-2 text-gray-700 text-base leading-relaxed">
-                      It features a {car.engineSize}L {car.fuelType} engine with {car.transmission} transmission. With
-                      only {Number(car.mileage).toLocaleString()} Miles on the odometer, this {car.color} vehicle
-                      provides an excellent driving experience.
+                      It features a {car.engineSize}L {car.fuelType} engine with{" "}
+                      {car.transmission} transmission. With only{" "}
+                      {Number(car.mileage).toLocaleString()} Miles on the
+                      odometer, this {car.color} vehicle provides an excellent
+                      driving experience.
                     </p>
                     <p className="mt-2 text-gray-700 text-base leading-relaxed">
-                      Contact us today to schedule a test drive and experience this amazing vehicle for yourself!
+                      Contact us today to schedule a test drive and experience
+                      this amazing vehicle for yourself!
                     </p>
                   </>
                 )}
@@ -575,10 +622,14 @@ export default function CarDetails() {
               {/* Pricing Section */}
               <div className="flex items-center justify-between gap-4 mb-6">
                 <div>
-                  <div className="text-4xl font-bold text-blue-700">£{Number(car.price).toLocaleString()}</div>
+                  <div className="text-4xl font-bold text-blue-700">
+                    £{Number(car.price).toLocaleString()}
+                  </div>
                 </div>
-                <button className="bg-green-100 hover:bg-green-200 text-green-800 font-semibold py-2 px-6 rounded-lg transition duration-300 border border-green-200">
-                  Available Now
+                <button
+                  className={`bg-green-100 hover:bg-green-200 text-green-800 font-semibold py-2 px-6 rounded-lg transition duration-300 border border-green-200 ${car.status === "Sold" ? "bg-gray-300 text-gray-600 cursor-not-allowed" : ""}`}
+                >
+                  {car.status || "Available Now"}
                 </button>
               </div>
 
@@ -586,7 +637,9 @@ export default function CarDetails() {
               <div className="h-px bg-gray-200 mb-6"></div>
 
               {/* Vehicle Details Section */}
-              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">Vehicle Details</h2>
+              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                Vehicle Details
+              </h2>
 
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -594,7 +647,9 @@ export default function CarDetails() {
                     <CarFront className="h-5 w-5 mr-2 text-blue-600" />
                     Engine Size
                   </span>
-                  <span className="font-medium text-gray-900 text-base">{car.engineSize}L</span>
+                  <span className="font-medium text-gray-900 text-base">
+                    {car.engineSize}L
+                  </span>
                 </div>
                 <div className="h-px bg-gray-200"></div>
 
@@ -603,7 +658,9 @@ export default function CarDetails() {
                     <Fuel className="h-5 w-5 mr-2 text-blue-600" />
                     Fuel Type
                   </span>
-                  <span className="font-medium capitalize text-gray-900 text-base">{car.fuelType}</span>
+                  <span className="font-medium capitalize text-gray-900 text-base">
+                    {car.fuelType}
+                  </span>
                 </div>
                 <div className="h-px bg-gray-200"></div>
 
@@ -623,7 +680,9 @@ export default function CarDetails() {
                     <Settings className="h-5 w-5 mr-2 text-blue-600" />
                     Transmission
                   </span>
-                  <span className="font-medium capitalize text-gray-900 text-base">{car.transmission}</span>
+                  <span className="font-medium capitalize text-gray-900 text-base">
+                    {car.transmission}
+                  </span>
                 </div>
                 <div className="h-px bg-gray-200"></div>
 
@@ -632,7 +691,9 @@ export default function CarDetails() {
                     <Palette className="h-5 w-5 mr-2 text-blue-600" />
                     Color
                   </span>
-                  <span className="font-medium capitalize text-gray-900 text-base">{car.color}</span>
+                  <span className="font-medium capitalize text-gray-900 text-base">
+                    {car.color}
+                  </span>
                 </div>
                 <div className="h-px bg-gray-200"></div>
 
@@ -641,7 +702,9 @@ export default function CarDetails() {
                     <DoorOpen className="h-5 w-5 mr-2 text-blue-600" />
                     Doors
                   </span>
-                  <span className="font-medium text-gray-900 text-base">{car.doors}</span>
+                  <span className="font-medium text-gray-900 text-base">
+                    {car.doors}
+                  </span>
                 </div>
               </div>
             </div>
@@ -659,10 +722,17 @@ export default function CarDetails() {
                   <div>
                     <h3 className="font-medium text-green-800">Thank You!</h3>
                     <p className="text-green-700">
-                      Your inquiry has been sent successfully. Our team will contact you shortly.
+                      Your inquiry has been sent successfully. Our team will
+                      contact you shortly.
                     </p>
                     <button
-                      onClick={() => setFormStatus({ submitted: false, error: false, message: "" })}
+                      onClick={() =>
+                        setFormStatus({
+                          submitted: false,
+                          error: false,
+                          message: "",
+                        })
+                      }
                       className="mt-3 text-sm font-medium text-green-700 hover:text-green-900"
                     >
                       Send another message
@@ -683,7 +753,10 @@ export default function CarDetails() {
 
                   {/* Name Field */}
                   <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="name"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Full Name*
                     </label>
                     <input
@@ -700,7 +773,10 @@ export default function CarDetails() {
 
                   {/* Email Field */}
                   <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="email"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Email Address*
                     </label>
                     <input
@@ -717,7 +793,10 @@ export default function CarDetails() {
 
                   {/* Phone Field */}
                   <div>
-                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="phone"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Phone Number
                     </label>
                     <input
@@ -732,11 +811,19 @@ export default function CarDetails() {
                   </div>
 
                   {/* Subject Field - Pre-filled but editable */}
-                  <input type="hidden" id="subject" name="subject" value={formData.subject} />
+                  <input
+                    type="hidden"
+                    id="subject"
+                    name="subject"
+                    value={formData.subject}
+                  />
 
                   {/* Message Field */}
                   <div>
-                    <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="message"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Message*
                     </label>
                     <textarea
@@ -780,5 +867,5 @@ export default function CarDetails() {
         </div>
       </div>
     </div>
-  )
+  );
 }
