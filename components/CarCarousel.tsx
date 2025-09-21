@@ -21,6 +21,7 @@ interface CarProps {
   images: string[] // Array of image URLs
   image?: string // Optional for backward compatibility
   features: string[] // Array of feature strings
+  isIncoming?: boolean // Add isIncoming field
 }
 
 export default function CarCarousel() {
@@ -58,6 +59,7 @@ export default function CarCarousel() {
               images: data.images || (data.image ? [data.image] : []),
               image: data.image || "",
               features: data.features || [],
+              isIncoming: data.isIncoming || false,
             }
             carsList.push(car)
           }
@@ -232,6 +234,13 @@ export default function CarCarousel() {
                       </div>
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
+
+                    {/* Incoming Badge */}
+                    {car.isIncoming && (
+                      <div className="absolute top-4 left-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-4 py-2 rounded-full font-bold shadow-lg">
+                        Incoming
+                      </div>
+                    )}
 
                     {/* Price Badge */}
                     <div className="absolute top-4 right-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-full font-bold shadow-lg">

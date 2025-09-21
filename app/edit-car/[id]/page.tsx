@@ -34,6 +34,7 @@ export default function EditCar() {
     images: [] as string[],
     make: "",
     status: "Available Now", // Add status field
+    isIncoming: false, // Add isIncoming field
   });
   const [imagesToDelete, setImagesToDelete] = useState<number[]>([]);
   const [featureInput, setFeatureInput] = useState("");
@@ -76,6 +77,7 @@ export default function EditCar() {
               images: data.images || [],
               make: data.make || "",
               status: data.status || "Available Now", // Load status
+              isIncoming: data.isIncoming || false, // Load isIncoming
             });
           } else {
             console.log("No such document!");
@@ -267,6 +269,30 @@ export default function EditCar() {
             <option value="Sale in progress">Sale in progress</option>
             <option value="Sold">Sold</option>
             <option value="Coming Soon">Coming Soon</option>
+          </select>
+        </div>
+
+        {/* Incoming Vehicle Dropdown */}
+        <div className="mb-4">
+          <label
+            htmlFor="isIncoming"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Vehicle Type
+          </label>
+          <select
+            id="isIncoming"
+            name="isIncoming"
+            value={carData.isIncoming ? "true" : "false"}
+            onChange={(e) => {
+              const value = e.target.value === "true";
+              setCarData({ ...carData, isIncoming: value });
+            }}
+            className="w-full p-2 border border-gray-300 rounded"
+            required
+          >
+            <option value="false">Regular Vehicle</option>
+            <option value="true">Incoming Vehicle</option>
           </select>
         </div>
         {/* Title */}

@@ -1,67 +1,69 @@
-"use client"
+"use client";
 
-import { useState, useRef, useEffect } from "react"
-import { signOut } from "firebase/auth"
-import { auth } from "../firebase/firebase"
-import useAuth from "../hooks/useAuth"
-import Link from "next/link"
-import { Phone, Mail, Menu, X, MapPin } from "lucide-react" // Import MapPin icon
+import { useState, useRef, useEffect } from "react";
+import { signOut } from "firebase/auth";
+import { auth } from "../firebase/firebase";
+import useAuth from "../hooks/useAuth";
+import Link from "next/link";
+import { Phone, Mail, Menu, X, MapPin } from "lucide-react"; // Import MapPin icon
 
 export default function Navbar() {
-  const { user } = useAuth()
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
-  const menuRef = useRef<HTMLDivElement>(null)
+  const { user } = useAuth();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const handleSignOut = async () => {
-    await signOut(auth)
-    setMobileMenuOpen(false)
-  }
+    await signOut(auth);
+    setMobileMenuOpen(false);
+  };
 
   // Handle scroll effect
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 10) {
-        setScrolled(true)
+        setScrolled(true);
       } else {
-        setScrolled(false)
+        setScrolled(false);
       }
-    }
+    };
 
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setMobileMenuOpen(false)
+        setMobileMenuOpen(false);
       }
-    }
+    };
 
     if (mobileMenuOpen) {
-      document.addEventListener("mousedown", handleClickOutside)
+      document.addEventListener("mousedown", handleClickOutside);
     }
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, [mobileMenuOpen])
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [mobileMenuOpen]);
 
   // Close mobile menu when screen size changes to desktop
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 768) {
-        setMobileMenuOpen(false)
+        setMobileMenuOpen(false);
       }
-    }
+    };
 
-    window.addEventListener("resize", handleResize)
-    return () => window.removeEventListener("resize", handleResize)
-  }, [])
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   return (
-    <header className={`sticky top-0 z-50 transition-all duration-300 ${scrolled ? "shadow-md" : ""}`}>
+    <header
+      className={`sticky top-0 z-50 transition-all duration-300 ${scrolled ? "shadow-md" : ""}`}
+    >
       {/* Main Navbar with Gradient */}
       <div className="bg-gradient-to-r from-blue-500 to-blue-800">
         <div className="container mx-auto px-4">
@@ -69,7 +71,11 @@ export default function Navbar() {
             {/* Logo - Left */}
             <div className="flex-shrink-0 relative z-10">
               <Link href="/">
-                <img src="/IRONSAUTO.png" alt="IronsAuto Logo" className="h-12 md:h-14 w-auto" />
+                <img
+                  src="/IRONSAUTO.png"
+                  alt="IronsAuto Logo"
+                  className="h-12 md:h-14 w-auto"
+                />
               </Link>
             </div>
 
@@ -80,6 +86,13 @@ export default function Navbar() {
                 className="text-white hover:text-blue-100 font-medium text-lg py-2 relative group transition-colors duration-200"
               >
                 Cars
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300"></span>
+              </Link>
+              <Link
+                href="/incoming-vehicles"
+                className="text-white hover:text-blue-100 font-medium text-lg py-2 relative group transition-colors duration-200"
+              >
+                Incoming Vehicles
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300"></span>
               </Link>
               <Link
@@ -96,6 +109,7 @@ export default function Navbar() {
                 About us
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300"></span>
               </Link>
+              
 
               {/* Conditionally render Add Car link if the user is signed in */}
               {user && (
@@ -122,12 +136,18 @@ export default function Navbar() {
                 <span className="font-medium">LE5 5FW</span>
               </a>
               <div className="h-6 w-px bg-blue-300/50"></div>
-              <a href="tel:+447476866745" className="flex items-center hover:text-blue-100 transition-colors">
+              <a
+                href="tel:+447476866745"
+                className="flex items-center hover:text-blue-100 transition-colors"
+              >
                 <Phone size={18} className="mr-2" />
                 <span className="font-medium">+44 7467 866745</span>
               </a>
               <div className="h-6 w-px bg-blue-300/50"></div>
-              <a href="mailto:info@ironsauto.co.uk" className="flex items-center hover:text-blue-100 transition-colors">
+              <a
+                href="mailto:info@ironsauto.co.uk"
+                className="flex items-center hover:text-blue-100 transition-colors"
+              >
                 <Mail size={18} className="mr-2" />
                 <span className="font-medium">info@ironsauto.co.uk</span>
               </a>
@@ -156,7 +176,11 @@ export default function Navbar() {
                 className="p-2 text-white focus:outline-none"
                 aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
               >
-                {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                {mobileMenuOpen ? (
+                  <X className="h-6 w-6" />
+                ) : (
+                  <Menu className="h-6 w-6" />
+                )}
               </button>
             </div>
           </div>
@@ -184,10 +208,38 @@ export default function Navbar() {
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
               Cars
             </Link>
+
+            <Link
+              href="/incoming-vehicles"
+              className="text-gray-800 hover:text-blue-600 py-3 px-4 hover:bg-blue-50 rounded-lg transition-colors duration-200 flex items-center"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 mr-3 text-blue-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              Incoming Vehicles
+            </Link>
+
 
             <Link
               href="/contact"
@@ -233,6 +285,7 @@ export default function Navbar() {
               About Us
             </Link>
 
+            
             {user && (
               <Link
                 href="/add-car"
@@ -246,7 +299,12 @@ export default function Navbar() {
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 4v16m8-8H4"
+                  />
                 </svg>
                 Add Car
               </Link>
@@ -310,5 +368,5 @@ export default function Navbar() {
         </div>
       </div>
     </header>
-  )
+  );
 }

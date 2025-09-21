@@ -1,20 +1,10 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
-import { db } from "../firebase/firebase";
-import { collection, getDocs, query, orderBy } from "firebase/firestore";
+import { useState, useEffect } from "react";
+import { db } from "../../firebase/firebase";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import Link from "next/link";
-import {
-  Search,
-  Filter,
-  ChevronDown,
-  Sliders,
-  MapPin,
-  Gauge,
-  Fuel,
-  Camera,
-  CarFront,
-} from "lucide-react";
+import { MapPin, Gauge, Fuel, Camera, CarFront } from "lucide-react";
 
 interface Car {
   id: string;
@@ -31,28 +21,19 @@ interface Car {
   features: string[];
   createdAt?: string;
   make?: string;
-  isIncoming?: boolean;
 }
 
-const Cars = () => {
+const IncomingVehicles = () => {
   const [cars, setCars] = useState<Car[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sortOption, setSortOption] = useState("newest");
-  const [showFilters, setShowFilters] = useState(false);
-  const [filters, setFilters] = useState({
-    transmission: "",
-    fuelType: "",
-    make: "",
-  });
 
-  // Fetch car data from Firestore
+  // Fetch incoming cars data from Firestore
   useEffect(() => {
-    const fetchCars = async () => {
+    const fetchIncomingCars = async () => {
       try {
         const carsQuery = query(
           collection(db, "cars"),
-          orderBy("createdAt", "desc")
+          where("isIncoming", "==", true)
         );
         const querySnapshot = await getDocs(carsQuery);
         const carList: Car[] = [];
@@ -76,91 +57,31 @@ const Cars = () => {
               features: data.features || [],
               createdAt: data.createdAt,
               make: data.make || "",
-              isIncoming: data.isIncoming || false,
             };
-
-            // Only add cars that are NOT incoming
-            if (!car.isIncoming) {
-              carList.push(car);
-            }
+            carList.push(car);
           }
+        });
+
+        // Sort by createdAt in JavaScript since we can't use composite index
+        carList.sort((a, b) => {
+          if (a.createdAt && b.createdAt) {
+            return (
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            );
+          }
+          return 0;
         });
 
         setCars(carList);
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching cars: ", error);
+        console.error("Error fetching incoming cars: ", error);
         setLoading(false);
       }
     };
 
-    fetchCars();
+    fetchIncomingCars();
   }, []);
-
-  // Filter and sort cars
-  const filteredAndSortedCars = useMemo(() => {
-    let result = cars.filter(
-      (car) =>
-        car.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        car.features.some((feature) =>
-          feature.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-    );
-
-    if (filters.transmission) {
-      result = result.filter(
-        (car) => car.transmission === filters.transmission
-      );
-    }
-
-    if (filters.fuelType) {
-      result = result.filter((car) => car.fuelType === filters.fuelType);
-    }
-
-    if (filters.make) {
-      result = result.filter((car) => car.make === filters.make);
-    }
-
-    return result.sort((a, b) => {
-      switch (sortOption) {
-        case "price-low":
-          return Number(a.price) - Number(b.price);
-        case "price-high":
-          return Number(b.price) - Number(a.price);
-        case "mileage-low":
-          return Number(a.mileage) - Number(b.mileage);
-        default:
-          return 0;
-      }
-    });
-  }, [cars, searchTerm, sortOption, filters]);
-
-  const transmissionOptions = useMemo(() => {
-    const options = new Set(
-      cars
-        .map((car) => car.transmission)
-        .filter((transmission): transmission is string => Boolean(transmission))
-    );
-    return Array.from(options);
-  }, [cars]);
-
-  const fuelTypeOptions = useMemo(() => {
-    const options = new Set(
-      cars
-        .map((car) => car.fuelType)
-        .filter((fuelType): fuelType is string => Boolean(fuelType))
-    );
-    return Array.from(options);
-  }, [cars]);
-
-  const makeOptions = useMemo(() => {
-    const options = new Set(
-      cars
-        .map((car) => car.make)
-        .filter((make): make is string => Boolean(make))
-    );
-    return Array.from(options);
-  }, [cars]);
 
   const getFeatureTagColor = (index: number) => {
     const colors = [
@@ -184,7 +105,7 @@ const Cars = () => {
             <div className="absolute inset-0 w-20 h-20 border-4 border-transparent border-b-blue-700 border-l-blue-800 rounded-full animate-spin animate-reverse"></div>
           </div>
           <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-            Loading Premium Vehicles
+            Loading Incoming Vehicles
           </div>
           <div className="text-gray-600 mt-2">
             Curating the finest selection for you...
@@ -202,138 +123,12 @@ const Cars = () => {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
             <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">
-              Available Cars
+              Incoming Vehicles
             </h1>
             <p className="text-xl text-blue-100 max-w-2xl mx-auto">
-              Discover exceptional vehicles crafted for the extraordinary
-              journey ahead
+              Discover exceptional vehicles arriving soon to our showroom
             </p>
           </div>
-        </div>
-      </div>
-
-      {/* Search and Filter Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10">
-        <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-xl">
-          <div className="flex flex-col lg:flex-row gap-4">
-            {/* Make Filter */}
-            <div className="relative w-full lg:w-48">
-              <select
-                className="block w-full px-4 py-4 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
-                value={filters.make}
-                onChange={(e) =>
-                  setFilters({ ...filters, make: e.target.value })
-                }
-              >
-                <option value="">All Makes</option>
-                {makeOptions.map((option) => (
-                  <option key={option} value={option}>
-                    {option.charAt(0).toUpperCase() + option.slice(1)}
-                  </option>
-                ))}
-              </select>
-              <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                <ChevronDown className="h-5 w-5 text-gray-400" />
-              </div>
-            </div>
-
-            {/* Search */}
-            <div className="relative flex-grow">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <Search className="h-5 w-5 text-gray-400" />
-              </div>
-              <input
-                type="text"
-                placeholder="Search by model, features, or keywords..."
-                className="block w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-
-            {/* Sort */}
-            <div className="relative w-full lg:w-64">
-              <select
-                className="block w-full px-4 py-4 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
-                value={sortOption}
-                onChange={(e) => setSortOption(e.target.value)}
-              >
-                <option value="newest">Newest First</option>
-                <option value="price-low">Price: Low to High</option>
-                <option value="price-high">Price: High to Low</option>
-                <option value="mileage-low">Lowest Mileage</option>
-              </select>
-              <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                <ChevronDown className="h-5 w-5 text-gray-400" />
-              </div>
-            </div>
-
-            {/* Filter Toggle */}
-            <button
-              className="flex items-center justify-center px-6 py-4 bg-gradient-to-r from-blue-500 to-blue-800 text-white rounded-xl hover:from-blue-600 hover:to-blue-900 transition-all duration-200 shadow-lg hover:shadow-xl"
-              onClick={() => setShowFilters(!showFilters)}
-            >
-              <Filter className="h-5 w-5 mr-2" />
-              Filters
-            </button>
-          </div>
-
-          {/* Expanded Filters */}
-          {showFilters && (
-            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 pt-6 border-t border-gray-200">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Transmission
-                </label>
-                <select
-                  className="block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={filters.transmission}
-                  onChange={(e) =>
-                    setFilters({ ...filters, transmission: e.target.value })
-                  }
-                >
-                  <option value="">All Transmissions</option>
-                  {transmissionOptions.map((option) => (
-                    <option key={option} value={option}>
-                      {option.charAt(0).toUpperCase() + option.slice(1)}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Fuel Type
-                </label>
-                <select
-                  className="block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={filters.fuelType}
-                  onChange={(e) =>
-                    setFilters({ ...filters, fuelType: e.target.value })
-                  }
-                >
-                  <option value="">All Fuel Types</option>
-                  {fuelTypeOptions.map((option) => (
-                    <option key={option} value={option}>
-                      {option.charAt(0).toUpperCase() + option.slice(1)}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="flex items-end md:col-span-2">
-                <button
-                  className="w-full px-4 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors border border-gray-300"
-                  onClick={() => {
-                    setFilters({ transmission: "", fuelType: "", make: "" });
-                    setSearchTerm("");
-                  }}
-                >
-                  Clear Filters
-                </button>
-              </div>
-            </div>
-          )}
         </div>
       </div>
 
@@ -342,51 +137,38 @@ const Cars = () => {
         <div className="flex justify-between items-center mb-8">
           <div>
             <h2 className="text-2xl font-bold text-gray-900 mb-1">
-              {filteredAndSortedCars.length} Premium{" "}
-              {filteredAndSortedCars.length === 1 ? "Vehicle" : "Vehicles"}
+              {cars.length} Incoming{" "}
+              {cars.length === 1 ? "Vehicle" : "Vehicles"}
             </h2>
             <p className="text-gray-600">
-              Handpicked for excellence and performance
+              Premium vehicles arriving soon to our showroom
             </p>
-          </div>
-          <div className="hidden md:flex items-center text-gray-600 bg-white px-4 py-2 rounded-lg border border-gray-200 shadow-sm">
-            <Sliders className="h-4 w-4 mr-2" />
-            {sortOption === "newest"
-              ? "Newest First"
-              : sortOption === "price-low"
-                ? "Price: Low to High"
-                : sortOption === "price-high"
-                  ? "Price: High to Low"
-                  : "Lowest Mileage"}
           </div>
         </div>
 
         {/* Car Grid */}
-        {filteredAndSortedCars.length === 0 ? (
+        {cars.length === 0 ? (
           <div className="text-center py-16">
             <div className="bg-white rounded-2xl p-12 border border-gray-200 shadow-lg">
               <div className="text-6xl mb-6">🔍</div>
               <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                No Vehicles Found
+                No Incoming Vehicles Found
               </h3>
               <p className="text-gray-600 mb-8 max-w-md mx-auto">
-                We couldnt find any vehicles matching your criteria. Try
-                adjusting your search or filters.
+                We don&apos;t have any vehicles marked as incoming at the
+                moment. Check back soon for exciting new arrivals!
               </p>
-              <button
+              <Link
+                href="/cars"
                 className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-800 text-white rounded-xl hover:from-blue-600 hover:to-blue-900 transition-all duration-200 shadow-lg"
-                onClick={() => {
-                  setFilters({ transmission: "", fuelType: "", make: "" });
-                  setSearchTerm("");
-                }}
               >
-                Reset Search
-              </button>
+                View Available Cars
+              </Link>
             </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-            {filteredAndSortedCars.map((car) => (
+            {cars.map((car) => (
               <Link href={`/newcars/${car.id}`} key={car.id} className="group">
                 <div className="bg-white rounded-2xl overflow-hidden border border-gray-200 hover:border-blue-300 transition-all duration-300 hover:transform hover:-translate-y-2 hover:shadow-2xl shadow-lg h-[550px] flex flex-col">
                   {/* Image Section - Fixed Height */}
@@ -511,36 +293,36 @@ const Cars = () => {
             Questions? We are Here to Help
           </h2>
           <p className="text-gray-600">
-            Everything you need to know about your premium car buying experience
+            Everything you need to know about our incoming vehicles
           </p>
         </div>
 
         <div className="space-y-4">
           {[
             {
-              question: "How do I schedule a test drive?",
+              question: "How do I express interest in an incoming vehicle?",
               answer:
-                "Simply click on any vehicle to view details and use our instant booking system. You can also call our concierge team for personalized assistance.",
+                "Simply click on any incoming vehicle to view details and contact us to express your interest. We'll notify you as soon as it arrives.",
             },
             {
-              question: "Do you offer financing options?",
+              question: "When will these vehicles be available?",
               answer:
-                "Yes, we provide premium financing solutions with competitive rates. Our finance specialists work with top-tier lenders to secure the best terms for your investment.",
+                "These vehicles are currently in transit or being prepared for arrival. Contact us for specific arrival dates and availability.",
             },
             {
-              question: "What documents do I need to purchase?",
+              question: "Can I reserve an incoming vehicle?",
               answer:
-                "You'll need a valid driver's license, proof of insurance, and income verification. Our team will guide you through the entire process seamlessly.",
+                "Yes, you can express interest and we'll give you priority access once the vehicle arrives at our showroom.",
             },
             {
-              question: "Do you offer white-glove delivery?",
+              question: "Will the price change when the vehicle arrives?",
               answer:
-                "Absolutely. We provide complimentary delivery within 50 miles, with extended delivery available. Your vehicle arrives detailed and ready for the road.",
+                "Prices are subject to market conditions, but we'll honor the displayed price for interested customers.",
             },
             {
-              question: "What is your warranty policy?",
+              question: "What if the vehicle doesn't arrive as expected?",
               answer:
-                "We offer a 3-month warranty on all cars. The warranty can be extended to 12 months.",
+                "While we do our best to ensure accurate information, delays can occur. We'll keep you updated on any changes.",
             },
           ].map((faq, index) => (
             <div
@@ -559,4 +341,4 @@ const Cars = () => {
   );
 };
 
-export default Cars;
+export default IncomingVehicles;
