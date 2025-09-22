@@ -114,7 +114,7 @@ export default function AboutUsContent() {
                     <h4 className="font-semibold text-gray-900">Phone</h4>
                     <p className="text-gray-600">
                       <a href="tel:+447476866745" className="hover:text-indigo-600 transition-colors">
-                        +44 7476 866745
+                        +44 7467 866745
                       </a>
                     </p>
                   </div>
