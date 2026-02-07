@@ -32,6 +32,7 @@ interface Car {
   createdAt?: string;
   make?: string;
   isIncoming?: boolean;
+  status?: string;
 }
 
 const Cars = () => {
@@ -77,6 +78,7 @@ const Cars = () => {
               createdAt: data.createdAt,
               make: data.make || "",
               isIncoming: data.isIncoming || false,
+              status: data.status || "Available",
             };
 
             // Only add cars that are NOT incoming
@@ -405,6 +407,23 @@ const Cars = () => {
                       </div>
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
+
+                    {/* Status/Incoming Badge - Top Left */}
+                    {car.isIncoming ? (
+                      <div className="absolute top-4 left-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-4 py-2 rounded-full font-bold shadow-lg">
+                        Incoming
+                      </div>
+                    ) : car.status ? (
+                      <div className={`absolute top-4 left-4 text-white px-4 py-2 rounded-full font-bold shadow-lg ${
+                        car.status === "Sold" 
+                          ? "bg-gradient-to-r from-red-500 to-red-600" 
+                          : car.status === "Sale in Progress"
+                          ? "bg-gradient-to-r from-orange-500 to-orange-600"
+                          : "bg-gradient-to-r from-green-500 to-green-600"
+                      }`}>
+                        {car.status}
+                      </div>
+                    ) : null}
 
                     {/* Price Badge */}
                     <div className="absolute top-4 right-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-full font-bold shadow-lg">

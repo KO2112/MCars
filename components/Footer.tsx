@@ -12,7 +12,7 @@ export default function Footer() {
           <div className="space-y-4">
             <h2 className="text-2xl font-bold">IRONSAUTO</h2>
             <p className="text-gray-300">
-              Your trusted partner for quality used cars in Leicester since 2015.
+              Your trusted partner for quality used cars in Leicester since 2022.
             </p>
             <div className="flex space-x-4">
               <Link href="https://facebook.com" className="hover:text-blue-400">
