@@ -141,7 +141,7 @@ export default function Navbar() {
                 className="flex items-center hover:text-blue-100 transition-colors"
               >
                 <Phone size={18} className="mr-2" />
-                <span className="font-medium">+44 7467 866745</span>
+                <span className="font-medium">07407403676</span>
               </a>
               <div className="h-6 w-px bg-blue-300/50"></div>
               <a

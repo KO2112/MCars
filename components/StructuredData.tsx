@@ -11,7 +11,7 @@ const StructuredData: React.FC = () => {
     "url": "https://ironsauto.co.uk",
     "logo": "IRONSAUTO.png", // Replace with actual logo URL
     "image": "IRONSAUTO.jpg", // Replace with actual image URL
-    "telephone": "+447467866745",
+    "telephone": "+447407403676",
     "email": "info@ironsauto.co.uk", // Replace with actual email
     "address": {
       "@type": "PostalAddress",
@@ -77,7 +77,7 @@ const StructuredData: React.FC = () => {
     "name": "Ironsauto",
     "description": "Your trusted local car dealership specializing in quality used vehicles.",
     "url": "https://ironsauto.co.uk",
-    "telephone": "+447467866745",
+    "telephone": "+447407403676",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "101-103 Margaret Rd, Leicester LE5 5FW", // Replace with actual address
