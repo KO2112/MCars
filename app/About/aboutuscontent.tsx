@@ -113,7 +113,7 @@ export default function AboutUsContent() {
                   <div>
                     <h4 className="font-semibold text-gray-900">Phone</h4>
                     <p className="text-gray-600">
-                      <a href="tel:+447476866745" className="hover:text-indigo-600 transition-colors">
+                      <a href="tel:+447407403676" className="hover:text-indigo-600 transition-colors">
                         07407403676
                       </a>
                     </p>

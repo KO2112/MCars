@@ -137,7 +137,7 @@ export default function Navbar() {
               </a>
               <div className="h-6 w-px bg-blue-300/50"></div>
               <a
-                href="tel:+447476866745"
+                href="tel:+447407403676"
                 className="flex items-center hover:text-blue-100 transition-colors"
               >
                 <Phone size={18} className="mr-2" />
@@ -166,7 +166,7 @@ export default function Navbar() {
             {/* Mobile Menu Button */}
             <div className="md:hidden flex items-center ml-auto">
               {/* Mobile Contact Icons */}
-              <a href="tel:+447476866745" className="text-white p-2 mr-1">
+              <a href="tel:+447407403676" className="text-white p-2 mr-1">
                 <Phone size={20} />
               </a>
 
@@ -324,11 +324,11 @@ export default function Navbar() {
                 LE5 5FW
               </a>
               <a
-                href="tel:+447476866745"
+                href="tel:+447407403676"
                 className="text-gray-800 hover:text-blue-600 py-3 px-4 hover:bg-blue-50 rounded-lg transition-colors duration-200 flex items-center"
               >
                 <Phone size={16} className="mr-3 text-blue-500" />
-                +44 7476 866745
+                +44 7407 403676
               </a>
               <a
                 href="mailto:info@ironsauto.co.uk"
