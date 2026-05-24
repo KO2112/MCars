@@ -18,21 +18,26 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Ironsauto - Premium Used Cars & Car Dealership UK",
+    default: "Ironsauto - Used Cars Leicester | Second Hand Car Dealership UK",
     template: "%s | Ironsauto"
   },
-  description: "Discover quality used cars at Iron auto. Wide selection of inspected vehicles, competitive prices, and excellent customer service. Car dealership in the UK.",
+  description: "Buy quality used cars in Leicester. Competitive prices, finance options & inspected vehicles. Ironsauto's second hand car collection. UK delivery.",
   keywords: [
-    "used cars",
-    "car dealership", 
-    "second hand cars",
-    "quality cars",
-    "UK cars",
-    "car sales",
-    "vehicle finance",
-    "Iron auto",
-    "affordable cars",
-    "inspected vehicles"
+    "used cars Leicester",
+    "second hand cars Leicester",
+    "car dealership Leicester",
+    "buy used cars",
+    "car finance UK",
+    "inspected vehicles",
+    "quality used cars",
+    "second hand car sales",
+    "affordable vehicles",
+    "reliable cars UK",
+    "Ironsauto",
+    "Leicester garage",
+    "used car dealers",
+    "vehicle financing",
+    "pre-owned cars"
   ],
   authors: [{ name: "Ironsauto" }],
   creator: "Ironsauto",
@@ -47,25 +52,25 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   openGraph: {
-    title: "Ironsauto - Premium Used Cars & Car Dealership UK",
-    description: "Discover quality used cars at Ironsauto. Wide selection of inspected vehicles, competitive prices, and excellent customer service.",
+    title: "Ironsauto - Used Cars Leicester | Second Hand Car Dealership UK",
+    description: "Buy quality used cars in Leicester & across the UK. Ironsauto: second hand vehicles, competitive prices, car finance. Inspected cars, UK-wide delivery.",
     url: 'https://ironsauto.co.uk',
     siteName: 'Ironsauto',
     locale: 'en_GB',
     type: 'website',
     images: [
       {
-        url: '/IRONSAUTO.png', // You'll need to add this image
+        url: '/IRONSAUTO.png',
         width: 1200,
         height: 630,
-        alt: 'Ironsauto - Quality Used Cars',
+        alt: 'Ironsauto Leicester - Quality Used Cars Dealership',
       }
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: "Ironsauto - Premium Used Cars & Car Dealership UK",
-    description: "Discover quality used cars at Ironsauto. Wide selection of inspected vehicles, competitive prices, and excellent customer service.",
+    title: "Used Cars Leicester | Ironsauto Second Hand Car Dealership",
+    description: "Buy quality used cars in Leicester & UK. Ironsauto: competitive prices, car finance, inspected vehicles. UK-wide delivery available.",
     images: ['/IRONSAUTO.png'], // Same image as OpenGraph
   },
   robots: {

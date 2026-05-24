@@ -3,6 +3,7 @@
 import { useState, ChangeEvent, FormEvent } from 'react';
 import { ChevronRight, CheckCircle, AlertCircle, Mail, Phone, MapPin } from 'lucide-react';
 import { sendContactEmail } from '../../lib/resend';
+import LocationMap from '@/components/LocationMap';
 
 const ContactPage = () => {
   const [formStatus, setFormStatus] = useState({
@@ -268,6 +269,8 @@ const ContactPage = () => {
           )}
         </div>
       </div>
+      
+      <LocationMap />
     </div>
   );
 };

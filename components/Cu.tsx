@@ -24,65 +24,77 @@ export default function ContactUsSection() {
           </p>
         </div>
 
-        <div className="bg-gray-800 rounded-2xl shadow-xl p-6 md:p-10 border border-gray-700"> {/* Smaller padding, less rounded */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"> {/* Tighter gap */}
-            {/* Phone Contact */}
-            <a
-              href="tel:+447407403676"
-              className="group flex flex-col items-center p-5 bg-gray-700 rounded-xl transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-700/50 border border-gray-600" /* Smaller padding, less aggressive hover */
-            >
-              <div className="bg-blue-600 p-3 rounded-full mb-3 transition-all duration-300 group-hover:bg-blue-500 group-hover:scale-105"> {/* Smaller icon circle */}
-                <Phone className="h-6 w-6 text-white" strokeWidth={2} /> {/* Smaller icon size */}
-              </div>
-              <p className="text-xs text-gray-400 font-medium uppercase tracking-wide mb-1">Call Us Directly</p> {/* Smaller text */}
-              <h3 className="text-xl font-bold text-white mb-1">07407403676</h3> {/* Smaller text */}
-              <span className="text-blue-400 font-semibold text-xs flex items-center"> {/* Smaller text */}
-                Get Instant Support
-              </span>
-            </a>
+        <div className="space-y-8"> {/* Stack contact info above the map */}
+          <div className="bg-gray-800 rounded-2xl shadow-xl p-6 md:p-10 border border-gray-700"> {/* Info panel */}
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"> {/* Three-column contact cards */}
+              {/* Phone Contact */}
+              <a
+                href="tel:+447407403676"
+                className="group flex flex-col items-center p-5 bg-gray-700 rounded-xl transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-700/50 border border-gray-600"
+              >
+                <div className="bg-blue-600 p-3 rounded-full mb-3 transition-all duration-300 group-hover:bg-blue-500 group-hover:scale-105">
+                  <Phone className="h-6 w-6 text-white" strokeWidth={2} />
+                </div>
+                <p className="text-xs text-gray-400 font-medium uppercase tracking-wide mb-1">Call Us Directly</p>
+                <h3 className="text-xl font-bold text-white mb-1">07407403676</h3>
+                <span className="text-blue-400 font-semibold text-xs flex items-center">
+                  Get Instant Support
+                </span>
+              </a>
 
-            {/* Email Contact */}
-            <a
-              href="mailto:info@ironsauto.co.uk"
-              className="group flex flex-col items-center p-5 bg-gray-700 rounded-xl transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-700/50 border border-gray-600"
-            >
-              <div className="bg-green-600 p-3 rounded-full mb-3 transition-all duration-300 group-hover:bg-green-500 group-hover:scale-105">
-                <Mail className="h-6 w-6 text-white" strokeWidth={2} />
-              </div>
-              <p className="text-xs text-gray-400 font-medium uppercase tracking-wide mb-1">Send Us an Email</p>
-              <h3 className="text-xl font-bold text-white mb-1">info@ironsauto.co.uk</h3>
-              <span className="text-green-400 font-semibold text-xs flex items-center">
-                We Reply Promptly
-              </span>
-            </a>
+              {/* Email Contact */}
+              <a
+                href="mailto:info@ironsauto.co.uk"
+                className="group flex flex-col items-center p-5 bg-gray-700 rounded-xl transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-700/50 border border-gray-600"
+              >
+                <div className="bg-green-600 p-3 rounded-full mb-3 transition-all duration-300 group-hover:bg-green-500 group-hover:scale-105">
+                  <Mail className="h-6 w-6 text-white" strokeWidth={2} />
+                </div>
+                <p className="text-xs text-gray-400 font-medium uppercase tracking-wide mb-1">Send Us an Email</p>
+                <h3 className="text-xl font-bold text-white mb-1">info@ironsauto.co.uk</h3>
+                <span className="text-green-400 font-semibold text-xs flex items-center">
+                  We Reply Promptly
+                </span>
+              </a>
 
-            {/* Visit Us Card */}
-            <a
-              href="/contact#location"
-              className="group flex flex-col items-center p-5 bg-gray-700 rounded-xl transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-700/50 border border-gray-600"
-            >
-              <div className="bg-purple-600 p-3 rounded-full mb-3 transition-all duration-300 group-hover:bg-purple-500 group-hover:scale-105">
-                <MapPin className="h-6 w-6 text-white" strokeWidth={2} />
+              {/* Visit Us Card */}
+              <div className="group flex flex-col items-center p-5 bg-gray-700 rounded-xl transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-700/50 border border-gray-600">
+                <div className="bg-purple-600 p-3 rounded-full mb-3 transition-all duration-300 group-hover:bg-purple-500 group-hover:scale-105">
+                  <MapPin className="h-6 w-6 text-white" strokeWidth={2} />
+                </div>
+                <p className="text-xs text-gray-400 font-medium uppercase tracking-wide mb-1">Visit Our Showroom</p>
+                <h3 className="text-xl font-bold text-white mb-1">Leicester, UK</h3>
+                <p className="text-gray-400 text-sm text-center">
+                  101-103 Margaret Road<br />LE5 5FW
+                </p>
               </div>
-              <p className="text-xs text-gray-400 font-medium uppercase tracking-wide mb-1">Visit Our Showroom</p>
-              <h3 className="text-xl font-bold text-white mb-1">Leicester, UK</h3>
-              <span className="text-purple-400 font-semibold text-xs flex items-center">
-                Find Directions
-              </span>
-            </a>
+            </div>
+
+            <div className="mt-10 text-center">
+              <h4 className="text-xl font-bold text-white mb-3">Opening Hours</h4>
+              <p className="text-gray-300 text-base mb-1">
+                Monday - Friday: 9:00 AM - 6:00 PM
+              </p>
+              <p className="text-gray-300 text-base">
+                Saturday: 10:00 AM - 4:00 PM | Sunday: Closed
+              </p>
+              <p className="text-gray-500 text-sm mt-3">
+                *Appointments outside these hours may be available upon request.
+              </p>
+            </div>
           </div>
-          
-          <div className="mt-10 text-center"> {/* Reduced top margin */}
-            <h4 className="text-xl font-bold text-white mb-3">Opening Hours</h4> {/* Smaller text */}
-            <p className="text-gray-300 text-base mb-1"> {/* Smaller text, reduced margin */}
-              **Monday - Friday:** 9:00 AM - 6:00 PM
-            </p>
-            <p className="text-gray-300 text-base"> {/* Smaller text */}
-              **Saturday:** 10:00 AM - 4:00 PM | **Sunday:** Closed
-            </p>
-            <p className="text-gray-500 text-sm mt-3"> {/* Reduced top margin */}
-              *Appointments outside these hours may be available upon request.
-            </p>
+
+          <div className="rounded-2xl overflow-hidden shadow-xl border border-gray-700 bg-black/5">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2421.6139366513466!2d-1.1025617233121312!3d52.63082037209039!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x48776120d9b22b9d%3A0xcc59254268cadb83!2sIron%20Auto%20Ltd!5e0!3m2!1sen!2suk!4v1779637666743!5m2!1sen!2suk"
+              width="100%"
+              height="450"
+              style={{ border: 0 }}
+              allowFullScreen={true}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Iron Auto Ltd Location Map"
+            />
           </div>
         </div>
       </div>
