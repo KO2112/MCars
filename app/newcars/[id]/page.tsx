@@ -409,14 +409,85 @@ export default function CarDetails() {
     </div>
   );
 
-  // Spec sheet data
+  // Spec sheet data with custom SVGs mapped out cleanly
   const specs = [
-    { label: "Mileage", value: Number(car.mileage).toLocaleString(), unit: "mi" },
-    { label: "Engine", value: car.engineSize, unit: "L" },
-    { label: "Fuel", value: car.fuelType, unit: "" },
-    { label: "Gearbox", value: car.transmission, unit: "" },
-    { label: "Colour", value: car.color, unit: "" },
-    { label: "Doors", value: car.doors, unit: "" },
+    {
+      label: "Mileage",
+      value: Number(car.mileage).toLocaleString(),
+      unit: "mi",
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-auto" viewBox="0 0 54.983 42.905">
+          <g id="speedometer" transform="translate(0 0)">
+            <path id="Path_197" data-name="Path 197" d="M204.763,425.767H194.411a1.611,1.611,0,1,0,0,3.222h10.352a1.611,1.611,0,1,0,0-3.222Z" transform="translate(-172.096 -386.083)" fill="#003435"></path>
+            <path id="Path_198" data-name="Path 198" d="M155.874,209.829a5.06,5.06,0,0,0-6.784-6.784l-7.587-7.588a1.611,1.611,0,0,0-2.278,2.278l7.588,7.588a5.06,5.06,0,0,0,6.783,6.783l1.785,1.785a1.611,1.611,0,1,0,2.278-2.278Zm-4.531-.415a1.838,1.838,0,1,1,1.838-1.838A1.84,1.84,0,0,1,151.343,209.414Z" transform="translate(-123.852 -180.085)" fill="#003435"></path>
+            <path id="Path_199" data-name="Path 199" d="M27.491,56.233A27.492,27.492,0,0,0,3.684,97.472a1.611,1.611,0,0,0,2.2.588l4.484-2.588a1.611,1.611,0,1,0-1.611-2.79L5.713,94.438a24.253,24.253,0,0,1-2.436-9.1h3.51a1.611,1.611,0,1,0,0-3.222H3.276a24.086,24.086,0,0,1,2.441-9.1l3.038,1.754a1.611,1.611,0,0,0,1.611-2.79L7.332,70.225a24.47,24.47,0,0,1,6.66-6.66L15.744,66.6a1.611,1.611,0,1,0,2.79-1.611L16.78,61.95a24.1,24.1,0,0,1,9.1-2.441v3.51a1.611,1.611,0,0,0,3.222,0V59.51a24.1,24.1,0,0,1,9.1,2.441l-1.754,3.038a1.611,1.611,0,0,0,2.79,1.611l1.752-3.034a24.466,24.466,0,0,1,6.66,6.66l-3.034,1.752a1.611,1.611,0,0,0,1.611,2.79l3.038-1.754a24.089,24.089,0,0,1,2.441,9.1H48.2a1.611,1.611,0,0,0,0,3.222h3.51a24.253,24.253,0,0,1-2.436,9.1l-3.043-1.757a1.611,1.611,0,0,0-1.611,2.79L49.1,98.06a1.611,1.611,0,0,0,2.2-.588A27.491,27.491,0,0,0,27.491,56.233Z" transform="translate(0 -56.233)" fill="#003435"></path>
+          </g>
+        </svg>
+      ),
+    },
+    {
+      label: "Engine",
+      value: car.engineSize,
+      unit: "L",
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-auto" viewBox="0 0 57.323 42.905">
+          <path id="malfunction-indicador" d="M57.165,48.355l-2.774-6.282a1.861,1.861,0,0,0-1.7-1.11h-4.6a1.861,1.861,0,0,0-1.861,1.861v2.934H44.8V43.345a1.861,1.861,0,0,0-1.861-1.861H37.982V36.4a1.861,1.861,0,0,0-1.861-1.861H26.965V32.771h9.156a1.861,1.861,0,1,0,0-3.723H14.086a1.861,1.861,0,1,0,0,3.723h9.156v1.772H14.086A1.861,1.861,0,0,0,12.225,36.4v1.547H8.141A1.861,1.861,0,0,0,6.28,39.813V49.8H3.723V39.813a1.861,1.861,0,1,0-3.723,0v23.7a1.861,1.861,0,1,0,3.723,0V53.524H6.28v9.989a1.861,1.861,0,0,0,1.861,1.861h7.232l7.348,6.145a1.861,1.861,0,0,0,1.194.434H42.938A1.861,1.861,0,0,0,44.8,70.092V65.018h1.43v2.934a1.861,1.861,0,0,0,1.861,1.861h4.6a1.861,1.861,0,0,0,1.7-1.11l2.774-6.282a1.862,1.862,0,0,0,.159-.752V49.107A1.859,1.859,0,0,0,57.165,48.355ZM53.6,61.278l-2.125,4.813H49.952V63.157A1.861,1.861,0,0,0,48.091,61.3H42.938a1.861,1.861,0,0,0-1.861,1.861v5.074H24.591l-7.348-6.145a1.861,1.861,0,0,0-1.194-.434H10V41.674h4.084a1.861,1.861,0,0,0,1.861-1.861V38.266H34.26v5.079a1.861,1.861,0,0,0,1.861,1.861h4.956v2.414a1.861,1.861,0,0,0,1.861,1.861h5.153a1.861,1.861,0,0,0,1.861-1.861V44.686h1.523L53.6,49.5Z" transform="translate(0 -29.048)" fill="#003435"></path>
+        </svg>
+      ),
+    },
+    {
+      label: "Fuel",
+      value: car.fuelType,
+      unit: "",
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-auto" viewBox="0 0 39.04 38.241">
+          <g id="Group_742" data-name="Group 742" transform="translate(0 0)">
+            <g id="gas">
+              <path id="Path_194" data-name="Path 194" d="M104.648,58.7H92.575a1.185,1.185,0,0,0-1.185,1.185V68.25a1.185,1.185,0,0,0,1.185,1.185h12.073a1.186,1.186,0,0,0,1.185-1.185V59.885A1.185,1.185,0,0,0,104.648,58.7Zm-1.185,8.365h-9.7V61.071h9.7Z" transform="translate(-84.169 -54.461)" fill="#003435"></path>
+              <path id="Path_195" data-name="Path 195" d="M37.293,11.431h0l-5.06-4.789A1.185,1.185,0,1,0,30.6,8.364l2.626,2.485a4.315,4.315,0,0,0,.2,8.165V33.678a.712.712,0,1,1-1.424,0V26.227a3.56,3.56,0,0,0-3.555-3.555H25.7V8.606A3.559,3.559,0,0,0,22.148,5.05H6.738A3.56,3.56,0,0,0,3.182,8.606V34.98h-.41A2.775,2.775,0,0,0,0,37.753v4.353a1.185,1.185,0,0,0,1.185,1.185H27.7a1.185,1.185,0,0,0,1.185-1.185V37.753a2.776,2.776,0,0,0-2.773-2.773H25.7V25.042h2.749a1.186,1.186,0,0,1,1.184,1.184v7.451a3.082,3.082,0,0,0,6.165,0v-14.6a4.315,4.315,0,0,0,1.491-7.645ZM23.333,34.98H5.553V8.606A1.187,1.187,0,0,1,6.738,7.421h15.41a1.186,1.186,0,0,1,1.185,1.185Zm3.183,2.773v3.168H2.371V37.753a.4.4,0,0,1,.4-.4H26.114A.4.4,0,0,1,26.516,37.753Zm8.208-20.911A1.945,1.945,0,1,1,36.669,14.9,1.947,1.947,0,0,1,34.724,16.842Z" transform="translate(0 -5.05)" fill="#003435"></path>
+            </g>
+          </g>
+        </svg>
+      ),
+    },
+    {
+      label: "Gearbox",
+      value: car.transmission,
+      unit: "",
+      icon: (
+        <svg id="gearshift" xmlns="http://www.w3.org/2000/svg" className="h-5 w-auto" viewBox="0 0 42.905 42.905">
+          <g id="Group_741" data-name="Group 741">
+            <path id="Path_196" data-name="Path 196" d="M36.62,0a6.285,6.285,0,0,0-1.257,12.443v6.5A1.258,1.258,0,0,1,34.106,20.2H22.71V12.443a6.285,6.285,0,1,0-2.514,0V20.2H7.542V12.443a6.285,6.285,0,1,0-2.514,0V30.462a6.285,6.285,0,1,0,2.514,0V22.71H20.2v7.752a6.285,6.285,0,1,0,2.514,0V22.71h11.4a3.775,3.775,0,0,0,3.771-3.771v-6.5A6.285,6.285,0,0,0,36.62,0ZM10.056,36.62a3.771,3.771,0,1,1-3.771-3.771A3.775,3.775,0,0,1,10.056,36.62ZM6.285,10.056a3.771,3.771,0,1,1,3.771-3.771A3.775,3.775,0,0,1,6.285,10.056ZM25.223,36.62a3.771,3.771,0,1,1-3.771-3.771A3.775,3.775,0,0,1,25.223,36.62ZM21.453,10.056a3.771,3.771,0,1,1,3.771-3.771A3.775,3.775,0,0,1,21.453,10.056Zm15.168,0a3.771,3.771,0,1,1,3.771-3.771A3.775,3.775,0,0,1,36.62,10.056Z" transform="translate(0 0)" fill="#003435"></path>
+          </g>
+        </svg>
+      ),
+    },
+    {
+      label: "Colour",
+      value: car.color,
+      unit: "",
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-auto" viewBox="0 0 44.974 42.905">
+          <g id="color-palette" transform="translate(0 0)">
+            <path id="Path_191" data-name="Path 191" d="M58.338,194.85a4.866,4.866,0,1,0,4.866,4.866A4.871,4.871,0,0,0,58.338,194.85Zm0,7.086a2.22,2.22,0,1,1,2.22-2.22A2.223,2.223,0,0,1,58.338,201.936Z" transform="translate(-48.757 -178.702)" fill="#003435"></path>
+            <path id="Path_192" data-name="Path 192" d="M156.048,325.171a4.866,4.866,0,1,0,4.866,4.866A4.871,4.871,0,0,0,156.048,325.171Zm0,7.086a2.22,2.22,0,1,1,2.22-2.22A2.223,2.223,0,0,1,156.048,332.257Z" transform="translate(-137.85 -297.53)" fill="#003435"></path>
+            <path id="Path_193" data-name="Path 193" d="M43.755,39.328l-.026-.026-4.58-4.322a7.706,7.706,0,0,0,2.669-8.545A21.466,21.466,0,1,0,33.18,51.142,4.759,4.759,0,0,0,30.585,42.4a2.94,2.94,0,0,1-.789-5.785l8.069,8.552.026.026a4.146,4.146,0,1,0,5.864-5.863Zm-17.09,4.154a5.677,5.677,0,0,0,3.921,1.562,2.111,2.111,0,0,1,1.146,3.885,18.789,18.789,0,1,1,7.575-21.66,5.049,5.049,0,0,1-2.124,5.857l-7.347-6.933a6.555,6.555,0,0,0-1.785-6c-2.026-2.026-8.408-3.036-11.174-3.336a1.323,1.323,0,0,0-1.458,1.458c.3,2.777,1.307,9.144,3.336,11.174a6.556,6.556,0,0,0,6,1.785l3.095,3.28a5.561,5.561,0,0,0-1.187,8.93ZM20.625,27.617c-1-1-1.887-4.788-2.358-7.912,3.125.47,6.915,1.361,7.912,2.358a3.928,3.928,0,1,1-5.555,5.555ZM41.887,43.325a1.5,1.5,0,0,1-2.113.009L27.311,30.126a6.7,6.7,0,0,0,1.378-1.378L41.9,41.212A1.5,1.5,0,0,1,41.887,43.325Z" transform="translate(0 -11.73)" fill="#003435"></path>
+          </g>
+        </svg>
+      ),
+    },
+    {
+      label: "Doors",
+      value: car.doors,
+      unit: "",
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-auto" viewBox="0 0 42.905 42.905">
+          <g id="car-door" transform="translate(0 0)">
+            <path d="M36,4H12A4,4,0,0,0,8,8V36a4,4,0,0,0,4,4H36a4,4,0,0,0,4,-4V8A4,4,0,0,0,36,4ZM11.5,36V8A.5.5,0,0,1,12,7.5H23V36.5H12A.5.5,0,0,1,11.5,36ZM36.5,36a.5.5,0,0,1-.5.5H26V7.5H36a.5.5,0,0,1,.5.5ZM31,21a2,2,0,1,0,2,2A2,2,0,0,0,31,21Z" fill="#003435"></path>
+          </g>
+        </svg>
+      ),
+    },
   ];
 
   return (
@@ -489,7 +560,7 @@ export default function CarDetails() {
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5 mb-7 pb-7 border-b border-stone-200">
           <div className="min-w-0">
             <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-stone-500 mb-2">
-              Irons Auto &middot; Leicester forecourt
+              Irons Auto · Leicester forecourt
             </p>
             <h1 className="text-3xl md:text-[2.75rem] md:leading-[1.05] font-bold text-blue-950 tracking-tight">
               {car.title}
@@ -498,7 +569,7 @@ export default function CarDetails() {
             <div className="flex flex-wrap gap-2 mt-4">
               <span className="inline-flex items-center gap-1.5 bg-white border border-stone-200 rounded-md px-3 py-1.5 text-xs font-semibold text-stone-700">
                 <BadgeCheck className="h-3.5 w-3.5 text-blue-800" />
-                Inspected &amp; prepared
+                Inspected & prepared
               </span>
               <span className="inline-flex items-center gap-1.5 bg-white border border-stone-200 rounded-md px-3 py-1.5 text-xs font-semibold text-stone-700 capitalize">
                 {car.fuelType}
@@ -521,7 +592,7 @@ export default function CarDetails() {
                 car.status === "Sold" ? "text-red-700" : "text-emerald-700"
               }`}
             >
-              &#9679; {car.status || "Available Now"}
+              ● {car.status || "Available Now"}
             </span>
           </div>
         </div>
@@ -615,9 +686,12 @@ export default function CarDetails() {
                       i >= 2 ? "border-t sm:border-t" : ""
                     } sm:[&:nth-child(-n+3)]:border-t-0 lg:border-t-0`}
                   >
-                    <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-stone-950 font-bold mb-1.5">
-                      {spec.label}
-                    </p>
+                    <div className="flex items-center gap-2 mb-1.5">
+                      {spec.icon}
+                      <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-stone-950 font-bold">
+                        {spec.label}
+                      </p>
+                    </div>
                     <p className="font-mono text-lg lg:text-xl font-semibold text-blue-950 capitalize leading-none">
                       {spec.value}
                       {spec.unit && (
