@@ -1,20 +1,22 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
-import { db } from "../firebase/firebase";
-import { collection, getDocs, query, orderBy } from "firebase/firestore";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import Link from "next/link";
+import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import {
-  Search,
-  Filter,
-  ChevronDown,
-  Sliders,
-  MapPin,
-  Gauge,
-  Fuel,
+  ArrowRight,
+  BadgeCheck,
   Camera,
-  CarFront,
+  ChevronDown,
+  Filter,
+  Fuel,
+  Gauge,
+  MapPin,
+  Search,
+  SlidersHorizontal,
+  X,
 } from "lucide-react";
+import { db } from "../firebase/firebase";
 
 interface Car {
   id: string;
@@ -29,11 +31,30 @@ interface Car {
   images: string[];
   image?: string;
   features: string[];
-  createdAt?: string;
+  createdAt?: unknown;
   make?: string;
   isIncoming?: boolean;
   status?: string;
 }
+
+type Filters = {
+  transmission: string;
+  fuelType: string;
+  make: string;
+};
+
+const EMPTY_FILTERS: Filters = {
+  transmission: "",
+  fuelType: "",
+  make: "",
+};
+
+const formatNumber = (value: string) => {
+  const number = Number(value);
+  return Number.isFinite(number) ? number.toLocaleString("en-GB") : value;
+};
+
+const normalise = (value?: string) => value?.trim().toLowerCase() ?? "";
 
 const Cars = () => {
   const [cars, setCars] = useState<Car[]>([]);
@@ -41,13 +62,8 @@ const Cars = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOption, setSortOption] = useState("newest");
   const [showFilters, setShowFilters] = useState(false);
-  const [filters, setFilters] = useState({
-    transmission: "",
-    fuelType: "",
-    make: "",
-  });
+  const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
 
-  // Fetch car data from Firestore
   useEffect(() => {
     const fetchCars = async () => {
       try {
@@ -58,40 +74,35 @@ const Cars = () => {
         const querySnapshot = await getDocs(carsQuery);
         const carList: Car[] = [];
 
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
+        querySnapshot.forEach((snapshot) => {
+          const data = snapshot.data();
 
-          if (data) {
-            const car: Car = {
-              id: doc.id,
-              title: data.title || "",
-              price: data.price || "",
-              mileage: data.mileage || "",
-              transmission: data.transmission || "",
-              color: data.color || "",
-              engineSize: data.engineSize || "",
-              fuelType: data.fuelType || "",
-              doors: data.doors || "",
-              images: data.images || (data.image ? [data.image] : []),
-              image: data.image || "",
-              features: data.features || [],
-              createdAt: data.createdAt,
-              make: data.make || "",
-              isIncoming: data.isIncoming || false,
-              status: data.status || "Available",
-            };
+          const car: Car = {
+            id: snapshot.id,
+            title: data.title || "",
+            price: data.price || "",
+            mileage: data.mileage || "",
+            transmission: data.transmission || "",
+            color: data.color || "",
+            engineSize: data.engineSize || "",
+            fuelType: data.fuelType || "",
+            doors: data.doors || "",
+            images: data.images || (data.image ? [data.image] : []),
+            image: data.image || "",
+            features: data.features || [],
+            createdAt: data.createdAt,
+            make: data.make || "",
+            isIncoming: data.isIncoming || false,
+            status: data.status || "Available",
+          };
 
-            // Only add cars that are NOT incoming
-            if (!car.isIncoming) {
-              carList.push(car);
-            }
-          }
+          if (!car.isIncoming) carList.push(car);
         });
 
         setCars(carList);
-        setLoading(false);
       } catch (error) {
-        console.error("Error fetching cars: ", error);
+        console.error("Error fetching cars:", error);
+      } finally {
         setLoading(false);
       }
     };
@@ -99,31 +110,27 @@ const Cars = () => {
     fetchCars();
   }, []);
 
-  // Filter and sort cars
   const filteredAndSortedCars = useMemo(() => {
-    let result = cars.filter(
-      (car) =>
-        car.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        car.features.some((feature) =>
-          feature.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-    );
+    const term = normalise(searchTerm);
 
-    if (filters.transmission) {
-      result = result.filter(
-        (car) => car.transmission === filters.transmission
-      );
-    }
+    const result = cars.filter((car) => {
+      const matchesSearch =
+        !term ||
+        normalise(car.title).includes(term) ||
+        normalise(car.make).includes(term) ||
+        normalise(car.fuelType).includes(term) ||
+        normalise(car.transmission).includes(term) ||
+        car.features.some((feature) => normalise(feature).includes(term));
 
-    if (filters.fuelType) {
-      result = result.filter((car) => car.fuelType === filters.fuelType);
-    }
+      const matchesTransmission =
+        !filters.transmission || car.transmission === filters.transmission;
+      const matchesFuel = !filters.fuelType || car.fuelType === filters.fuelType;
+      const matchesMake = !filters.make || car.make === filters.make;
 
-    if (filters.make) {
-      result = result.filter((car) => car.make === filters.make);
-    }
+      return matchesSearch && matchesTransmission && matchesFuel && matchesMake;
+    });
 
-    return result.sort((a, b) => {
+    return [...result].sort((a, b) => {
       switch (sortOption) {
         case "price-low":
           return Number(a.price) - Number(b.price);
@@ -135,447 +142,438 @@ const Cars = () => {
           return 0;
       }
     });
-  }, [cars, searchTerm, sortOption, filters]);
+  }, [cars, filters, searchTerm, sortOption]);
 
-  const transmissionOptions = useMemo(() => {
-    const options = new Set(
-      cars
-        .map((car) => car.transmission)
-        .filter((transmission): transmission is string => Boolean(transmission))
-    );
-    return Array.from(options);
-  }, [cars]);
+  const transmissionOptions = useMemo(
+    () =>
+      Array.from(
+        new Set(cars.map((car) => car.transmission).filter(Boolean))
+      ).sort(),
+    [cars]
+  );
 
-  const fuelTypeOptions = useMemo(() => {
-    const options = new Set(
-      cars
-        .map((car) => car.fuelType)
-        .filter((fuelType): fuelType is string => Boolean(fuelType))
-    );
-    return Array.from(options);
-  }, [cars]);
+  const fuelTypeOptions = useMemo(
+    () =>
+      Array.from(new Set(cars.map((car) => car.fuelType).filter(Boolean))).sort(),
+    [cars]
+  );
 
-  const makeOptions = useMemo(() => {
-    const options = new Set(
-      cars
-        .map((car) => car.make)
-        .filter((make): make is string => Boolean(make))
-    );
-    return Array.from(options);
-  }, [cars]);
+  const makeOptions = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          cars
+            .map((car) => car.make)
+            .filter((make): make is string => Boolean(make))
+        )
+      ).sort(),
+    [cars]
+  );
 
-  const getFeatureTagColor = (index: number) => {
-    const colors = [
-      "bg-gradient-to-r from-blue-500 to-blue-600 text-white",
-      "bg-gradient-to-r from-blue-600 to-blue-700 text-white",
-      "bg-gradient-to-r from-indigo-500 to-indigo-600 text-white",
-      "bg-gradient-to-r from-cyan-500 to-cyan-600 text-white",
-      "bg-gradient-to-r from-sky-500 to-sky-600 text-white",
-      "bg-gradient-to-r from-blue-400 to-blue-500 text-white",
-      "bg-gradient-to-r from-slate-600 to-slate-700 text-white",
-    ];
-    return colors[index % colors.length];
+  const hasActiveFilters =
+    Boolean(searchTerm) ||
+    Boolean(filters.make) ||
+    Boolean(filters.fuelType) ||
+    Boolean(filters.transmission);
+
+  const clearFilters = () => {
+    setSearchTerm("");
+    setFilters(EMPTY_FILTERS);
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex justify-center items-center">
-        <div className="text-center">
-          <div className="relative">
-            <div className="w-20 h-20 border-4 border-transparent border-t-blue-500 border-r-blue-600 rounded-full animate-spin mb-6"></div>
-            <div className="absolute inset-0 w-20 h-20 border-4 border-transparent border-b-blue-700 border-l-blue-800 rounded-full animate-spin animate-reverse"></div>
-          </div>
-          <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-            Loading Premium Vehicles
-          </div>
-          <div className="text-gray-600 mt-2">
-            Curating the finest selection for you...
-          </div>
+      <div className="min-h-screen bg-[#FAF9F6] flex items-center justify-center px-4">
+        <div className="flex flex-col items-center text-center">
+          <div className="h-10 w-10 rounded-full border-2 border-stone-200 border-t-blue-950 animate-spin" />
+          <p className="mt-5 font-mono text-[11px] uppercase tracking-[0.25em] text-stone-500">
+            Loading forecourt
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
-      {/* Hero Header */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-blue-500 to-blue-800">
-        <div className="absolute inset-0 bg-black/10"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="text-center">
-            <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">
-              Available Cars
-            </h1>
-            <p className="text-xl text-blue-100 max-w-2xl mx-auto">
-              Discover exceptional vehicles crafted for the extraordinary
-              journey ahead
+    <main className="min-h-screen bg-[#FAF9F6] text-stone-900">
+      <section className="border-b border-stone-200 bg-blue-950 text-white">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-20">
+          <div className="max-w-4xl">
+            <p className="font-mono text-[11px] uppercase tracking-[0.28em] text-stone-300 mb-4">
+              Irons Auto · Leicester
             </p>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[0.98]">
+              Cars selected with care,
+              <span className="block text-[#FFD500]">prepared to be driven.</span>
+            </h1>
+            <p className="mt-6 max-w-2xl text-base sm:text-lg leading-relaxed text-stone-300">
+              Browse our current forecourt. Every vehicle is inspected,
+              prepared and available to view at our Leicester showroom.
+            </p>
+
+            <div className="mt-9 flex flex-wrap gap-x-7 gap-y-3 text-sm text-stone-200">
+              <span className="inline-flex items-center gap-2">
+                <BadgeCheck className="h-4 w-4 text-[#FFD500]" />
+                Inspected stock
+              </span>
+              <span className="inline-flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-[#FFD500]" />
+                Leicester showroom
+              </span>
+              <span className="inline-flex items-center gap-2">
+                <Gauge className="h-4 w-4 text-[#FFD500]" />
+                Test drives available
+              </span>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Search and Filter Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10">
-        <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-xl">
-          <div className="flex flex-col lg:flex-row gap-4">
-            {/* Make Filter */}
-            <div className="relative w-full lg:w-48">
-              <select
-                className="block w-full px-4 py-4 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
-                value={filters.make}
-                onChange={(e) =>
-                  setFilters({ ...filters, make: e.target.value })
-                }
-              >
-                <option value="">All Makes</option>
-                {makeOptions.map((option) => (
-                  <option key={option} value={option}>
-                    {option.charAt(0).toUpperCase() + option.slice(1)}
-                  </option>
-                ))}
-              </select>
-              <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                <ChevronDown className="h-5 w-5 text-gray-400" />
-              </div>
-            </div>
-
-            {/* Search */}
-            <div className="relative flex-grow">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <Search className="h-5 w-5 text-gray-400" />
-              </div>
+      <section className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative -mt-7 rounded-xl border border-stone-200 bg-white shadow-[0_12px_40px_rgba(28,25,23,0.08)]">
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_210px_180px_auto] gap-3 p-4">
+            <label className="relative block">
+              <span className="sr-only">Search vehicles</span>
+              <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
               <input
-                type="text"
-                placeholder="Search by model, features, or keywords..."
-                className="block w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                type="search"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                placeholder="Search make, model or feature"
+                className="h-12 w-full rounded-md border border-stone-200 bg-[#FAF9F6] pl-11 pr-4 text-sm outline-none transition focus:border-blue-950 focus:ring-1 focus:ring-blue-950"
               />
-            </div>
+            </label>
 
-            {/* Sort */}
-            <div className="relative w-full lg:w-64">
-              <select
-                className="block w-full px-4 py-4 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
-                value={sortOption}
-                onChange={(e) => setSortOption(e.target.value)}
-              >
-                <option value="newest">Newest First</option>
-                <option value="price-low">Price: Low to High</option>
-                <option value="price-high">Price: High to Low</option>
-                <option value="mileage-low">Lowest Mileage</option>
-              </select>
-              <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                <ChevronDown className="h-5 w-5 text-gray-400" />
-              </div>
-            </div>
+            <SelectField
+              value={filters.make}
+              onChange={(value) => setFilters((current) => ({ ...current, make: value }))}
+              label="Make"
+              emptyLabel="All makes"
+              options={makeOptions as string[]}
+            />
 
-            {/* Filter Toggle */}
+            <SelectField
+              value={sortOption}
+              onChange={setSortOption}
+              label="Sort vehicles"
+              emptyLabel="Newest first"
+              options={[
+                { value: "newest", label: "Newest first" },
+                { value: "price-low", label: "Price: low to high" },
+                { value: "price-high", label: "Price: high to low" },
+                { value: "mileage-low", label: "Lowest mileage" },
+              ]}
+            />
+
             <button
-              className="flex items-center justify-center px-6 py-4 bg-gradient-to-r from-blue-500 to-blue-800 text-white rounded-xl hover:from-blue-600 hover:to-blue-900 transition-all duration-200 shadow-lg hover:shadow-xl"
-              onClick={() => setShowFilters(!showFilters)}
+              type="button"
+              onClick={() => setShowFilters((visible) => !visible)}
+              className={`h-12 inline-flex items-center justify-center gap-2 rounded-md px-5 text-sm font-semibold transition-colors ${
+                showFilters
+                  ? "bg-[#FFD500] text-stone-950"
+                  : "bg-blue-950 text-white hover:bg-blue-900"
+              }`}
+              aria-expanded={showFilters}
             >
-              <Filter className="h-5 w-5 mr-2" />
+              <Filter className="h-4 w-4" />
               Filters
             </button>
           </div>
 
-          {/* Expanded Filters */}
           {showFilters && (
-            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 pt-6 border-t border-gray-200">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Transmission
-                </label>
-                <select
-                  className="block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={filters.transmission}
-                  onChange={(e) =>
-                    setFilters({ ...filters, transmission: e.target.value })
-                  }
-                >
-                  <option value="">All Transmissions</option>
-                  {transmissionOptions.map((option) => (
-                    <option key={option} value={option}>
-                      {option.charAt(0).toUpperCase() + option.slice(1)}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Fuel Type
-                </label>
-                <select
-                  className="block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={filters.fuelType}
-                  onChange={(e) =>
-                    setFilters({ ...filters, fuelType: e.target.value })
-                  }
-                >
-                  <option value="">All Fuel Types</option>
-                  {fuelTypeOptions.map((option) => (
-                    <option key={option} value={option}>
-                      {option.charAt(0).toUpperCase() + option.slice(1)}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="flex items-end md:col-span-2">
-                <button
-                  className="w-full px-4 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors border border-gray-300"
-                  onClick={() => {
-                    setFilters({ transmission: "", fuelType: "", make: "" });
-                    setSearchTerm("");
-                  }}
-                >
-                  Clear Filters
-                </button>
-              </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_auto] gap-3 border-t border-stone-100 p-4">
+              <SelectField
+                value={filters.transmission}
+                onChange={(value) =>
+                  setFilters((current) => ({ ...current, transmission: value }))
+                }
+                label="Transmission"
+                emptyLabel="All transmissions"
+                options={transmissionOptions}
+              />
+              <SelectField
+                value={filters.fuelType}
+                onChange={(value) =>
+                  setFilters((current) => ({ ...current, fuelType: value }))
+                }
+                label="Fuel type"
+                emptyLabel="All fuel types"
+                options={fuelTypeOptions}
+              />
+              <button
+                type="button"
+                onClick={clearFilters}
+                disabled={!hasActiveFilters}
+                className="h-12 inline-flex items-center justify-center gap-2 rounded-md border border-stone-200 px-5 text-sm font-semibold text-stone-600 transition-colors hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                <X className="h-4 w-4" />
+                Clear
+              </button>
             </div>
           )}
         </div>
-      </div>
+      </section>
 
-      {/* Results Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
-        <div className="flex justify-between items-center mb-8">
+      <section className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+        <div className="mb-7 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-1">
-              {filteredAndSortedCars.length} Premium{" "}
-              {filteredAndSortedCars.length === 1 ? "Vehicle" : "Vehicles"}
-            </h2>
-            <p className="text-gray-600">
-              Handpicked for excellence and performance
+            <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-stone-500 mb-2">
+              Current stock
             </p>
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-blue-950">
+              {filteredAndSortedCars.length} {filteredAndSortedCars.length === 1 ? "vehicle" : "vehicles"}
+            </h2>
           </div>
-          <div className="hidden md:flex items-center text-gray-600 bg-white px-4 py-2 rounded-lg border border-gray-200 shadow-sm">
-            <Sliders className="h-4 w-4 mr-2" />
-            {sortOption === "newest"
-              ? "Newest First"
-              : sortOption === "price-low"
-                ? "Price: Low to High"
-                : sortOption === "price-high"
-                  ? "Price: High to Low"
-                  : "Lowest Mileage"}
+          <div className="inline-flex items-center gap-2 text-sm text-stone-500">
+            <SlidersHorizontal className="h-4 w-4" />
+            {sortOption === "price-low"
+              ? "Price: low to high"
+              : sortOption === "price-high"
+                ? "Price: high to low"
+                : sortOption === "mileage-low"
+                  ? "Lowest mileage"
+                  : "Newest first"}
           </div>
         </div>
 
-        {/* Car Grid */}
         {filteredAndSortedCars.length === 0 ? (
-          <div className="text-center py-16">
-            <div className="bg-white rounded-2xl p-12 border border-gray-200 shadow-lg">
-              <div className="text-6xl mb-6">🔍</div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                No Vehicles Found
-              </h3>
-              <p className="text-gray-600 mb-8 max-w-md mx-auto">
-                We couldnt find any vehicles matching your criteria. Try
-                adjusting your search or filters.
-              </p>
-              <button
-                className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-800 text-white rounded-xl hover:from-blue-600 hover:to-blue-900 transition-all duration-200 shadow-lg"
-                onClick={() => {
-                  setFilters({ transmission: "", fuelType: "", make: "" });
-                  setSearchTerm("");
-                }}
-              >
-                Reset Search
-              </button>
-            </div>
+          <div className="rounded-xl border border-stone-200 bg-white px-6 py-16 text-center">
+            <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-stone-400">
+              No matching stock
+            </p>
+            <h3 className="mt-3 text-2xl font-bold text-blue-950">
+              Try a broader search
+            </h3>
+            <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-stone-500">
+              We could not find a vehicle matching those filters. Clear the
+              selection to return to the full forecourt.
+            </p>
+            <button
+              type="button"
+              onClick={clearFilters}
+              className="mt-7 rounded-md bg-blue-950 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-900"
+            >
+              Show all vehicles
+            </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-            {filteredAndSortedCars.map((car) => (
-              <Link href={`/newcars/${car.id}`} key={car.id} className="group">
-                <div className="bg-white rounded-2xl overflow-hidden border border-gray-200 hover:border-blue-300 transition-all duration-300 hover:transform hover:-translate-y-2 hover:shadow-2xl shadow-lg h-[550px] flex flex-col">
-                  {/* Image Section - Fixed Height */}
-                  <div className="relative h-64 flex-shrink-0 overflow-hidden">
-                    {car.images && car.images.length > 0 ? (
-                      <img
-                        src={car.images[0] || "/placeholder.svg"}
-                        alt={car.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gray-100">
-                        <span className="text-gray-500">
-                          No image available
-                        </span>
-                      </div>
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
-
-                    {/* Status/Incoming Badge - Top Left */}
-                    {car.isIncoming ? (
-                      <div className="absolute top-4 left-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-4 py-2 rounded-full font-bold shadow-lg">
-                        Incoming
-                      </div>
-                    ) : car.status ? (
-                      <div className={`absolute top-4 left-4 text-white px-4 py-2 rounded-full font-bold shadow-lg ${
-                        car.status === "Sold" 
-                          ? "bg-gradient-to-r from-red-500 to-red-600" 
-                          : car.status === "Sale in progress"
-                          ? "bg-orange-500"
-                          : "bg-gradient-to-r from-green-500 to-green-600"
-                      }`}>
-                        {car.status}
-                      </div>
-                    ) : null}
-
-                    {/* Price Badge */}
-                    <div className="absolute top-4 right-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-full font-bold shadow-lg">
-                      £{Number(car.price).toLocaleString()}
-                    </div>
-
-                    {/* Photo Count */}
-                    {car.images && car.images.length > 1 && (
-                      <div className="absolute bottom-4 right-4 bg-black/70 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm flex items-center">
-                        <Camera className="h-4 w-4 mr-1" />
-                        {car.images.length}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Content - Flexible Height */}
-                  <div className="p-6 flex-1 flex flex-col min-h-0">
-                    {/* Title with line clamping */}
-                    <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors line-clamp-2 leading-tight">
-                      {car.title}
-                    </h3>
-
-                    <div className="flex items-center text-gray-500 mb-4">
-                      <MapPin className="h-4 w-4 mr-2 text-blue-500 flex-shrink-0" />
-                      <span className="text-sm">Leicester Showroom</span>
-                    </div>
-
-                    {/* Specs Grid */}
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                      <div className="flex items-center text-gray-700">
-                        <Gauge className="h-4 w-4 mr-2 text-blue-500 flex-shrink-0" />
-                        <span className="text-sm">
-                          {Number(car.mileage).toLocaleString()} mi
-                        </span>
-                      </div>
-                      <div className="flex items-center text-gray-700">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-4 w-4 mr-2 text-blue-500 flex-shrink-0"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"
-                          />
-                        </svg>
-                        <span className="text-sm capitalize">
-                          {car.transmission}
-                        </span>
-                      </div>
-                      <div className="flex items-center text-gray-700">
-                        <CarFront className="h-4 w-4 mr-2 text-blue-500 flex-shrink-0" />
-                        <span className="text-sm">{car.engineSize}L</span>
-                      </div>
-                      <div className="flex items-center text-gray-700">
-                        <Fuel className="h-4 w-4 mr-2 text-blue-500 flex-shrink-0" />
-                        <span className="text-sm capitalize">
-                          {car.fuelType}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Features - Flexible */}
-                    <div className="flex-1 min-h-0 mb-4">
-                      {car.features && car.features.length > 0 && (
-                        <div className="flex flex-wrap gap-2">
-                          {car.features.slice(0, 3).map((feature, index) => (
-                            <span
-                              key={index}
-                              className={`px-3 py-1 rounded-full text-xs font-medium ${getFeatureTagColor(index)} shadow-sm`}
-                            >
-                              {feature}
-                            </span>
-                          ))}
-                          {car.features.length > 3 && (
-                            <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">
-                              +{car.features.length - 3} more
-                            </span>
-                          )}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* CTA Button - Always at bottom */}
-                    <div className="w-full py-3 bg-gradient-to-r from-blue-500 to-blue-800 text-white font-medium rounded-xl hover:from-blue-600 hover:to-blue-900 transition-all duration-200 shadow-lg hover:shadow-xl text-center flex-shrink-0">
-                      View Details & Book Test Drive
-                    </div>
-                  </div>
-                </div>
-              </Link>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {filteredAndSortedCars.map((car, index) => (
+              <VehicleCard key={car.id} car={car} index={index} />
             ))}
           </div>
         )}
-      </div>
+      </section>
 
-      {/* FAQ Section */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mt-20 pb-20">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Questions? We are Here to Help
-          </h2>
-          <p className="text-gray-600">
-            Everything you need to know about your premium car buying experience
-          </p>
+      <section className="border-t border-stone-200 bg-white">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-14 grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
+          <div>
+            <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-stone-500 mb-3">
+              Looking for something specific?
+            </p>
+            <h2 className="text-2xl sm:text-3xl font-bold text-blue-950 tracking-tight">
+              Tell us what is on your shortlist.
+            </h2>
+            <p className="mt-3 max-w-2xl text-sm sm:text-base leading-relaxed text-stone-600">
+              Our team can help with availability, part exchange, finance and
+              arranging a viewing at the Leicester forecourt.
+            </p>
+          </div>
+          <a
+            href="tel:07407403676"
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-md bg-[#FFD500] px-6 text-sm font-bold text-stone-950 transition-transform hover:-translate-y-0.5"
+          >
+            Call the showroom
+            <ArrowRight className="h-4 w-4" />
+          </a>
         </div>
-
-        <div className="space-y-4">
-          {[
-            {
-              question: "How do I schedule a test drive?",
-              answer:
-                "Simply click on any vehicle to view details and use our instant booking system. You can also call our concierge team for personalized assistance.",
-            },
-            {
-              question: "Do you offer financing options?",
-              answer:
-                "Yes, we provide premium financing solutions with competitive rates. Our finance specialists work with top-tier lenders to secure the best terms for your investment.",
-            },
-            {
-              question: "What documents do I need to purchase?",
-              answer:
-                "You'll need a valid driver's license, proof of insurance, and income verification. Our team will guide you through the entire process seamlessly.",
-            },
-            {
-              question: "Do you offer white-glove delivery?",
-              answer:
-                "Absolutely. We provide complimentary delivery within 50 miles, with extended delivery available. Your vehicle arrives detailed and ready for the road.",
-            },
-            {
-              question: "What is your warranty policy?",
-              answer:
-                "We offer a 3-month warranty on all cars. The warranty can be extended to 12 months.",
-            },
-          ].map((faq, index) => (
-            <div
-              key={index}
-              className="bg-white rounded-xl border border-gray-200 p-6 hover:border-blue-300 transition-colors shadow-sm hover:shadow-md"
-            >
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                {faq.question}
-              </h3>
-              <p className="text-gray-600 leading-relaxed">{faq.answer}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 };
+
+function VehicleCard({ car, index }: { car: Car; index: number }) {
+  const image = car.images?.[0] || car.image || "/placeholder-car.jpg";
+  const status = car.status || "Available";
+  const isSold = normalise(status) === "sold";
+  const isInProgress = normalise(status) === "sale in progress";
+
+  return (
+    <article className="group overflow-hidden rounded-xl border border-stone-200 bg-white transition-all duration-300 hover:-translate-y-1 hover:border-stone-300 hover:shadow-[0_18px_45px_rgba(28,25,23,0.10)]">
+      <Link href={`/newcars/${car.id}`} className="block">
+        <div className="relative aspect-[16/10] overflow-hidden bg-stone-100">
+          <img
+            src={image}
+            alt={car.title}
+            loading={index < 3 ? "eager" : "lazy"}
+            className={`h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.035] ${
+              isSold ? "grayscale" : ""
+            }`}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-stone-950/45 via-transparent to-transparent" />
+
+          <div
+            className={`absolute left-4 top-4 rounded-md px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.16em] ${
+              isSold
+                ? "bg-red-700 text-white"
+                : isInProgress
+                  ? "bg-amber-500 text-stone-950"
+                  : "bg-white/95 text-emerald-800"
+            }`}
+          >
+            {status}
+          </div>
+
+          {car.images.length > 1 && (
+            <div className="absolute bottom-4 left-4 inline-flex items-center gap-1.5 rounded-md bg-stone-950/75 px-2.5 py-1.5 font-mono text-[10px] text-white backdrop-blur-sm">
+              <Camera className="h-3.5 w-3.5" />
+              {String(car.images.length).padStart(2, "0")}
+            </div>
+          )}
+
+          <div className="absolute bottom-4 right-4 inline-flex overflow-hidden rounded-md border border-stone-900/70 shadow-sm">
+            <div className="flex items-center bg-blue-800 px-1">
+              <span className="font-mono text-[7px] font-bold text-white [writing-mode:vertical-rl] rotate-180">
+                GB
+              </span>
+            </div>
+            <div className="bg-[#FFD500] px-3 py-1.5">
+              <span className="font-mono text-lg font-bold tracking-tight text-stone-950">
+                £{formatNumber(car.price)}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-5 sm:p-6">
+          <p className="font-mono text-[9px] uppercase tracking-[0.22em] text-stone-400">
+            Irons Auto · Leicester
+          </p>
+          <h3 className="mt-2 min-h-[3.5rem] text-xl font-bold leading-snug text-blue-950 transition-colors group-hover:text-blue-800 line-clamp-2">
+            {car.title}
+          </h3>
+
+          <div className="mt-5 grid grid-cols-2 gap-x-4 gap-y-3 border-y border-stone-100 py-4">
+            <Spec icon={<Gauge className="h-4 w-4" />} label="Mileage" value={`${formatNumber(car.mileage)} mi`} />
+            <Spec icon={<Fuel className="h-4 w-4" />} label="Fuel" value={car.fuelType} />
+            <Spec icon={<GearboxIcon />} label="Gearbox" value={car.transmission} />
+            <Spec icon={<EngineIcon />} label="Engine" value={car.engineSize ? `${car.engineSize}L` : "—"} />
+          </div>
+
+          {car.features.length > 0 && (
+            <div className="mt-4 flex flex-wrap gap-2">
+              {car.features.slice(0, 2).map((feature) => (
+                <span
+                  key={feature}
+                  className="rounded-md bg-stone-100 px-2.5 py-1 text-[11px] font-medium text-stone-600"
+                >
+                  {feature}
+                </span>
+              ))}
+              {car.features.length > 2 && (
+                <span className="rounded-md border border-stone-200 px-2.5 py-1 text-[11px] font-medium text-stone-500">
+                  +{car.features.length - 2} more
+                </span>
+              )}
+            </div>
+          )}
+
+          <div className="mt-5 flex items-center justify-between text-sm font-semibold text-blue-950">
+            View vehicle
+            <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-blue-950 text-white transition-transform group-hover:translate-x-1">
+              <ArrowRight className="h-4 w-4" />
+            </span>
+          </div>
+        </div>
+      </Link>
+    </article>
+  );
+}
+
+function Spec({
+  icon,
+  label,
+  value,
+}: {
+  icon: ReactNode;
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="min-w-0">
+      <div className="flex items-center gap-2 text-stone-400">
+        {icon}
+        <span className="font-mono text-[9px] uppercase tracking-[0.18em]">
+          {label}
+        </span>
+      </div>
+      <p className="mt-1 truncate text-sm font-semibold capitalize text-stone-700">
+        {value || "—"}
+      </p>
+    </div>
+  );
+}
+
+type SelectOption = string | { value: string; label: string };
+
+function SelectField({
+  value,
+  onChange,
+  label,
+  emptyLabel,
+  options,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  label: string;
+  emptyLabel: string;
+  options: SelectOption[];
+}) {
+  return (
+    <label className="relative block">
+      <span className="sr-only">{label}</span>
+      <select
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        className="h-12 w-full appearance-none rounded-md border border-stone-200 bg-[#FAF9F6] px-4 pr-10 text-sm capitalize outline-none transition focus:border-blue-950 focus:ring-1 focus:ring-blue-950"
+      >
+        <option value="">{emptyLabel}</option>
+        {options.map((option) => {
+          const item =
+            typeof option === "string"
+              ? { value: option, label: option }
+              : option;
+          return (
+            <option key={item.value} value={item.value}>
+              {item.label}
+            </option>
+          );
+        })}
+      </select>
+      <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
+    </label>
+  );
+}
+
+function GearboxIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d="M6 4v16M18 4v16M6 8h12M6 16h12M12 8v8" />
+      <circle cx="6" cy="4" r="1.5" />
+      <circle cx="18" cy="4" r="1.5" />
+      <circle cx="6" cy="20" r="1.5" />
+      <circle cx="18" cy="20" r="1.5" />
+    </svg>
+  );
+}
+
+function EngineIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d="M7 8h9l2 2v7H7l-2-2v-5l2-2Z" />
+      <path d="M10 8V5h4v3M18 12h2v3h-2M5 11H3v5h2" />
+    </svg>
+  );
+}
 
 export default Cars;

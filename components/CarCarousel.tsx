@@ -1,656 +1,380 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useKeenSlider } from "keen-slider/react"
-import { useEffect, useState } from "react"
-import { db } from "../firebase/firebase" // Firebase setup
-import { collection, getDocs, limit, query, orderBy } from "firebase/firestore"
-import Link from "next/link"
-import { ChevronLeft, ChevronRight, Camera, ArrowRight, Gauge, CarIcon, MapPin, CarFront, Fuel } from "lucide-react"
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useKeenSlider } from "keen-slider/react";
+import { collection, getDocs, limit, orderBy, query } from "firebase/firestore";
+import {
+  ArrowUpRight,
+  Camera,
+  ChevronLeft,
+  ChevronRight,
+  Fuel,
+  Gauge,
+  Settings2,
+  CarFront, // Added CarFront icon for engine size
+} from "lucide-react";
 
-interface CarProps {
-  id: string
-  title: string
-  price: string
-  mileage: string
-  transmission: string
-  color: string
-  engineSize: string
-  fuelType: string
-  doors: string
-  images: string[] // Array of image URLs
-  image?: string // Optional for backward compatibility
-  features: string[] // Array of feature strings
-  isIncoming?: boolean // Add isIncoming field
-  status?: string // Add status field (Available, Sale in Progress, Sold)
+import { db } from "../firebase/firebase";
+
+interface Car {
+  id: string;
+  title: string;
+  price: string;
+  mileage: string;
+  transmission: string;
+  engineSize: string;
+  fuelType: string;
+  color: string;
+  doors: string;
+  images: string[];
+  image?: string;
+  features: string[];
+  isIncoming?: boolean;
+  status?: string;
+}
+
+const numberFormatter = new Intl.NumberFormat("en-GB");
+
+function formatNumber(value?: string) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? numberFormatter.format(parsed) : value || "—";
+}
+
+function getStatus(car: Car) {
+  if (car.isIncoming) {
+    return { label: "Coming soon", className: "bg-[#f3d18d] text-[#3a2808]" };
+  }
+
+  const status = (car.status || "Available").toLowerCase();
+
+  if (status === "sold") {
+    return { label: "Sold", className: "bg-white text-[#16181b]" };
+  }
+
+  if (status === "sale in progress") {
+    return { label: "Sale in progress", className: "bg-[#f3d18d] text-[#3a2808]" };
+  }
+
+  return { label: "Available", className: "bg-[#dcecdf] text-[#17351d]" };
+}
+
+function CarCard({ car }: { car: Car }) {
+  const image = car.images?.[0] || car.image;
+  const status = getStatus(car);
+  const visibleFeatures = car.features?.slice(0, 3) || [];
+  const remainingFeatures = Math.max((car.features?.length || 0) - visibleFeatures.length, 0);
+
+  return (
+    <Link href={`/newcars/${car.id}`} className="group block h-full">
+      <article className="flex h-full min-h-[510px] flex-col overflow-hidden rounded-[26px] border border-black/[0.09] bg-white shadow-[0_14px_38px_rgba(30,38,45,0.08)] transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_24px_58px_rgba(30,38,45,0.14)]">
+        <div className="relative aspect-[4/3] overflow-hidden bg-[#dfe3e6]">
+          {image ? (
+            <img
+              src={image}
+              alt={car.title}
+              className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
+            />
+          ) : (
+            <div className="grid h-full place-items-center text-sm text-black/40">Image coming soon</div>
+          )}
+
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/5 to-transparent" />
+
+          {/* Status badge: Updated spacing and text size alignment */}
+          <span className={`absolute left-4 top-4 rounded-full px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] ${status.className}`}>
+            {status.label}
+          </span>
+
+          {car.images?.length > 1 && (
+            <span className="absolute right-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-black/55 px-3 py-1.5 text-xs text-white backdrop-blur-md">
+              <Camera size={13} />
+              {car.images.length}
+            </span>
+          )}
+
+          <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between gap-3 text-white">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/65">Price</p>
+              <p className="mt-1 text-[1.7rem] font-semibold tracking-[-0.045em]">£{formatNumber(car.price)}</p>
+            </div>
+
+            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white text-black transition-transform group-hover:rotate-6 group-hover:scale-105">
+              <ArrowUpRight size={18} />
+            </span>
+          </div>
+        </div>
+
+        <div className="flex flex-1 flex-col p-5 sm:p-6">
+          <h3 className="line-clamp-2 min-h-[50px] text-lg font-semibold leading-[1.3] tracking-[-0.03em] text-[#17191c] sm:text-xl">
+            {car.title}
+          </h3>
+
+          {/* Specs Layout Grid: Updated spacing, text sizing, and color weighting */}
+          <div className="mt-5 grid grid-cols-2 gap-x-5 gap-y-4 border-t border-black/10 pt-5 text-sm font-medium text-black">
+            <span className="flex items-center gap-2">
+              <Gauge size={15} strokeWidth={1.7} />
+              {formatNumber(car.mileage)} mi
+            </span>
+            <span className="flex items-center gap-2 capitalize">
+              <Settings2 size={15} strokeWidth={1.7} />
+              {car.transmission || "—"}
+            </span>
+            <span className="flex items-center gap-2 capitalize">
+              <Fuel size={15} strokeWidth={1.7} />
+              {car.fuelType || "—"}
+            </span>
+            {/* Engine size section matching the new UI grid items styling */}
+            <span className="flex items-center gap-2">
+              <CarFront size={15} strokeWidth={1.7} />
+              {car.engineSize ? `${car.engineSize}L` : "—"}
+            </span>
+          </div>
+
+          <div className="mt-5 flex min-h-[58px] flex-wrap content-start gap-2 border-t border-black/[0.07] pt-5">
+            {visibleFeatures.length > 0 ? (
+              <>
+                {visibleFeatures.map((feature, index) => (
+                  <span
+                    key={`${car.id}-feature-${index}`}
+                    className="rounded-full bg-black px-4 py-2 text-xs font-semibold text-white shadow-md"
+                  >
+                    {feature}
+                  </span>
+                ))}
+                {remainingFeatures > 0 && (
+                  <span className="rounded-full bg-neutral-800 px-4 py-2 text-xs font-semibold text-white shadow-md">
+                    +{remainingFeatures} more
+                  </span>
+                )}
+              </>
+            ) : (
+              <span className="text-xs text-black/38">Full specification available</span>
+            )}
+          </div>
+        </div>
+      </article>
+    </Link>
+  );
+}
+
+function CarouselSection({
+  eyebrow,
+  title,
+  description,
+  href,
+  linkLabel,
+  cars,
+  alternate = false,
+}: {
+  eyebrow: string;
+  title: string;
+  description: string;
+  href: string;
+  linkLabel: string;
+  cars: Car[];
+  alternate?: boolean;
+}) {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [paused, setPaused] = useState(false);
+
+  const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
+    mode: "snap",
+    loop: cars.length > 1,
+    slides: { perView: 1.08, spacing: 16 },
+    breakpoints: {
+      "(min-width: 640px)": { slides: { perView: 2.05, spacing: 20 } },
+      "(min-width: 1024px)": { slides: { perView: 3.05, spacing: 24 } },
+      "(min-width: 1536px)": { slides: { perView: 3.65, spacing: 26 } },
+    },
+    slideChanged(slider) {
+      setCurrentSlide(slider.track.details.rel);
+    },
+  });
+
+  useEffect(() => {
+    instanceRef.current?.update();
+  }, [cars.length, instanceRef]);
+
+  useEffect(() => {
+    if (paused || cars.length < 2) return;
+
+    const timer = window.setInterval(() => {
+      instanceRef.current?.next();
+    }, 5000);
+
+    return () => window.clearInterval(timer);
+  }, [cars.length, instanceRef, paused]);
+
+  return (
+    <section className={alternate ? "w-full bg-[#e7edf1] py-16 sm:py-20 lg:py-24" : "w-full bg-[#f3f5f6] py-16 sm:py-20 lg:py-24"}>
+      <div className="mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12 xl:px-16">
+        <div className="mb-9 flex flex-col gap-6 lg:mb-12 lg:flex-row lg:items-end lg:justify-between">
+          <div className="max-w-2xl">
+            <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-black/42">{eyebrow}</p>
+            <h2 className="mt-3 text-4xl font-semibold leading-none tracking-[-0.055em] text-[#15171a] sm:text-5xl lg:text-[3.75rem]">
+              {title}
+            </h2>
+            <p className="mt-5 max-w-xl text-sm leading-6 text-black/55 sm:text-base">{description}</p>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => instanceRef.current?.prev()}
+              className="grid h-11 w-11 place-items-center rounded-full border border-black/10 bg-white text-black transition hover:bg-black hover:text-white"
+              aria-label="Previous vehicle"
+            >
+              <ChevronLeft size={18} />
+            </button>
+            <button
+              type="button"
+              onClick={() => instanceRef.current?.next()}
+              className="grid h-11 w-11 place-items-center rounded-full border border-black/10 bg-white text-black transition hover:bg-black hover:text-white"
+              aria-label="Next vehicle"
+            >
+              <ChevronRight size={18} />
+            </button>
+
+            <Link href={href} className="ml-1 inline-flex h-11 items-center gap-2 rounded-full bg-[#17191c] px-5 text-sm font-semibold text-white transition hover:bg-black/75">
+              {linkLabel}
+              <ArrowUpRight size={15} />
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      <div className="mx-auto max-w-[1760px] overflow-hidden px-5 sm:px-8 lg:px-12 xl:px-16">
+        <div
+          ref={sliderRef}
+          className="keen-slider !overflow-visible pb-4"
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
+          onFocusCapture={() => setPaused(true)}
+          onBlurCapture={() => setPaused(false)}
+        >
+          {cars.map((car) => (
+            <div key={car.id} className="keen-slider__slide h-auto py-1">
+              <CarCard car={car} />
+            </div>
+          ))}
+        </div>
+
+        {cars.length > 1 && (
+          <div className="mt-6 flex items-center gap-3 sm:hidden">
+            <span className="text-xs tabular-nums text-black/45">
+              {String(currentSlide + 1).padStart(2, "0")} / {String(cars.length).padStart(2, "0")}
+            </span>
+            <div className="h-px flex-1 bg-black/10">
+              <div
+                className="h-px bg-black transition-all duration-300"
+                style={{ width: `${((currentSlide + 1) / cars.length) * 100}%` }}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
+  );
 }
 
 export default function CarCarousel() {
-  const [cars, setCars] = useState<CarProps[]>([])
-  const [regularCars, setRegularCars] = useState<CarProps[]>([])
-  const [incomingCars, setIncomingCars] = useState<CarProps[]>([])
-  const [loading, setLoading] = useState(true)
-  const [currentSlide, setCurrentSlide] = useState(0)
-  const [currentIncomingSlide, setCurrentIncomingSlide] = useState(0)
-  const [loaded, setLoaded] = useState(false)
-  const [incomingLoaded, setIncomingLoaded] = useState(false)
+  const [regularCars, setRegularCars] = useState<Car[]>([]);
+  const [incomingCars, setIncomingCars] = useState<Car[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Fetch featured cars from Firestore
   useEffect(() => {
-    const fetchFeaturedCars = async () => {
+    async function fetchCars() {
       try {
-        const carsQuery = query(
-          collection(db, "cars"),
-          orderBy("createdAt", "desc"), // Assuming 'createdAt' field for latest cars
-          limit(20), // Increased limit to get enough cars for both carousels
-        )
+        const snapshot = await getDocs(
+          query(collection(db, "cars"), orderBy("createdAt", "desc"), limit(20)),
+        );
 
-        const querySnapshot = await getDocs(carsQuery)
-        const carsList: CarProps[] = []
+        const cars: Car[] = snapshot.docs.map((document) => {
+          const data = document.data();
 
-        querySnapshot.forEach((doc) => {
-          const data = doc.data()
-          if (data) {
-            const car: CarProps = {
-              id: doc.id,
-              title: data.title || "",
-              price: data.price || "",
-              mileage: data.mileage || "",
-              transmission: data.transmission || "",
-              color: data.color || "",
-              engineSize: data.engineSize || "",
-              fuelType: data.fuelType || "",
-              doors: data.doors || "",
-              images: data.images || (data.image ? [data.image] : []),
-              image: data.image || "",
-              features: data.features || [],
-              isIncoming: data.isIncoming || false,
-              status: data.status || "Available",
-            }
-            carsList.push(car)
-          }
-        })
+          return {
+            id: document.id,
+            title: data.title || "Untitled vehicle",
+            price: data.price || "0",
+            mileage: data.mileage || "0",
+            transmission: data.transmission || "",
+            engineSize: data.engineSize || "",
+            fuelType: data.fuelType || "",
+            color: data.color || "",
+            doors: data.doors || "",
+            images: data.images || (data.image ? [data.image] : []),
+            image: data.image || "",
+            features: Array.isArray(data.features) ? data.features : [],
+            isIncoming: Boolean(data.isIncoming),
+            status: data.status || "Available",
+          };
+        });
 
-        // Separate cars into regular and incoming
-        const regular = carsList.filter((car) => !car.isIncoming)
-        const incoming = carsList.filter((car) => car.isIncoming)
-
-        setCars(carsList)
-        setRegularCars(regular)
-        setIncomingCars(incoming)
-        setLoading(false)
+        setRegularCars(cars.filter((car) => !car.isIncoming));
+        setIncomingCars(cars.filter((car) => car.isIncoming));
       } catch (error) {
-        console.error("Error fetching featured cars:", error)
-        setLoading(false)
+        console.error("Error fetching featured cars:", error);
+      } finally {
+        setLoading(false);
       }
     }
 
-    fetchFeaturedCars()
-  }, [])
+    fetchCars();
+  }, []);
 
-  // Initialize slider once cars are loaded and available
-  useEffect(() => {
-    if (!loading && regularCars.length > 0) {
-      setLoaded(true)
-    }
-  }, [regularCars, loading])
-
-  // Initialize incoming slider
-  useEffect(() => {
-    if (!loading && incomingCars.length > 0) {
-      setIncomingLoaded(true)
-    }
-  }, [incomingCars, loading])
-
-  // KeenSlider setup for regular cars
-  const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>(
-    {
-      initial: 0,
-      loop: true,
-      slides: {
-        perView: () => {
-          // Responsive slides per view
-          if (typeof window !== "undefined") {
-            if (window.innerWidth < 640) return 1 // 1 slide on small screens (e.g., mobile)
-            if (window.innerWidth < 1024) return 2 // 2 slides on medium screens (e.g., tablet)
-            if (window.innerWidth < 1280) return 3 // 3 slides on large screens (e.g., small desktop)
-            return 4 // 4 slides on extra-large screens (e.g., large desktop)
-          }
-          return 4 // Default to 4
-        },
-        spacing: 24, // Increased spacing for better visual separation between cards
-      },
-      slideChanged(slider) {
-        setCurrentSlide(slider.track.details.rel)
-      },
-      created() {
-        setLoaded(true)
-      },
-    },
-    [],
-  )
-
-  // KeenSlider setup for incoming cars
-  const [incomingSliderRef, incomingInstanceRef] = useKeenSlider<HTMLDivElement>(
-    {
-      initial: 0,
-      loop: true,
-      slides: {
-        perView: () => {
-          // Responsive slides per view
-          if (typeof window !== "undefined") {
-            if (window.innerWidth < 640) return 1 // 1 slide on small screens (e.g., mobile)
-            if (window.innerWidth < 1024) return 2 // 2 slides on medium screens (e.g., tablet)
-            if (window.innerWidth < 1280) return 3 // 3 slides on large screens (e.g., small desktop)
-            return 4 // 4 slides on extra-large screens (e.g., large desktop)
-          }
-          return 4 // Default to 4
-        },
-        spacing: 24, // Increased spacing for better visual separation between cards
-      },
-      slideChanged(slider) {
-        setCurrentIncomingSlide(slider.track.details.rel)
-      },
-      created() {
-        setIncomingLoaded(true)
-      },
-    },
-    [],
-  )
-
-  // Auto-slide functionality for regular cars
-  useEffect(() => {
-    if (!instanceRef.current || regularCars.length <= 0) return
-
-    const intervalId = setInterval(() => {
-      instanceRef.current?.next()
-    }, 5000) // Auto-slides every 5 seconds
-
-    return () => clearInterval(intervalId) // Clear interval on component unmount
-  }, [instanceRef, regularCars])
-
-  // Auto-slide functionality for incoming cars
-  useEffect(() => {
-    if (!incomingInstanceRef.current || incomingCars.length <= 0) return
-
-    const intervalId = setInterval(() => {
-      incomingInstanceRef.current?.next()
-    }, 5000) // Auto-slides every 5 seconds
-
-    return () => clearInterval(intervalId) // Clear interval on component unmount
-  }, [incomingInstanceRef, incomingCars])
-
-  const handlePrev = (e: React.MouseEvent, instance: any) => {
-    e.stopPropagation()
-    instance?.prev()
-  }
-
-  const handleNext = (e: React.MouseEvent, instance: any) => {
-    e.stopPropagation()
-    instance?.next()
-  }
-
-  // Loading State
   if (loading) {
     return (
-      <section className="max-w-[2000px] mx-auto py-16 bg-gray-50 w-full">
-        {" "}
-        {/* Adjust max-width as per your section import */}
-        <div className="text-center mb-10 px-4">
-          <h2 className="text-4xl font-extrabold text-gray-900 leading-tight">
-            Our Latest Arrivals <span className="text-blue-600">Are Here</span>
-          </h2>
-          <p className="mt-2 text-lg text-gray-600">Discover your next dream car.</p>
-        </div>
-        <div className="flex justify-center items-center h-64">
-          <div className="flex flex-col items-center">
-            <CarIcon size={48} className="text-blue-600 mb-4 animate-bounce" />
-            <div className="text-xl font-medium text-gray-600">Loading amazing vehicles...</div>
-            <div className="text-sm text-gray-400 mt-2">Just a moment, your ride is on its way!</div>
+      <section className="w-full bg-[#f3f5f6] px-5 py-20 sm:px-8 lg:px-12">
+        <div className="mx-auto max-w-[1600px]">
+          <div className="h-3 w-28 animate-pulse rounded-full bg-black/10" />
+          <div className="mt-5 h-12 max-w-sm animate-pulse rounded-xl bg-black/10" />
+          <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {[0, 1, 2].map((item) => (
+              <div key={item} className="h-[510px] animate-pulse rounded-[26px] bg-black/10" />
+            ))}
           </div>
         </div>
       </section>
-    )
+    );
   }
 
-  // No Cars Available State
-  if (regularCars.length === 0 && incomingCars.length === 0) {
+  if (!regularCars.length && !incomingCars.length) {
     return (
-      <section className="max-w-[2000px] mx-auto py-16 bg-gray-50 w-full">
-        {" "}
-        {/* Adjust max-width as per your section import */}
-        <div className="text-center mb-10 px-4">
-          <h2 className="text-4xl font-extrabold text-gray-900 leading-tight">
-            Our Latest Arrivals <span className="text-blue-600">Are Here</span>
-          </h2>
-          <p className="mt-2 text-lg text-gray-600">Discover your next dream car.</p>
-        </div>
-        <div className="text-center py-16 bg-white rounded-xl shadow-lg mx-4 border border-gray-100">
-          <p className="text-gray-600 text-lg font-medium">
-            <span className="text-blue-500 font-bold">Oops!</span> No vehicles available at this time.
-          </p>
-          <p className="text-gray-500 mt-2">Please check back soon or explore our other sections!</p>
-          <Link
-            href="/contact"
-            className="mt-6 inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-300"
-          >
-            Contact Us
-            <ArrowRight size={18} className="ml-2" />
-          </Link>
-        </div>
+      <section className="w-full bg-[#f3f5f6] px-5 py-24 text-center text-[#17191c]">
+        <p className="text-3xl font-semibold tracking-[-0.04em]">Fresh stock is on the way.</p>
+        <p className="mx-auto mt-3 max-w-md text-black/50">Contact our team and tell us what you are looking for.</p>
+        <Link href="/contact" className="mt-7 inline-flex rounded-full bg-[#17191c] px-6 py-3 text-sm font-semibold text-white">
+          Speak to us
+        </Link>
       </section>
-    )
+    );
   }
 
   return (
-    <div className="w-full">
-      {/* REGULAR CARS CAROUSEL */}
+    <div className="w-full overflow-hidden">
       {regularCars.length > 0 && (
-        <section className="max-w-[2000px] mx-auto py-16 bg-gradient-to-br from-blue-50 to-indigo-100 w-full overflow-hidden">
-          {/* Section Header */}
-          <div className="flex flex-col sm:flex-row justify-between items-center mb-12 px-4 sm:px-6 lg:px-8">
-            <div>
-              <h2 className="text-4xl font-extrabold text-gray-900 leading-tight">
-                Our Latest Arrivals <span className="text-blue-600">Are Here</span>
-              </h2>
-              <p className="mt-2 text-lg text-gray-600">Discover your next dream car from our curated selection.</p>
-            </div>
-            {/* View All Vehicles Button */}
-            <Link
-              href="/cars"
-              className="mt-6 sm:mt-0 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg shadow-lg transition-all duration-300 flex items-center group transform hover:-translate-y-1"
-            >
-              View all vehicles
-              <ArrowRight size={20} className="ml-2 group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </div>
-
-          {/* Carousel Container */}
-          <div className="relative w-full px-4 sm:px-6 lg:px-8">
-            <div ref={sliderRef} className="keen-slider">
-              {regularCars.map((car) => (
-            <div key={car.id} className="keen-slider__slide">
-              <Link
-                href={`/newcars/${car.id}`}
-                className="block h-full transition-transform duration-300 hover:scale-[1.01]"
-              >
-                <div className="bg-white rounded-2xl overflow-hidden border border-gray-200 hover:border-blue-300 transition-all duration-300 hover:transform hover:-translate-y-2 hover:shadow-2xl shadow-lg h-[550px] flex flex-col">
-                  {/* Image Section - Fixed Height */}
-                  <div className="relative h-64 flex-shrink-0 overflow-hidden">
-                    {car.images && car.images.length > 0 ? (
-                      <img
-                        src={car.images[0] || "/placeholder.svg"}
-                        alt={car.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gray-100">
-                        <span className="text-gray-500">No image available</span>
-                      </div>
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
-
-                    {/* Status/Incoming Badge - Top Left */}
-                    {car.isIncoming ? (
-                      <div className="absolute top-4 left-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-4 py-2 rounded-full font-bold shadow-lg">
-                        Incoming
-                      </div>
-                    ) : car.status ? (
-                      <div className={`absolute top-4 left-4 text-white px-4 py-2 rounded-full font-bold shadow-lg ${
-                        car.status === "Sold" 
-                          ? "bg-gradient-to-r from-red-500 to-red-600" 
-                          : car.status === "Sale in progress"
-                          ? "bg-orange-500"
-                          : "bg-gradient-to-r from-green-500 to-green-600"
-                      }`}>
-                        {car.status}
-                      </div>
-                    ) : null}
-
-                    {/* Price Badge */}
-                    <div className="absolute top-4 right-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-full font-bold shadow-lg">
-                      £{Number(car.price).toLocaleString()}
-                    </div>
-
-                    {/* Photo Count */}
-                    {car.images && car.images.length > 1 && (
-                      <div className="absolute bottom-4 right-4 bg-black/70 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm flex items-center">
-                        <Camera className="h-4 w-4 mr-1" />
-                        {car.images.length}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Content - Flexible Height */}
-                  <div className="p-6 flex-1 flex flex-col min-h-0">
-                    {/* Title with line clamping */}
-                    <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors line-clamp-2 leading-tight">
-                      {car.title}
-                    </h3>
-
-                    <div className="flex items-center text-gray-500 mb-4">
-                      <MapPin className="h-4 w-4 mr-2 text-blue-500 flex-shrink-0" />
-                      <span className="text-sm">Leicester Showroom</span>
-                    </div>
-
-                    {/* Specs Grid */}
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                      <div className="flex items-center text-gray-700">
-                        <Gauge className="h-4 w-4 mr-2 text-blue-500 flex-shrink-0" />
-                        <span className="text-sm">{Number(car.mileage).toLocaleString()} mi</span>
-                      </div>
-                      <div className="flex items-center text-gray-700">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-4 w-4 mr-2 text-blue-500 flex-shrink-0"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"
-                          />
-                        </svg>
-                        <span className="text-sm capitalize">{car.transmission}</span>
-                      </div>
-                      <div className="flex items-center text-gray-700">
-                        <CarFront className="h-4 w-4 mr-2 text-blue-500 flex-shrink-0" />
-                        <span className="text-sm">{car.engineSize}L</span>
-                      </div>
-                      <div className="flex items-center text-gray-700">
-                        <Fuel className="h-4 w-4 mr-2 text-blue-500 flex-shrink-0" />
-                        <span className="text-sm capitalize">{car.fuelType}</span>
-                      </div>
-                    </div>
-
-                    {/* Features - Flexible */}
-                    <div className="flex-1 min-h-0 mb-4">
-                      {car.features && car.features.length > 0 && (
-                        <div className="flex flex-wrap gap-2">
-                          {car.features.slice(0, 3).map((feature, index) => {
-                            const colors = [
-                              "bg-gradient-to-r from-blue-500 to-blue-600 text-white",
-                              "bg-gradient-to-r from-blue-600 to-blue-700 text-white",
-                              "bg-gradient-to-r from-indigo-500 to-indigo-600 text-white",
-                              "bg-gradient-to-r from-cyan-500 to-cyan-600 text-white",
-                              "bg-gradient-to-r from-sky-500 to-sky-600 text-white",
-                              "bg-gradient-to-r from-blue-400 to-blue-500 text-white",
-                              "bg-gradient-to-r from-slate-600 to-slate-700 text-white",
-                            ]
-                            return (
-                              <span
-                                key={index}
-                                className={`px-3 py-1 rounded-full text-xs font-medium ${colors[index % colors.length]} shadow-sm`}
-                              >
-                                {feature}
-                              </span>
-                            )
-                          })}
-                          {car.features.length > 3 && (
-                            <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">
-                              +{car.features.length - 3} more
-                            </span>
-                          )}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* CTA Button - Always at bottom */}
-                    <div className="w-full py-3 bg-gradient-to-r from-blue-500 to-blue-800 text-white font-medium rounded-xl hover:from-blue-600 hover:to-blue-900 transition-all duration-200 shadow-lg hover:shadow-xl text-center flex-shrink-0">
-                      View Details & Book Test Drive
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            </div>
-          ))}
-        </div>
-
-        {/* Navigation Controls */}
-        {loaded && regularCars.length > 0 && (
-          <>
-            <button
-              onClick={(e) => handlePrev(e, instanceRef.current)}
-              className="absolute left-6 top-1/2 -translate-y-1/2 bg-white p-4 rounded-full shadow-xl hover:bg-gray-50 z-10 focus:outline-none border border-gray-200 transition-all duration-300 text-blue-600 hover:text-blue-800 hidden md:block group hover:scale-110 active:scale-95"
-              aria-label="Previous slide"
-            >
-              <ChevronLeft size={28} />
-            </button>
-            <button
-              onClick={(e) => handleNext(e, instanceRef.current)}
-              className="absolute right-6 top-1/2 -translate-y-1/2 bg-white p-4 rounded-full shadow-xl hover:bg-gray-50 z-10 focus:outline-none border border-gray-200 transition-all duration-300 text-blue-600 hover:text-blue-800 hidden md:block group hover:scale-110 active:scale-95"
-              aria-label="Next slide"
-            >
-              <ChevronRight size={28} />
-            </button>
-          </>
-        )}
-      </div>
-
-      {/* Pagination Dots */}
-      {loaded && regularCars.length > 0 && (
-        <div className="flex justify-center gap-2 mt-10">
-          {[...Array(Math.min(regularCars.length, 8)).keys()].map((idx) => (
-            <button
-              key={idx}
-              onClick={() => instanceRef.current?.moveToIdx(idx)}
-              className={`h-3 rounded-full transition-all duration-300 ${
-                currentSlide === idx ? "bg-blue-600 w-8" : "bg-gray-300 hover:bg-gray-400 w-3"
-              } hover:scale-110 active:scale-90`}
-              aria-label={`Go to slide ${idx + 1}`}
-            />
-          ))}
-        </div>
-      )}
-    </section>
+        <CarouselSection
+          eyebrow="Recently added"
+          title="Latest arrivals"
+          description="A considered selection of quality used vehicles, prepared and ready to view in Leicester."
+          href="/cars"
+          linkLabel="View all stock"
+          cars={regularCars}
+        />
       )}
 
-      {/* INCOMING VEHICLES CAROUSEL */}
       {incomingCars.length > 0 && (
-        <section className="max-w-[2000px] mx-auto py-16 bg-gradient-to-br from-orange-50 to-amber-100 w-full overflow-hidden">
-          {/* Section Header */}
-          <div className="flex flex-col sm:flex-row justify-between items-center mb-12 px-4 sm:px-6 lg:px-8">
-            <div>
-              <h2 className="text-4xl font-extrabold text-gray-900 leading-tight">
-                Incoming Vehicles <span className="text-orange-600">Coming Soon</span>
-              </h2>
-              <p className="mt-2 text-lg text-gray-600">Preview vehicles that are on their way to us.</p>
-            </div>
-            {/* View All Vehicles Button */}
-            <Link
-              href="/incoming-vehicles"
-              className="mt-6 sm:mt-0 bg-orange-600 hover:bg-orange-700 text-white font-medium py-3 px-6 rounded-lg shadow-lg transition-all duration-300 flex items-center group transform hover:-translate-y-1"
-            >
-              View all incoming
-              <ArrowRight size={20} className="ml-2 group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </div>
-
-          {/* Carousel Container */}
-          <div className="relative w-full px-4 sm:px-6 lg:px-8">
-            <div ref={incomingSliderRef} className="keen-slider">
-              {incomingCars.map((car) => (
-                <div key={car.id} className="keen-slider__slide">
-                  <Link
-                    href={`/newcars/${car.id}`}
-                    className="block h-full transition-transform duration-300 hover:scale-[1.01]"
-                  >
-                    <div className="bg-white rounded-2xl overflow-hidden border border-gray-200 hover:border-orange-300 transition-all duration-300 hover:transform hover:-translate-y-2 hover:shadow-2xl shadow-lg h-[550px] flex flex-col">
-                      {/* Image Section - Fixed Height */}
-                      <div className="relative h-64 flex-shrink-0 overflow-hidden">
-                        {car.images && car.images.length > 0 ? (
-                          <img
-                            src={car.images[0] || "/placeholder.svg"}
-                            alt={car.title}
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-gray-100">
-                            <span className="text-gray-500">No image available</span>
-                          </div>
-                        )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
-
-                        {/* Status/Incoming Badge - Top Left */}
-                        {car.isIncoming ? (
-                          <div className="absolute top-4 left-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-4 py-2 rounded-full font-bold shadow-lg">
-                            Incoming
-                          </div>
-                        ) : car.status ? (
-                          <div className={`absolute top-4 left-4 text-white px-4 py-2 rounded-full font-bold shadow-lg ${
-                            car.status === "Sold" 
-                              ? "bg-gradient-to-r from-red-500 to-red-600" 
-                              : car.status === "Sale in progress"
-                              ? "bg-orange-500"
-                              : "bg-gradient-to-r from-green-500 to-green-600"
-                          }`}>
-                            {car.status}
-                          </div>
-                        ) : null}
-
-                        {/* Price Badge */}
-                        <div className="absolute top-4 right-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-4 py-2 rounded-full font-bold shadow-lg">
-                          £{Number(car.price).toLocaleString()}
-                        </div>
-
-                        {/* Photo Count */}
-                        {car.images && car.images.length > 1 && (
-                          <div className="absolute bottom-4 right-4 bg-black/70 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm flex items-center">
-                            <Camera className="h-4 w-4 mr-1" />
-                            {car.images.length}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Content - Flexible Height */}
-                      <div className="p-6 flex-1 flex flex-col min-h-0">
-                        {/* Title with line clamping */}
-                        <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-orange-600 transition-colors line-clamp-2 leading-tight">
-                          {car.title}
-                        </h3>
-
-                        <div className="flex items-center text-gray-500 mb-4">
-                          <MapPin className="h-4 w-4 mr-2 text-orange-500 flex-shrink-0" />
-                          <span className="text-sm">Leicester Showroom</span>
-                        </div>
-
-                        {/* Specs Grid */}
-                        <div className="grid grid-cols-2 gap-4 mb-4">
-                          <div className="flex items-center text-gray-700">
-                            <Gauge className="h-4 w-4 mr-2 text-orange-500 flex-shrink-0" />
-                            <span className="text-sm">{Number(car.mileage).toLocaleString()} mi</span>
-                          </div>
-                          <div className="flex items-center text-gray-700">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-4 w-4 mr-2 text-orange-500 flex-shrink-0"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"
-                              />
-                            </svg>
-                            <span className="text-sm capitalize">{car.transmission}</span>
-                          </div>
-                          <div className="flex items-center text-gray-700">
-                            <CarFront className="h-4 w-4 mr-2 text-orange-500 flex-shrink-0" />
-                            <span className="text-sm">{car.engineSize}L</span>
-                          </div>
-                          <div className="flex items-center text-gray-700">
-                            <Fuel className="h-4 w-4 mr-2 text-orange-500 flex-shrink-0" />
-                            <span className="text-sm capitalize">{car.fuelType}</span>
-                          </div>
-                        </div>
-
-                        {/* Features - Flexible */}
-                        <div className="flex-1 min-h-0 mb-4">
-                          {car.features && car.features.length > 0 && (
-                            <div className="flex flex-wrap gap-2">
-                              {car.features.slice(0, 3).map((feature, index) => {
-                                const colors = [
-                                  "bg-gradient-to-r from-orange-500 to-orange-600 text-white",
-                                  "bg-gradient-to-r from-orange-600 to-orange-700 text-white",
-                                  "bg-gradient-to-r from-amber-500 to-amber-600 text-white",
-                                  "bg-gradient-to-r from-yellow-500 to-yellow-600 text-white",
-                                  "bg-gradient-to-r from-orange-400 to-orange-500 text-white",
-                                  "bg-gradient-to-r from-red-500 to-red-600 text-white",
-                                  "bg-gradient-to-r from-rose-600 to-rose-700 text-white",
-                                ]
-                                return (
-                                  <span
-                                    key={index}
-                                    className={`px-3 py-1 rounded-full text-xs font-medium ${colors[index % colors.length]} shadow-sm`}
-                                  >
-                                    {feature}
-                                  </span>
-                                )
-                              })}
-                              {car.features.length > 3 && (
-                                <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">
-                                  +{car.features.length - 3} more
-                                </span>
-                              )}
-                            </div>
-                          )}
-                        </div>
-
-                        {/* CTA Button - Always at bottom */}
-                        <div className="w-full py-3 bg-gradient-to-r from-orange-500 to-orange-800 text-white font-medium rounded-xl hover:from-orange-600 hover:to-orange-900 transition-all duration-200 shadow-lg hover:shadow-xl text-center flex-shrink-0">
-                          View Details & Book Test Drive
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                </div>
-              ))}
-            </div>
-
-            {/* Navigation Controls */}
-            {incomingLoaded && incomingCars.length > 0 && (
-              <>
-                <button
-                  onClick={(e) => handlePrev(e, incomingInstanceRef.current)}
-                  className="absolute left-6 top-1/2 -translate-y-1/2 bg-white p-4 rounded-full shadow-xl hover:bg-gray-50 z-10 focus:outline-none border border-gray-200 transition-all duration-300 text-orange-600 hover:text-orange-800 hidden md:block group hover:scale-110 active:scale-95"
-                  aria-label="Previous slide"
-                >
-                  <ChevronLeft size={28} />
-                </button>
-                <button
-                  onClick={(e) => handleNext(e, incomingInstanceRef.current)}
-                  className="absolute right-6 top-1/2 -translate-y-1/2 bg-white p-4 rounded-full shadow-xl hover:bg-gray-50 z-10 focus:outline-none border border-gray-200 transition-all duration-300 text-orange-600 hover:text-orange-800 hidden md:block group hover:scale-110 active:scale-95"
-                  aria-label="Next slide"
-                >
-                  <ChevronRight size={28} />
-                </button>
-              </>
-            )}
-          </div>
-
-          {/* Pagination Dots */}
-          {incomingLoaded && incomingCars.length > 0 && (
-            <div className="flex justify-center gap-2 mt-10">
-              {[...Array(Math.min(incomingCars.length, 8)).keys()].map((idx) => (
-                <button
-                  key={idx}
-                  onClick={() => incomingInstanceRef.current?.moveToIdx(idx)}
-                  className={`h-3 rounded-full transition-all duration-300 ${
-                    currentIncomingSlide === idx ? "bg-orange-600 w-8" : "bg-gray-300 hover:bg-gray-400 w-3"
-                  } hover:scale-110 active:scale-90`}
-                  aria-label={`Go to slide ${idx + 1}`}
-                />
-              ))}
-            </div>
-          )}
-        </section>
+        <CarouselSection
+          eyebrow="Coming soon"
+          title="Incoming vehicles"
+          description="Preview vehicles before they reach the showroom and register your interest early."
+          href="/incoming-vehicles"
+          linkLabel="View incoming"
+          cars={incomingCars}
+          alternate
+        />
       )}
     </div>
-  )
+  );
 }

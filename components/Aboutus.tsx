@@ -1,370 +1,320 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Shield, Award, Users, Clock, CheckCircle, MapPin, HeartHandshake } from "lucide-react"
-import { motion } from "framer-motion"
+import Image from "next/image";
+import Link from "next/link";
+import { motion, useReducedMotion } from "framer-motion";
+import {
+  ArrowUpRight,
+  Award,
+  BadgeCheck,
+  CheckCircle,
+  Clock,
+  HeartHandshake,
+  MapPin,
+  Shield,
+  Users,
+} from "lucide-react";
+
+const coreValues = [
+  {
+    icon: Shield,
+    title: "Quality Assurance",
+    description: "Every vehicle undergoes rigorous multi-point inspection.",
+  },
+  {
+    icon: Award,
+    title: "Low Cost Service",
+    description: "Lower maintenance fees for customer satisfaction.",
+  },
+  {
+    icon: Users,
+    title: "Expert Team",
+    description: "Passionate and knowledgeable specialists at your service.",
+  },
+  {
+    icon: HeartHandshake,
+    title: "Community Focused",
+    description: "Proudly supporting local initiatives and charities.",
+  },
+];
+
+const stats = [
+  {
+    icon: Clock,
+    value: "Satisfactory",
+    label: "Tailored vehicles for each customer",
+  },
+  {
+    icon: CheckCircle,
+    value: "Part Exchange",
+    label: "Taking any vehicle for your convenience",
+  },
+  {
+    icon: Users,
+    value: "98%",
+    label: "Satisfied Customers",
+  },
+  {
+    icon: MapPin,
+    value: "1",
+    label: "Prime Location",
+  },
+];
 
 export default function AboutUs() {
-  const [hoveredStat, setHoveredStat] = useState<number | null>(null)
-  const [hoveredValue, setHoveredValue] = useState<number | null>(null)
+  const reduceMotion = useReducedMotion();
 
-  const coreValues = [
-    {
-      icon: Shield,
-      title: "Quality Assurance",
-      description: "Every vehicle undergoes rigorous multi-point inspection.",
-      color: "#2563EB", // Blue
-      lightColor: "#EFF6FF",
-    },
-    {
-      icon: Award,
-      title: "Low Cost Service",
-      description: "Lower maintenance fees for customer satisfaction.",
-      color: "#F59E0B", // Amber
-      lightColor: "#FFFBEB",
-    },
-    {
-      icon: Users,
-      title: "Expert Team",
-      description: "Passionate and knowledgeable specialists at your service.",
-      color: "#10B981", // Green
-      lightColor: "#ECFDF5",
-    },
-    {
-      icon: HeartHandshake,
-      title: "Community Focused",
-      description: "Proudly supporting local initiatives and charities.",
-      color: "#8B5CF6", // Purple
-      lightColor: "#F5F3FF",
-    },
-  ]
-
-  const stats = [
-    {
-      icon: Clock,
-      value: "Satisfactory",
-      label: "Tailored vehicles for each customer",
-      color: "#2563EB", // Blue
-      gradientFrom: "#1E40AF",
-      gradientTo: "#3B82F6",
-    },
-    {
-      icon: CheckCircle,
-      value: "Part Exchange",
-      label: "Taking any vehicle for your convenience", // Corrected typo
-      color: "#10B981", // Green
-      gradientFrom: "#047857",
-      gradientTo: "#34D399",
-    },
-    {
-      icon: Users,
-      value: "98%",
-      label: "Satisfied Customers",
-      color: "#F59E0B", // Amber
-      gradientFrom: "#B45309",
-      gradientTo: "#FBBF24",
-    },
-    {
-      icon: MapPin,
-      value: "1",
-      label: "Prime Location",
-      color: "#8B5CF6", // Purple
-      gradientFrom: "#6D28D9",
-      gradientTo: "#A78BFA",
-    },
-  ]
-
-  // Animation variants
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  }
-
-  const item = {
-    hidden: { y: 20, opacity: 0 },
-    show: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 100 } },
-  }
+  const reveal = {
+    initial: { opacity: 0, y: reduceMotion ? 0 : 24 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true, amount: 0.2 },
+  };
 
   return (
-    // Reduced vertical padding for mobile (py-16), and default px-4
-    <section className="py-16 px-4 sm:py-24 sm:px-6 bg-gradient-to-b from-gray-50 to-white relative overflow-hidden">
-      {/* Decorative elements - Hidden on mobile for better performance */}
-      <div className="absolute top-0 left-0 w-full h-full hidden sm:block">
-        <div className="absolute top-40 right-20 w-72 h-72 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-        <div className="absolute bottom-40 left-20 w-80 h-80 bg-purple-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-        <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-amber-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+    <section
+      aria-labelledby="about-heading"
+      className="relative isolate overflow-hidden bg-[#080a0d] text-white"
+    >
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_16%,rgba(255,255,255,0.08),transparent_28%)]" />
+        <div
+          className="absolute inset-0 opacity-[0.028]"
+          style={{
+            backgroundImage:
+              "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E\")",
+          }}
+        />
       </div>
 
-      <div className="max-w-7xl mx-auto relative z-10">
-        {/* Section Header */}
+      <div className="relative mx-auto max-w-[1440px] px-5 py-20 sm:px-8 sm:py-24 lg:px-12 lg:py-32 xl:px-16">
         <motion.div
-          className="text-center mb-10 sm:mb-16" // Reduced margin for mobile
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          {...reveal}
+          transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+          className="grid gap-8 border-b border-white/10 pb-12 lg:grid-cols-[0.8fr_1.2fr] lg:items-end lg:gap-16 lg:pb-16"
         >
-          <motion.p
-            className="text-xs sm:text-sm font-semibold text-blue-600 uppercase tracking-wider mb-2 sm:mb-3" // Smaller text for mobile
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
-          >
-            Our Story, Our Passion
-          </motion.p>
-          <motion.h2
-            className="text-3xl sm:text-5xl font-extrabold text-gray-900 leading-tight mb-3 sm:mb-4" // Smaller text for mobile
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4, duration: 0.6 }}
-          >
-            Driving Excellence Since <span className="text-blue-700">2022</span>
-          </motion.h2>
-          <motion.p
-            className="text-base sm:text-xl text-gray-700 max-w-3xl mx-auto" // Smaller text for mobile
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6, duration: 0.6 }}
-          >
-            At IRON AUTO, we do not just sell cars; we build relationships. Learn about our journey and what makes us
-            unique.
-          </motion.p>
+          <div>
+            <div className="mb-6 flex items-center gap-3">
+              <span className="h-px w-9 bg-white/55" />
+              <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-white/55 sm:text-xs">
+                Our story, our passion
+              </p>
+            </div>
+
+            <p className="max-w-md text-sm leading-6 text-white/52 sm:text-base sm:leading-7">
+              Independent car dealership · Leicester
+            </p>
+          </div>
+
+          <div>
+            <h2
+              id="about-heading"
+              className="max-w-5xl text-[clamp(2.9rem,6vw,6.5rem)] font-semibold leading-[0.9] tracking-[-0.06em]"
+            >
+              Driving Excellence
+              <span className="block font-light italic text-white/62">
+                Since 2022.
+              </span>
+            </h2>
+
+            <p className="mt-7 max-w-3xl text-base leading-7 text-white/62 sm:text-lg sm:leading-8">
+              At IRON AUTO, we do not just sell cars; we build relationships.
+              Learn about our journey and what makes us unique.
+            </p>
+          </div>
         </motion.div>
 
-        {/* Main Content Grid */}
-        {/* Stacks vertically on mobile (grid-cols-1), then 2 columns on lg */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-16 items-start"> {/* Reduced gap for mobile */}
-          {/* Left Column - Company Story & Core Values */}
+        <div className="grid gap-10 py-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:py-16">
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
+            {...reveal}
+            transition={{
+              delay: 0.05,
+              duration: 0.7,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+            className="flex flex-col justify-between"
           >
-            <motion.h3
-              className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6 relative inline-block" // Smaller text for mobile
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.5 }}
-            >
-              Leicesters Premier Auto Dealership
-              <motion.span
-                className="absolute bottom-0 left-0 h-1 bg-blue-600 rounded-full"
-                initial={{ width: 0 }}
-                animate={{ width: "100%" }}
-                transition={{ duration: 0.8, delay: 0.8 }}
-              ></motion.span>
-            </motion.h3>
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-white/45">
+                Leicester&apos;s premier auto dealership
+              </p>
 
-            <motion.p
-              className="text-sm sm:text-lg text-gray-700 mb-4 leading-relaxed" // Smaller text for mobile, reduced margin
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.7 }}
-            >
-              At Iron Auto, we believe that buying a car should be one of lifes great experiences. Since our foundation
-              in 2022, we have helped our customers find their perfect vehicle, combining exceptional customer
-              service with an outstanding selection of quality cars.
-            </motion.p>
+              <h3 className="mt-5 max-w-2xl text-3xl font-semibold tracking-[-0.035em] sm:text-4xl lg:text-5xl">
+                Honest guidance. Quality cars. A local team that cares.
+              </h3>
 
-            <motion.p
-              className="text-sm sm:text-lg text-gray-700 mb-6 sm:mb-8 leading-relaxed" // Smaller text for mobile, reduced margin
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.9 }}
-            >
-              Based in Leicester, our state-of-the-art showroom features a handpicked selection of premium vehicles. Our
-              expert team is passionate about cars and committed to providing honest, professional advice to help you
-              make the right choice for your needs and budget.
-            </motion.p>
+              <div className="mt-8 max-w-2xl space-y-5 text-[15px] leading-7 text-white/62 sm:text-base sm:leading-8">
+                <p>
+                  At Iron Auto, we believe that buying a car should be one of
+                  life&apos;s great experiences. Since our foundation in 2022,
+                  we have helped our customers find their perfect vehicle,
+                  combining exceptional customer service with an outstanding
+                  selection of quality cars.
+                </p>
 
-            {/* Core Values Section */}
-            <motion.h4
-              className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6" // Smaller text for mobile
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 1.1 }}
-            >
-              Our Core Values
-            </motion.h4>
+                <p>
+                  Based in Leicester, our state-of-the-art showroom features a
+                  handpicked selection of premium vehicles. Our expert team is
+                  passionate about cars and committed to providing honest,
+                  professional advice to help you make the right choice for your
+                  needs and budget.
+                </p>
+              </div>
+            </div>
 
-            <motion.div
-              // Stacks on mobile (grid-cols-1), then 2 columns on md
-              className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6" // Reduced gap for mobile
-              variants={container}
-              initial="hidden"
-              animate="show"
-            >
-              {coreValues.map((value, index) => (
-                <motion.div
-                  key={index}
-                  variants={item}
-                  onMouseEnter={() => setHoveredValue(index)}
-                  onMouseLeave={() => setHoveredValue(null)}
-                  // Smaller padding for mobile, slightly less shadow
-                  className="relative bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-start"
-                  style={{
-                    transform: hoveredValue === index ? "translateY(-5px)" : "translateY(0)",
-                    boxShadow:
-                      hoveredValue === index
-                        ? "0 10px 20px -5px rgba(0, 0, 0, 0.08), 0 6px 6px -5px rgba(0, 0, 0, 0.03)"
-                        : "",
-                    transition: "transform 0.3s ease, box-shadow 0.3s ease",
-                  }}
-                >
-                  {/* Background gradient that appears on hover */}
-                  <div
-                    className="absolute inset-0 rounded-xl opacity-0 z-0"
-                    style={{
-                      background: `linear-gradient(135deg, ${value.lightColor} 0%, white 100%)`,
-                      opacity: hoveredValue === index ? 1 : 0,
-                      transition: "opacity 0.5s ease",
-                    }}
-                  ></div>
+            <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+              <Link
+                href="/cars"
+                className="group inline-flex min-h-14 items-center justify-between gap-8 rounded-full bg-white px-6 text-sm font-semibold text-black transition duration-300 hover:bg-white/88 sm:min-w-56"
+              >
+                View available cars
+                <span className="grid h-8 w-8 place-items-center rounded-full bg-black text-white transition-transform duration-300 group-hover:rotate-45">
+                  <ArrowUpRight size={16} />
+                </span>
+              </Link>
 
-                  <div
-                    className="relative z-10 p-2 sm:p-3 rounded-full mr-3 sm:mr-4 shrink-0" // Smaller padding and margin for icon
-                    style={{
-                      backgroundColor: hoveredValue === index ? value.color : value.lightColor,
-                      color: hoveredValue === index ? "white" : value.color,
-                      transform: hoveredValue === index ? "scale(1.1) rotate(5deg)" : "scale(1) rotate(0)",
-                      transition: "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
-                    }}
-                  >
-                    <value.icon size={20} /> {/* Smaller icon size */}
-                  </div>
-                  <div className="relative z-10">
-                    <h4 className="font-bold text-gray-900 mb-0.5 text-base sm:text-lg">{value.title}</h4> {/* Smaller text */}
-                    <p className="text-gray-700 text-xs sm:text-sm">{value.description}</p> {/* Smaller text */}
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
+              <Link
+                href="/contact"
+                className="inline-flex min-h-14 items-center justify-center rounded-full border border-white/18 bg-white/[0.045] px-6 text-sm font-semibold text-white backdrop-blur-md transition hover:border-white/35 hover:bg-white/[0.08]"
+              >
+                Speak to our team
+              </Link>
+            </div>
           </motion.div>
 
-          {/* Right Column - Image & Key Stats */}
           <motion.div
-            className="flex flex-col gap-8 sm:gap-6" // Reduced gap for mobile
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
+            {...reveal}
+            transition={{
+              delay: 0.12,
+              duration: 0.75,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+            className="relative min-h-[420px] overflow-hidden rounded-[30px] border border-white/12 sm:min-h-[560px]"
           >
-            {/* Image with overlay */}
-            <motion.div
-              className="relative w-full h-64 sm:h-96 rounded-2xl overflow-hidden shadow-xl group" // Reduced height for mobile, slightly less shadow
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.5 }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <img
-                src="/BMWM8.jpg"
-                alt="IronsAuto Showroom"
-                className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/40 to-transparent flex items-end p-6 sm:p-8"> {/* Reduced padding */}
-                <motion.div
-                  className="text-white"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.8 }}
-                >
-                  <h3 className="text-xl sm:text-3xl font-bold mb-1 sm:mb-2">Our Modern Showroom</h3> {/* Smaller text */}
-                  <p className="text-gray-200 text-sm sm:text-base">Experience our vehicles in a comfortable and welcoming environment</p> {/* Smaller text */}
-                </motion.div>
-              </div>
-            </motion.div>
+            <Image
+              src="/jaguar.jpeg"
+              alt="Iron Auto modern showroom in Leicester"
+              fill
+              sizes="(min-width: 1024px) 44vw, 100vw"
+              className="object-cover"
+            />
 
-            {/* Key Stats - Now uses 2 columns on mobile too, but smaller text/icons */}
-            <motion.div
-              className="grid grid-cols-2 gap-4" // Maintained 2 columns but reduced gap
-              variants={container}
-              initial="hidden"
-              animate="show"
-              transition={{ delayChildren: 0.8, staggerChildren: 0.1 }}
-            >
-              {stats.map((stat, index) => (
-                <motion.div
-                  key={index}
-                  variants={item}
-                  onMouseEnter={() => setHoveredStat(index)}
-                  onMouseLeave={() => setHoveredStat(null)}
-                  className="relative rounded-xl shadow-md p-4 text-center overflow-hidden" // Reduced padding and shadow
-                  style={{
-                    background:
-                      hoveredStat === index
-                        ? `linear-gradient(135deg, ${stat.gradientFrom} 0%, ${stat.gradientTo} 100%)`
-                        : `linear-gradient(135deg, ${stat.gradientFrom}CC 0%, ${stat.gradientTo}CC 100%)`,
-                    transform: hoveredStat === index ? "translateY(-3px) scale(1.02)" : "translateY(0) scale(1)", // Less aggressive hover
-                    transition: "transform 0.3s ease, background 0.3s ease",
-                  }}
-                >
-                  {/* Animated background circles */}
-                  <div
-                    className="absolute top-0 right-0 w-24 h-24 rounded-full opacity-20" // Smaller circles
-                    style={{
-                      background: `radial-gradient(circle, white 0%, transparent 70%)`,
-                      transform: hoveredStat === index ? "translate(-5%, -20%) scale(1.1)" : "translate(5%, -30%)", // Less aggressive hover
-                      transition: "transform 0.5s ease",
-                    }}
-                  ></div>
+            <div className="absolute inset-0 bg-black/20" />
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(8,10,13,0.04)_20%,rgba(8,10,13,0.88)_100%)]" />
 
-                  <div
-                    className="absolute bottom-0 left-0 w-16 h-16 rounded-full opacity-10" // Smaller circles
-                    style={{
-                      background: `radial-gradient(circle, white 0%, transparent 70%)`,
-                      transform: hoveredStat === index ? "translate(-10%, 10%) scale(1.1)" : "translate(-20%, 20%)", // Less aggressive hover
-                      transition: "transform 0.5s ease",
-                    }}
-                  ></div>
+            <div className="absolute left-5 top-5 flex items-center gap-2 rounded-full border border-white/15 bg-black/28 px-4 py-2.5 backdrop-blur-xl sm:left-7 sm:top-7">
+              <MapPin size={14} />
+              <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/76">
+                Leicester showroom
+              </span>
+            </div>
 
-                  <motion.div
-                    initial={{ scale: 1 }}
-                    animate={{ scale: hoveredStat === index ? 1.05 : 1 }} // Less aggressive icon scale
-                    transition={{ type: "spring", stiffness: 300, damping: 10 }}
-                    className="relative z-10 text-white"
-                  >
-                    <stat.icon className="mx-auto mb-2" size={28} /> {/* Smaller icon */}
-                    <div className="text-2xl font-extrabold mb-1">{stat.value}</div> {/* Smaller text */}
-                    <div className="text-sm opacity-90">{stat.label}</div> {/* Smaller text */}
-                  </motion.div>
-                </motion.div>
-              ))}
-            </motion.div>
+            <div className="absolute inset-x-0 bottom-0 p-6 sm:p-8">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/48">
+                Our modern showroom
+              </p>
+              <h3 className="mt-3 max-w-xl text-2xl font-semibold tracking-[-0.03em] sm:text-3xl">
+                Experience our vehicles in a comfortable and welcoming
+                environment.
+              </h3>
+            </div>
           </motion.div>
         </div>
-      </div>
 
-      {/* Add CSS for blob animation */}
-      <style jsx>{`
-        @keyframes blob {
-          0% {
-            transform: translate(0px, 0px) scale(1);
-          }
-          33% {
-            transform: translate(30px, -50px) scale(1.1);
-          }
-          66% {
-            transform: translate(-20px, 20px) scale(0.9);
-          }
-          100% {
-            transform: translate(0px, 0px) scale(1);
-          }
-        }
-        .animate-blob {
-          animation: blob 7s infinite;
-        }
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-        .animation-delay-4000 {
-          animation-delay: 4s;
-        }
-      `}</style>
+        <motion.div
+          {...reveal}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="border-t border-white/10 py-12 lg:py-16"
+        >
+          <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-white/45">
+                What guides us
+              </p>
+              <h3 className="mt-3 text-3xl font-semibold tracking-[-0.035em] sm:text-4xl">
+                Our Core Values
+              </h3>
+            </div>
+
+            <p className="max-w-md text-sm leading-6 text-white/48">
+              The standards behind every vehicle, conversation, and customer
+              experience.
+            </p>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {coreValues.map(({ icon: Icon, title, description }, index) => (
+              <motion.article
+                key={title}
+                initial={{ opacity: 0, y: reduceMotion ? 0 : 18 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{
+                  delay: reduceMotion ? 0 : index * 0.06,
+                  duration: 0.5,
+                }}
+                className="group min-h-64 rounded-[24px] border border-white/10 bg-white/[0.035] p-6 transition duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-white/[0.06]"
+              >
+                <div className="grid h-11 w-11 place-items-center rounded-full border border-white/12 bg-white/[0.06] text-white transition group-hover:bg-white group-hover:text-black">
+                  <Icon size={18} strokeWidth={1.7} />
+                </div>
+
+                <div className="mt-16">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/35">
+                    0{index + 1}
+                  </p>
+                  <h4 className="mt-3 text-xl font-semibold tracking-[-0.025em]">
+                    {title}
+                  </h4>
+                  <p className="mt-3 text-sm leading-6 text-white/52">
+                    {description}
+                  </p>
+                </div>
+              </motion.article>
+            ))}
+          </div>
+        </motion.div>
+
+        <motion.div
+          {...reveal}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="border-t border-white/10 pt-12 lg:pt-16"
+        >
+          <div className="grid gap-px overflow-hidden rounded-[28px] border border-white/10 bg-white/10 sm:grid-cols-2 lg:grid-cols-4">
+            {stats.map(({ icon: Icon, value, label }, index) => (
+              <div
+                key={value}
+                className="group min-h-56 bg-[#0b0d10] p-6 transition duration-300 hover:bg-[#111419] sm:p-7"
+              >
+                <div className="flex items-start justify-between">
+                  <div className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.045] text-white/75">
+                    <Icon size={17} strokeWidth={1.7} />
+                  </div>
+
+                  <BadgeCheck
+                    size={16}
+                    className="text-white/18 transition group-hover:text-white/45"
+                  />
+                </div>
+
+                <div className="mt-14">
+                  <p
+                    className={`font-semibold tracking-[-0.04em] ${
+                      value.length > 8
+                        ? "text-2xl sm:text-[1.7rem]"
+                        : "text-4xl sm:text-5xl"
+                    }`}
+                  >
+                    {value}
+                  </p>
+                  <p className="mt-3 max-w-[18rem] text-sm leading-6 text-white/48">
+                    {label}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      </div>
     </section>
-  )
+  );
 }
