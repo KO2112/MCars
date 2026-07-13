@@ -64,7 +64,8 @@ export default function Banner() {
       />
 
       <div className="relative z-10 mx-auto flex min-h-[640px] max-w-[1440px] flex-col px-5 sm:min-h-[720px] sm:px-8 lg:min-h-[820px] lg:px-12 xl:px-16">
-        <div className="flex flex-1 items-center pb-40 pt-20 sm:pb-44 lg:pb-48 lg:pt-28">
+        {/* Adjusted mobile padding-bottom (pb-16) since the block flows naturally below now */}
+        <div className="flex flex-1 items-center pb-16 pt-20 sm:pb-44 lg:pb-48 lg:pt-28">
           <div className="max-w-3xl">
             <motion.div
               {...reveal}
@@ -135,7 +136,7 @@ export default function Banner() {
           </div>
         </div>
 
-        {/* Bottom trust strip */}
+        {/* Bottom trust strip - Changed to relative on mobile, absolute on desktop */}
         <motion.div
           initial={{ opacity: 0, y: reduceMotion ? 0 : 18 }}
           animate={{ opacity: 1, y: 0 }}
@@ -144,7 +145,7 @@ export default function Banner() {
             duration: 0.7,
             ease: [0.22, 1, 0.36, 1],
           }}
-          className="absolute inset-x-5 bottom-5 rounded-[28px] border border-white/12 bg-black/35 p-3 backdrop-blur-xl sm:inset-x-8 sm:bottom-8 lg:inset-x-12 xl:inset-x-16"
+          className="relative mb-8 w-full rounded-[28px] border border-white/12 bg-black/35 p-3 backdrop-blur-xl sm:absolute sm:inset-x-8 sm:bottom-8 sm:mb-0 lg:inset-x-12 xl:inset-x-16"
         >
           <div className="grid gap-1 sm:grid-cols-3">
             {trustItems.map(({ icon: Icon, title, copy }, index) => (
