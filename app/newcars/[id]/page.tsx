@@ -332,9 +332,6 @@ export default function CarDetails() {
   )}`;
 
   // Full-screen gallery modal
-  // Layout notes: min-h-0 on the image row is what stops a tall image from
-  // pushing the header and thumbnails off screen; the img is absolutely
-  // positioned inside it so it can never exceed the available space.
   const GalleryModal = () => (
     <div className="fixed inset-0 z-[9999] bg-stone-950 flex flex-col overflow-hidden">
       {/* Modal header — fixed height, never pushed away */}
@@ -497,7 +494,7 @@ export default function CarDetails() {
             <h1 className="text-3xl md:text-[2.75rem] md:leading-[1.05] font-bold text-blue-950 tracking-tight">
               {car.title}
             </h1>
-            {/* Highlight badges — dealer-style reassurance at a glance */}
+            {/* Highlight badges */}
             <div className="flex flex-wrap gap-2 mt-4">
               <span className="inline-flex items-center gap-1.5 bg-white border border-stone-200 rounded-md px-3 py-1.5 text-xs font-semibold text-stone-700">
                 <BadgeCheck className="h-3.5 w-3.5 text-blue-800" />
@@ -534,7 +531,6 @@ export default function CarDetails() {
           <div className="lg:col-span-2">
             {/* Image gallery */}
             <div className="bg-white rounded-xl overflow-hidden border border-stone-200">
-              {/* Main featured image — dimensions unchanged */}
               <div className="relative h-[300px] sm:h-[650px] bg-stone-100">
                 <img
                   src={car.images[activeImage] || "/placeholder-car.jpg"}
@@ -562,7 +558,7 @@ export default function CarDetails() {
                   <Maximize2 className="h-4 w-4" />
                 </button>
 
-                {/* Navigation arrows — only if more than one image */}
+                {/* Navigation arrows */}
                 {car.images.length > 1 && (
                   <>
                     <button
@@ -583,7 +579,7 @@ export default function CarDetails() {
                 )}
               </div>
 
-              {/* Thumbnail strip — only if more than one image */}
+              {/* Thumbnail strip */}
               {car.images.length > 1 && (
                 <div className="flex overflow-x-auto gap-2 p-3 border-t border-stone-100 hide-scrollbar">
                   {car.images.map((img, index) => (
@@ -607,16 +603,8 @@ export default function CarDetails() {
               )}
             </div>
 
-            {/* Spec sheet — paper treatment: ink on white, mono figures, hairline grid */}
+            {/* Spec sheet */}
             <div className="bg-white rounded-xl border border-stone-200 mt-6 overflow-hidden">
-              <div className="px-6 pt-5 pb-4 border-b border-stone-100 flex items-baseline justify-between">
-                <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-stone-500">
-                  Vehicle at a glance
-                </p>
-                <p className="font-mono text-[11px] text-stone-400">
-                  IA-{car.id.slice(0, 6).toUpperCase()}
-                </p>
-              </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
                 {specs.map((spec, i) => (
                   <div
@@ -627,7 +615,7 @@ export default function CarDetails() {
                       i >= 2 ? "border-t sm:border-t" : ""
                     } sm:[&:nth-child(-n+3)]:border-t-0 lg:border-t-0`}
                   >
-                    <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-stone-400 mb-1.5">
+                    <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-stone-950 font-bold mb-1.5">
                       {spec.label}
                     </p>
                     <p className="font-mono text-lg lg:text-xl font-semibold text-blue-950 capitalize leading-none">
@@ -675,7 +663,7 @@ export default function CarDetails() {
               </div>
             </div>
 
-            {/* Vehicle features — only if there are features */}
+            {/* Vehicle features */}
             {car.features && car.features.length > 0 && (
               <div className="bg-white rounded-xl border border-stone-200 p-7 sm:p-9 mt-6 order-4 lg:order-none">
                 <div className="flex items-baseline justify-between mb-5">
@@ -724,7 +712,7 @@ export default function CarDetails() {
                   </div>
                 </div>
 
-                {/* Direct actions — call, WhatsApp, share */}
+                {/* Direct actions */}
                 <div className="grid grid-cols-3 divide-x divide-stone-100 border-b border-stone-100">
                   <a
                     href="tel:07407403676"
@@ -791,7 +779,7 @@ export default function CarDetails() {
                       <div>
                         <label
                           htmlFor="name"
-                          className="block font-mono text-[11px] uppercase tracking-[0.18em] text-stone-500 mb-1.5"
+                          className="block font-mono text-[11px] uppercase tracking-[0.18em] text-stone-950 font-bold mb-1.5"
                         >
                           Full Name*
                         </label>
@@ -811,7 +799,7 @@ export default function CarDetails() {
                       <div>
                         <label
                           htmlFor="email"
-                          className="block font-mono text-[11px] uppercase tracking-[0.18em] text-stone-500 mb-1.5"
+                          className="block font-mono text-[11px] uppercase tracking-[0.18em] text-stone-950 font-bold mb-1.5"
                         >
                           Email Address*
                         </label>
@@ -831,7 +819,7 @@ export default function CarDetails() {
                       <div>
                         <label
                           htmlFor="phone"
-                          className="block font-mono text-[11px] uppercase tracking-[0.18em] text-stone-500 mb-1.5"
+                          className="block font-mono text-[11px] uppercase tracking-[0.18em] text-stone-950 font-bold mb-1.5"
                         >
                           Phone Number
                         </label>
@@ -858,7 +846,7 @@ export default function CarDetails() {
                       <div>
                         <label
                           htmlFor="message"
-                          className="block font-mono text-[11px] uppercase tracking-[0.18em] text-stone-500 mb-1.5"
+                          className="block font-mono text-[11px] uppercase tracking-[0.18em] text-stone-950 font-bold mb-1.5"
                         >
                           Message*
                         </label>
@@ -894,7 +882,7 @@ export default function CarDetails() {
                 </div>
               </div>
 
-              {/* Peace of mind — what comes with every Irons Auto car */}
+              {/* Peace of mind */}
               <div className="bg-white rounded-xl border border-stone-200 p-6">
                 <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-stone-500 mb-4">
                   Included with this car
@@ -980,7 +968,7 @@ export default function CarDetails() {
           </div>
         </div>
 
-        {/* Why buy from Irons Auto — full-width band */}
+        {/* Why buy from Irons Auto */}
         <div className="mt-10 bg-blue-950 rounded-xl px-7 sm:px-10 py-8 sm:py-10">
           <div className="flex flex-col lg:flex-row lg:items-center gap-8">
             <div className="lg:w-1/3">
