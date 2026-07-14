@@ -1,6 +1,12 @@
 "use client";
 
-import { useState, useEffect, type ChangeEvent, type FormEvent } from "react";
+import {
+  useState,
+  useEffect,
+  useRef,
+  type ChangeEvent,
+  type FormEvent,
+} from "react";
 import { db, storage } from "../../../firebase/firebase";
 import { doc, getDoc, deleteDoc } from "firebase/firestore";
 import { ref, deleteObject } from "firebase/storage";
@@ -27,6 +33,8 @@ import {
   Truck,
   BadgeCheck,
   X,
+  ZoomIn,
+  ZoomOut,
 } from "lucide-react";
 
 // Car interface matching our data structure
@@ -58,6 +66,17 @@ export default function CarDetails() {
   const [activeImage, setActiveImage] = useState(0);
   const [showFullGallery, setShowFullGallery] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
+
+  // Zoom state for the full-screen gallery
+  const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const dragRef = useRef<{
+    startX: number;
+    startY: number;
+    panX: number;
+    panY: number;
+    moved: boolean;
+  } | null>(null);
 
   // Contact form states
   const [formStatus, setFormStatus] = useState({
@@ -224,14 +243,23 @@ export default function CarDetails() {
     }
   };
 
+  // Reset zoom + pan back to the default view
+  const resetZoom = () => {
+    setZoom(1);
+    setPan({ x: 0, y: 0 });
+  };
+
   // Function to handle image navigation
   const changeImage = (index: number) => {
     setActiveImage(index);
+    resetZoom();
   };
 
   // Function to navigate to next/prev image
   const navigateImage = (direction: "next" | "prev") => {
     if (!car?.images.length) return;
+
+    resetZoom();
 
     if (direction === "next") {
       setActiveImage((prev) => (prev + 1) % car.images.length);
@@ -331,7 +359,7 @@ export default function CarDetails() {
     `Hi, I'm interested in the ${car.title} on your website.`
   )}`;
 
-  // Full-screen gallery modal
+  // Full-screen gallery modal — click to zoom, drag to pan, wheel + buttons to fine-tune
   const GalleryModal = () => (
     <div className="fixed inset-0 z-[9999] bg-stone-950 flex flex-col overflow-hidden">
       {/* Modal header — fixed height, never pushed away */}
@@ -347,7 +375,10 @@ export default function CarDetails() {
           </span>
         </div>
         <button
-          onClick={() => setShowFullGallery(false)}
+          onClick={() => {
+            setShowFullGallery(false);
+            resetZoom();
+          }}
           className="inline-flex items-center gap-2 text-stone-200 hover:text-white bg-white/10 hover:bg-white/20 px-3 py-2 rounded-md transition-colors focus:outline-none text-sm font-medium"
           aria-label="Close gallery"
         >
@@ -357,12 +388,100 @@ export default function CarDetails() {
       </div>
 
       {/* Main image area — flex-1 with min-h-0 so it can only use leftover space */}
-      <div className="relative flex-1 min-h-0">
+      <div
+        className="relative flex-1 min-h-0 overflow-hidden"
+        onWheel={(e) => {
+          // Scroll to zoom in/out smoothly
+          setZoom((z) => {
+            const next = Math.min(4, Math.max(1, z - Math.sign(e.deltaY) * 0.4));
+            if (next === 1) setPan({ x: 0, y: 0 });
+            return next;
+          });
+        }}
+      >
         <img
           src={car.images[activeImage] || "/placeholder-car.jpg"}
           alt={car.title}
-          className="absolute inset-0 w-full h-full object-contain p-3 sm:p-6"
+          draggable={false}
+          onClick={() => {
+            // Ignore the click that ends a drag
+            if (dragRef.current?.moved) return;
+            if (zoom > 1) {
+              resetZoom();
+            } else {
+              setZoom(2.5);
+            }
+          }}
+          onPointerDown={(e) => {
+            if (zoom <= 1) return;
+            (e.target as HTMLElement).setPointerCapture(e.pointerId);
+            dragRef.current = {
+              startX: e.clientX,
+              startY: e.clientY,
+              panX: pan.x,
+              panY: pan.y,
+              moved: false,
+            };
+          }}
+          onPointerMove={(e) => {
+            if (!dragRef.current) return;
+            const dx = e.clientX - dragRef.current.startX;
+            const dy = e.clientY - dragRef.current.startY;
+            if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
+              dragRef.current.moved = true;
+            }
+            setPan({
+              x: dragRef.current.panX + dx,
+              y: dragRef.current.panY + dy,
+            });
+          }}
+          onPointerUp={() => {
+            // Clear on the next tick so a drag doesn't also fire click-to-unzoom
+            setTimeout(() => {
+              dragRef.current = null;
+            }, 0);
+          }}
+          className={`absolute inset-0 w-full h-full object-contain p-3 sm:p-6 select-none touch-none ${
+            zoom > 1
+              ? "cursor-grab active:cursor-grabbing"
+              : "cursor-zoom-in transition-transform duration-200"
+          }`}
+          style={{
+            transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
+          }}
         />
+
+        {/* Zoom controls */}
+        <div className="absolute right-3 sm:right-5 top-3 sm:top-5 flex flex-col gap-2">
+          <button
+            onClick={() => setZoom((z) => Math.min(4, z + 0.5))}
+            className="bg-white/10 hover:bg-white/25 text-white p-2.5 rounded-full transition-colors focus:outline-none"
+            aria-label="Zoom in"
+          >
+            <ZoomIn className="h-5 w-5" />
+          </button>
+          <button
+            onClick={() =>
+              setZoom((z) => {
+                const next = Math.max(1, z - 0.5);
+                if (next === 1) setPan({ x: 0, y: 0 });
+                return next;
+              })
+            }
+            disabled={zoom <= 1}
+            className="bg-white/10 hover:bg-white/25 text-white p-2.5 rounded-full transition-colors focus:outline-none disabled:opacity-40 disabled:hover:bg-white/10"
+            aria-label="Zoom out"
+          >
+            <ZoomOut className="h-5 w-5" />
+          </button>
+        </div>
+
+        {/* Zoom level indicator — only shown while zoomed */}
+        {zoom > 1 && (
+          <div className="absolute bottom-3 sm:bottom-5 right-3 sm:right-5 bg-stone-950/70 backdrop-blur-sm text-white px-3 py-1.5 rounded-md font-mono text-xs tracking-widest pointer-events-none">
+            {zoom.toFixed(1)}×
+          </div>
+        )}
 
         {car.images.length > 1 && (
           <>
@@ -560,7 +679,7 @@ export default function CarDetails() {
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5 mb-7 pb-7 border-b border-stone-200">
           <div className="min-w-0">
             <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-stone-500 mb-2">
-              Irons Auto · Leicester forecourt
+              Iron Auto · Leicester forecourt
             </p>
             <h1 className="text-3xl md:text-[2.75rem] md:leading-[1.05] font-bold text-blue-950 tracking-tight">
               {car.title}
@@ -1042,7 +1161,7 @@ export default function CarDetails() {
           </div>
         </div>
 
-        {/* Why buy from Irons Auto */}
+        {/* Why buy from Iron Auto */}
         <div className="mt-10 bg-blue-950 rounded-xl px-7 sm:px-10 py-8 sm:py-10">
           <div className="flex flex-col lg:flex-row lg:items-center gap-8">
             <div className="lg:w-1/3">

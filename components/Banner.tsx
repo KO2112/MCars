@@ -38,7 +38,7 @@ export default function Banner() {
   };
 
   return (
-    <section className="relative isolate min-h-[640px] overflow-hidden bg-[#080a0d] text-white sm:min-h-[720px] lg:min-h-[820px]">
+    <section className="relative isolate min-h-[640px] overflow-hidden bg-[#0b1636] text-white sm:min-h-[720px] lg:min-h-[820px]">
       {/* Background */}
       <Image
         src="/BMWM8.jpg"
@@ -50,9 +50,9 @@ export default function Banner() {
       />
 
       {/* Cinematic overlays */}
-      <div className="absolute inset-0 bg-black/25" />
-      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,7,10,0.98)_0%,rgba(5,7,10,0.9)_34%,rgba(5,7,10,0.42)_65%,rgba(5,7,10,0.12)_100%)]" />
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,7,10,0.12)_0%,rgba(5,7,10,0.02)_55%,rgba(5,7,10,0.94)_100%)]" />
+      <div className="absolute inset-0 bg-[#0b1636]/20" />
+<div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(11,22,54,0.97)_0%,rgba(13,26,63,0.88)_34%,rgba(13,26,63,0.40)_65%,rgba(13,26,63,0.10)_100%)]" />
+<div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(11,22,54,0.10)_0%,rgba(11,22,54,0.02)_55%,rgba(9,17,45,0.92)_100%)]" />
 
       {/* Subtle texture */}
       <div

@@ -413,16 +413,16 @@ function VehicleCard({ car, index }: { car: Car; index: number }) {
           <div className="absolute inset-0 bg-gradient-to-t from-stone-950/45 via-transparent to-transparent" />
 
           <div
-            className={`absolute left-4 top-4 rounded-md px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.16em] ${
-              isSold
-                ? "bg-red-700 text-white"
-                : isInProgress
-                  ? "bg-amber-500 text-stone-950"
-                  : "bg-white/95 text-emerald-800"
-            }`}
-          >
-            {status}
-          </div>
+  className={`absolute left-4 top-4 rounded-md px-3.5 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.16em] shadow-[0_4px_14px_rgba(0,0,0,0.35)] ${
+    isSold
+      ? "bg-red-700 text-white"
+      : isInProgress
+        ? "bg-amber-500 text-stone-950"
+        : "bg-emerald-600 text-white ring-1 ring-white/40"
+  }`}
+>
+  {status}
+</div>
 
           {car.images.length > 1 && (
             <div className="absolute bottom-4 left-4 inline-flex items-center gap-1.5 rounded-md bg-stone-950/75 px-2.5 py-1.5 font-mono text-[10px] text-white backdrop-blur-sm">
@@ -437,11 +437,11 @@ function VehicleCard({ car, index }: { car: Car; index: number }) {
                 GB
               </span>
             </div>
-            <div className="bg-[#FFD500] px-3 py-1.5">
-              <span className="font-mono text-lg font-bold tracking-tight text-stone-950">
-                £{formatNumber(car.price)}
-              </span>
-            </div>
+            <div className="bg-[#FFD500] px-3.5 py-2">
+  <span className="font-mono text-xl sm:text-2xl font-bold tracking-tight text-stone-950">
+    £{formatNumber(car.price)}
+  </span>
+</div>
           </div>
         </div>
 

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { signOut } from "firebase/auth";
@@ -93,17 +94,28 @@ export default function Navbar() {
       <div
         className={`border-b transition-all duration-300 ${
           scrolled
-            ? "border-white/10 bg-[#080a0d]/92 shadow-[0_18px_50px_rgba(0,0,0,0.22)] backdrop-blur-xl"
-            : "border-white/10 bg-[#080a0d]"
+            ? "border-white/10 bg-[#0b1636]/92 shadow-[0_18px_50px_rgba(4,10,32,0.35)] backdrop-blur-xl"
+            : "border-white/10 bg-[#0b1636]"
         }`}
       >
         <div className="mx-auto flex h-[76px] max-w-[1440px] items-center px-5 sm:px-8 lg:h-[84px] lg:px-12 xl:px-16">
           <Link
             href="/"
-            aria-label="Irons Auto home"
-            className="relative z-10 flex shrink-0 items-center text-xl font-bold tracking-tight text-white sm:text-2xl"
+            aria-label="Iron Auto home"
+            className="relative z-10 flex shrink-0 items-center gap-3.5 text-xl font-bold tracking-tight text-white sm:text-2xl"
           >
-            Irons Auto
+            {/* Badge logo — cream disc behind it so the artwork pops on the navy bar */}
+            <span className="grid h-[58px] w-[58px] shrink-0 place-items-center overflow-hidden rounded-full bg-[#FAF6EE] shadow-[0_2px_10px_rgba(0,0,0,0.35)] ring-2 ring-white/25 transition-transform duration-300 hover:scale-105 lg:h-[64px] lg:w-[64px]">
+              <Image
+                src="/IronAutoLogo.jpeg"
+                alt="Iron Auto logo"
+                width={64}
+                height={64}
+                priority
+                className="h-full w-full object-cover"
+              />
+            </span>
+            <span className="hidden sm:inline">Iron Auto</span>
           </Link>
 
           <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-1 lg:flex">
@@ -115,9 +127,7 @@ export default function Navbar() {
                   key={item.href}
                   href={item.href}
                   className={`relative rounded-full px-4 py-2.5 text-sm font-medium transition-colors ${
-                    active
-                      ? "text-white"
-                      : "text-white/58 hover:text-white"
+                    active ? "text-white" : "text-white/58 hover:text-white"
                   }`}
                 >
                   {item.label}
@@ -143,6 +153,18 @@ export default function Navbar() {
           </nav>
 
           <div className="ml-auto hidden items-center gap-3 lg:flex">
+            {/* Discreet location link — postcode opens the map in a new tab */}
+            <a
+              href={contactDetails.mapHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Open our location in Google Maps"
+              className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-2.5 text-xs font-medium tracking-wide text-white/45 transition hover:text-white"
+            >
+              <MapPin size={14} strokeWidth={1.8} />
+              {contactDetails.postcode}
+            </a>
+
             <a
               href={contactDetails.phoneHref}
               className="inline-flex items-center gap-2.5 rounded-full border border-white/12 px-4 py-2.5 text-sm font-medium text-white/72 transition hover:border-white/25 hover:text-white"
@@ -153,7 +175,7 @@ export default function Navbar() {
 
             <Link
               href="/cars"
-              className="group inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-black transition hover:bg-white/90"
+              className="group inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-[#0b1636] transition hover:bg-white/90"
             >
               View stock
               <ArrowUpRight
@@ -176,9 +198,19 @@ export default function Navbar() {
 
           <div className="ml-auto flex items-center gap-1.5 lg:hidden">
             <a
+              href={contactDetails.mapHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="grid h-10 w-10 place-items-center rounded-full border border-white/12 text-white"
+              aria-label={`Open map — ${contactDetails.postcode}`}
+            >
+              <MapPin size={17} />
+            </a>
+
+            <a
               href={contactDetails.phoneHref}
               className="grid h-10 w-10 place-items-center rounded-full border border-white/12 text-white"
-              aria-label="Call Irons Auto"
+              aria-label="Call Iron Auto"
             >
               <Phone size={17} />
             </a>
@@ -216,7 +248,7 @@ export default function Navbar() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: reduceMotion ? 0 : -12 }}
               transition={{ duration: reduceMotion ? 0 : 0.25 }}
-              className="absolute inset-x-0 top-[76px] z-50 border-b border-white/10 bg-[#0b0d10] px-5 pb-6 pt-3 shadow-2xl lg:hidden"
+              className="absolute inset-x-0 top-[76px] z-50 border-b border-white/10 bg-[#0d1a3f] px-5 pb-6 pt-3 shadow-2xl lg:hidden"
             >
               <nav className="mx-auto max-w-[1440px]">
                 <div className="divide-y divide-white/8">
@@ -277,7 +309,7 @@ export default function Navbar() {
                 <div className="mt-3 flex gap-2">
                   <Link
                     href="/cars"
-                    className="flex min-h-12 flex-1 items-center justify-center rounded-full bg-white px-5 text-sm font-semibold text-black"
+                    className="flex min-h-12 flex-1 items-center justify-center rounded-full bg-white px-5 text-sm font-semibold text-[#0b1636]"
                   >
                     Browse cars
                   </Link>

@@ -274,11 +274,11 @@ function IncomingVehicleCard({ car, index }: { car: Car; index: number }) {
                 GB
               </span>
             </div>
-            <div className="bg-[#FFD500] px-3 py-1.5">
-              <span className="font-mono text-lg font-bold tracking-tight text-stone-950">
-                £{formatNumber(car.price)}
-              </span>
-            </div>
+            <div className="bg-[#FFD500] px-3.5 py-2">
+  <span className="font-mono text-xl sm:text-2xl font-bold tracking-tight text-stone-950">
+    £{formatNumber(car.price)}
+  </span>
+</div>
           </div>
         </div>
 
