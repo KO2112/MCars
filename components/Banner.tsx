@@ -7,25 +7,32 @@ import {
   ArrowUpRight,
   BadgeCheck,
   ChevronDown,
+  Gauge,
   Phone,
+  Ship,
   ShieldCheck,
 } from "lucide-react";
 
 const trustItems = [
   {
     icon: BadgeCheck,
-    title: "Hand-picked stock",
-    copy: "Quality vehicles selected with care",
+    title: "Carefully Selected",
+    copy: "Quality checked vehicles",
+  },
+  {
+    icon: Ship,
+    title: "Japanese Imports",
+    copy: "Expertly converted for UK",
+  },
+  {
+    icon: Gauge,
+    title: "Low Mileage",
+    copy: "Genuine & verified",
   },
   {
     icon: ShieldCheck,
-    title: "Up to 12 months warranty",
-    copy: "Drive away with added confidence",
-  },
-  {
-    icon: ArrowUpRight,
-    title: "Part exchange welcome",
-    copy: "A simple route into your next car",
+    title: "Warranty Included",
+    copy: "Peace of mind",
   },
 ];
 
@@ -38,7 +45,7 @@ export default function Banner() {
   };
 
   return (
-    <section className="relative isolate min-h-[640px] overflow-hidden bg-[#0b1636] text-white sm:min-h-[720px] lg:min-h-[820px]">
+    <section className="relative isolate min-h-[640px] overflow-hidden bg-[#0D1B2A] text-white sm:min-h-[720px] lg:min-h-[820px]">
       {/* Background */}
       <Image
         src="/BMWM8.jpg"
@@ -49,10 +56,10 @@ export default function Banner() {
         className="object-cover object-[68%_center] sm:object-center"
       />
 
-      {/* Cinematic overlays */}
-      <div className="absolute inset-0 bg-[#0b1636]/20" />
-<div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(11,22,54,0.97)_0%,rgba(13,26,63,0.88)_34%,rgba(13,26,63,0.40)_65%,rgba(13,26,63,0.10)_100%)]" />
-<div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(11,22,54,0.10)_0%,rgba(11,22,54,0.02)_55%,rgba(9,17,45,0.92)_100%)]" />
+      {/* Cinematic overlays — brand navy wash instead of black */}
+      <div className="absolute inset-0 bg-[#0D1B2A]/25" />
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(13,27,42,0.97)_0%,rgba(18,37,74,0.88)_34%,rgba(13,27,42,0.40)_65%,rgba(13,27,42,0.10)_100%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(13,27,42,0.10)_0%,rgba(13,27,42,0.02)_55%,rgba(13,27,42,0.94)_100%)]" />
 
       {/* Subtle texture */}
       <div
@@ -72,7 +79,7 @@ export default function Banner() {
               transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
               className="mb-7 flex items-center gap-3"
             >
-              <span className="h-px w-9 bg-white/55" />
+              <span className="h-px w-9 bg-[#C52228]" />
               <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-white/70 sm:text-xs">
                 Independent car dealership · Leicester
               </p>
@@ -85,12 +92,10 @@ export default function Banner() {
                 duration: 0.7,
                 ease: [0.22, 1, 0.36, 1],
               }}
-              className="max-w-[900px] text-[clamp(3.35rem,8vw,7.8rem)] font-semibold leading-[0.86] tracking-[-0.065em]"
+              className="max-w-[900px] text-[clamp(3.35rem,8vw,7.8rem)] font-bold uppercase leading-[0.9] tracking-[-0.03em]"
             >
               Your next car,
-              <span className="block font-light italic text-white/72">
-                chosen properly.
-              </span>
+              <span className="block text-[#D8353B]">chosen properly.</span>
             </motion.h1>
 
             <motion.p
@@ -117,10 +122,10 @@ export default function Banner() {
             >
               <Link
                 href="/cars"
-                className="group inline-flex min-h-14 items-center justify-between gap-8 rounded-full bg-white px-6 text-sm font-semibold text-black transition duration-300 hover:bg-white/88 sm:min-w-56"
+                className="group inline-flex min-h-14 items-center justify-between gap-8 rounded-full bg-[#C52228] px-6 text-sm font-bold text-white shadow-[0_10px_30px_rgba(197,34,40,0.35)] transition duration-300 hover:bg-[#A81C22] sm:min-w-56"
               >
-                View available cars
-                <span className="grid h-8 w-8 place-items-center rounded-full bg-black text-white transition-transform duration-300 group-hover:rotate-45">
+                View our stock
+                <span className="grid h-8 w-8 place-items-center rounded-full bg-white text-[#C52228] transition-transform duration-300 group-hover:rotate-45">
                   <ArrowUpRight size={16} />
                 </span>
               </Link>
@@ -130,7 +135,7 @@ export default function Banner() {
                 className="group inline-flex min-h-14 items-center justify-center gap-3 rounded-full border border-white/25 bg-white/[0.06] px-6 text-sm font-semibold text-white backdrop-blur-md transition duration-300 hover:border-white/50 hover:bg-white/12"
               >
                 <Phone size={16} />
-                Speak to our team
+                Get in touch
               </Link>
             </motion.div>
           </div>
@@ -145,9 +150,9 @@ export default function Banner() {
             duration: 0.7,
             ease: [0.22, 1, 0.36, 1],
           }}
-          className="relative mb-8 w-full rounded-[28px] border border-white/12 bg-black/35 p-3 backdrop-blur-xl sm:absolute sm:inset-x-8 sm:bottom-8 sm:mb-0 lg:inset-x-12 xl:inset-x-16"
+          className="relative mb-8 w-full rounded-[28px] border border-white/12 bg-[#12254A]/55 p-3 backdrop-blur-xl sm:absolute sm:inset-x-8 sm:bottom-8 sm:mb-0 lg:inset-x-12 xl:inset-x-16"
         >
-          <div className="grid gap-1 sm:grid-cols-3">
+          <div className="grid gap-1 sm:grid-cols-2 lg:grid-cols-4">
             {trustItems.map(({ icon: Icon, title, copy }, index) => (
               <div
                 key={title}
@@ -157,7 +162,7 @@ export default function Banner() {
                     : ""
                 }`}
               >
-                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-white/14 bg-white/[0.07]">
+                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-[#D8353B]/40 bg-[#C52228]/15 text-[#E4555A]">
                   <Icon size={17} strokeWidth={1.7} />
                 </div>
                 <div>

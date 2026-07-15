@@ -7,6 +7,7 @@ import {
   ArrowRight,
   BadgeCheck,
   Camera,
+  Check,
   ChevronDown,
   Filter,
   Fuel,
@@ -183,9 +184,9 @@ const Cars = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#FAF9F6] flex items-center justify-center px-4">
+      <div className="min-h-screen bg-[#F7F4EE] flex items-center justify-center px-4">
         <div className="flex flex-col items-center text-center">
-          <div className="h-10 w-10 rounded-full border-2 border-stone-200 border-t-blue-950 animate-spin" />
+          <div className="h-10 w-10 rounded-full border-2 border-stone-200 border-t-[#C52228] animate-spin" />
           <p className="mt-5 font-mono text-[11px] uppercase tracking-[0.25em] text-stone-500">
             Loading forecourt
           </p>
@@ -195,16 +196,16 @@ const Cars = () => {
   }
 
   return (
-    <main className="min-h-screen bg-[#FAF9F6] text-stone-900">
-      <section className="border-b border-stone-200 bg-blue-950 text-white">
+    <main className="min-h-screen bg-[#F7F4EE] text-stone-900">
+      <section className="border-b border-stone-200 bg-[linear-gradient(135deg,#0D1B2A_0%,#12254A_100%)] text-white">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-20">
           <div className="max-w-4xl">
             <p className="font-mono text-[11px] uppercase tracking-[0.28em] text-stone-300 mb-4">
-              Irons Auto · Leicester
+              Iron Auto · Leicester
             </p>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[0.98]">
               Cars selected with care,
-              <span className="block text-[#FFD500]">prepared to be driven.</span>
+              <span className="block text-[#D8353B]">prepared to be driven.</span>
             </h1>
             <p className="mt-6 max-w-2xl text-base sm:text-lg leading-relaxed text-stone-300">
               Browse our current forecourt. Every vehicle is inspected,
@@ -213,15 +214,15 @@ const Cars = () => {
 
             <div className="mt-9 flex flex-wrap gap-x-7 gap-y-3 text-sm text-stone-200">
               <span className="inline-flex items-center gap-2">
-                <BadgeCheck className="h-4 w-4 text-[#FFD500]" />
+                <BadgeCheck className="h-4 w-4 text-[#D8353B]" />
                 Inspected stock
               </span>
               <span className="inline-flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-[#FFD500]" />
+                <MapPin className="h-4 w-4 text-[#D8353B]" />
                 Leicester showroom
               </span>
               <span className="inline-flex items-center gap-2">
-                <Gauge className="h-4 w-4 text-[#FFD500]" />
+                <Gauge className="h-4 w-4 text-[#D8353B]" />
                 Test drives available
               </span>
             </div>
@@ -230,7 +231,7 @@ const Cars = () => {
       </section>
 
       <section className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="relative -mt-7 rounded-xl border border-stone-200 bg-white shadow-[0_12px_40px_rgba(28,25,23,0.08)]">
+        <div className="relative -mt-7 rounded-xl border border-stone-200 bg-white shadow-[0_12px_40px_rgba(13,27,42,0.10)]">
           <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_210px_180px_auto] gap-3 p-4">
             <label className="relative block">
               <span className="sr-only">Search vehicles</span>
@@ -240,7 +241,7 @@ const Cars = () => {
                 value={searchTerm}
                 onChange={(event) => setSearchTerm(event.target.value)}
                 placeholder="Search make, model or feature"
-                className="h-12 w-full rounded-md border border-stone-200 bg-[#FAF9F6] pl-11 pr-4 text-sm outline-none transition focus:border-blue-950 focus:ring-1 focus:ring-blue-950"
+                className="h-12 w-full rounded-md border border-stone-200 bg-[#F7F4EE] pl-11 pr-4 text-sm outline-none transition focus:border-[#0D1B2A] focus:ring-1 focus:ring-[#0D1B2A]"
               />
             </label>
 
@@ -270,8 +271,8 @@ const Cars = () => {
               onClick={() => setShowFilters((visible) => !visible)}
               className={`h-12 inline-flex items-center justify-center gap-2 rounded-md px-5 text-sm font-semibold transition-colors ${
                 showFilters
-                  ? "bg-[#FFD500] text-stone-950"
-                  : "bg-blue-950 text-white hover:bg-blue-900"
+                  ? "bg-[#C52228] text-white"
+                  : "bg-[#0D1B2A] text-white hover:bg-[#12254A]"
               }`}
               aria-expanded={showFilters}
             >
@@ -320,7 +321,7 @@ const Cars = () => {
             <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-stone-500 mb-2">
               Current stock
             </p>
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-blue-950">
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#0D1B2A]">
               {filteredAndSortedCars.length} {filteredAndSortedCars.length === 1 ? "vehicle" : "vehicles"}
             </h2>
           </div>
@@ -341,7 +342,7 @@ const Cars = () => {
             <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-stone-400">
               No matching stock
             </p>
-            <h3 className="mt-3 text-2xl font-bold text-blue-950">
+            <h3 className="mt-3 text-2xl font-bold text-[#0D1B2A]">
               Try a broader search
             </h3>
             <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-stone-500">
@@ -351,7 +352,7 @@ const Cars = () => {
             <button
               type="button"
               onClick={clearFilters}
-              className="mt-7 rounded-md bg-blue-950 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-900"
+              className="mt-7 rounded-md bg-[#0D1B2A] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#12254A]"
             >
               Show all vehicles
             </button>
@@ -371,7 +372,7 @@ const Cars = () => {
             <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-stone-500 mb-3">
               Looking for something specific?
             </p>
-            <h2 className="text-2xl sm:text-3xl font-bold text-blue-950 tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-bold text-[#0D1B2A] tracking-tight">
               Tell us what is on your shortlist.
             </h2>
             <p className="mt-3 max-w-2xl text-sm sm:text-base leading-relaxed text-stone-600">
@@ -381,7 +382,7 @@ const Cars = () => {
           </div>
           <a
             href="tel:07407403676"
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-md bg-[#FFD500] px-6 text-sm font-bold text-stone-950 transition-transform hover:-translate-y-0.5"
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-md bg-[#C52228] px-6 text-sm font-bold text-white shadow-[0_6px_18px_rgba(197,34,40,0.30)] transition-transform hover:-translate-y-0.5 hover:bg-[#A81C22]"
           >
             Call the showroom
             <ArrowRight className="h-4 w-4" />
@@ -392,6 +393,27 @@ const Cars = () => {
   );
 };
 
+// Diagonal rubber-stamp "SOLD" — sits over the car photo, mockup style
+function SoldStamp() {
+  return (
+    <div className="pointer-events-none absolute inset-0 z-10 grid place-items-center overflow-hidden">
+      <span
+        className="-rotate-[14deg] select-none rounded-lg border-[5px] border-[#C52228] px-7 py-1 font-mono text-4xl font-black uppercase tracking-[0.32em] text-[#C52228] sm:text-5xl"
+        style={{
+          opacity: 0.88,
+          maskImage:
+            "radial-gradient(circle at 30% 40%, black 60%, rgba(0,0,0,0.72) 100%)",
+          WebkitMaskImage:
+            "radial-gradient(circle at 30% 40%, black 60%, rgba(0,0,0,0.72) 100%)",
+          textShadow: "0 0 1px rgba(197,34,40,0.5)",
+        }}
+      >
+        Sold
+      </span>
+    </div>
+  );
+}
+
 function VehicleCard({ car, index }: { car: Car; index: number }) {
   const image = car.images?.[0] || car.image || "/placeholder-car.jpg";
   const status = car.status || "Available";
@@ -399,7 +421,7 @@ function VehicleCard({ car, index }: { car: Car; index: number }) {
   const isInProgress = normalise(status) === "sale in progress";
 
   return (
-    <article className="group overflow-hidden rounded-xl border border-stone-200 bg-white transition-all duration-300 hover:-translate-y-1 hover:border-stone-300 hover:shadow-[0_18px_45px_rgba(28,25,23,0.10)]">
+    <article className="group overflow-hidden rounded-xl border border-stone-200 bg-white transition-all duration-300 hover:-translate-y-1 hover:border-stone-300 hover:shadow-[0_18px_45px_rgba(13,27,42,0.12)]">
       <Link href={`/newcars/${car.id}`} className="block">
         <div className="relative aspect-[16/10] overflow-hidden bg-stone-100">
           <img
@@ -407,22 +429,25 @@ function VehicleCard({ car, index }: { car: Car; index: number }) {
             alt={car.title}
             loading={index < 3 ? "eager" : "lazy"}
             className={`h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.035] ${
-              isSold ? "grayscale" : ""
+              isSold ? "grayscale-[0.55] brightness-[0.92]" : ""
             }`}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-stone-950/45 via-transparent to-transparent" />
 
+          {/* Diagonal SOLD stamp across the photo */}
+          {isSold && <SoldStamp />}
+
           <div
-  className={`absolute left-4 top-4 rounded-md px-3.5 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.16em] shadow-[0_4px_14px_rgba(0,0,0,0.35)] ${
-    isSold
-      ? "bg-red-700 text-white"
-      : isInProgress
-        ? "bg-amber-500 text-stone-950"
-        : "bg-emerald-600 text-white ring-1 ring-white/40"
-  }`}
->
-  {status}
-</div>
+            className={`absolute left-4 top-4 rounded-md px-3.5 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.16em] shadow-[0_4px_14px_rgba(0,0,0,0.35)] ${
+              isSold
+                ? "bg-[#C52228] text-white"
+                : isInProgress
+                  ? "bg-amber-500 text-stone-950"
+                  : "bg-emerald-600 text-white ring-1 ring-white/40"
+            }`}
+          >
+            {status}
+          </div>
 
           {car.images.length > 1 && (
             <div className="absolute bottom-4 left-4 inline-flex items-center gap-1.5 rounded-md bg-stone-950/75 px-2.5 py-1.5 font-mono text-[10px] text-white backdrop-blur-sm">
@@ -430,26 +455,13 @@ function VehicleCard({ car, index }: { car: Car; index: number }) {
               {String(car.images.length).padStart(2, "0")}
             </div>
           )}
-
-          <div className="absolute bottom-4 right-4 inline-flex overflow-hidden rounded-md border border-stone-900/70 shadow-sm">
-            <div className="flex items-center bg-blue-800 px-1">
-              <span className="font-mono text-[7px] font-bold text-white [writing-mode:vertical-rl] rotate-180">
-                GB
-              </span>
-            </div>
-            <div className="bg-[#FFD500] px-3.5 py-2">
-  <span className="font-mono text-xl sm:text-2xl font-bold tracking-tight text-stone-950">
-    £{formatNumber(car.price)}
-  </span>
-</div>
-          </div>
         </div>
 
         <div className="p-5 sm:p-6">
-          <p className="font-mono text-[9px] uppercase tracking-[0.22em] text-stone-400">
-            Irons Auto · Leicester
+          <p className="font-mono text-[9px] font-bold uppercase tracking-[0.22em] text-[#C52228]/80">
+            Iron Auto · Leicester
           </p>
-          <h3 className="mt-2 min-h-[3.5rem] text-xl font-bold leading-snug text-blue-950 transition-colors group-hover:text-blue-800 line-clamp-2">
+          <h3 className="mt-2 min-h-[3.5rem] text-xl font-bold leading-snug text-[#0D1B2A] transition-colors group-hover:text-[#12254A] line-clamp-2">
             {car.title}
           </h3>
 
@@ -478,9 +490,19 @@ function VehicleCard({ car, index }: { car: Car; index: number }) {
             </div>
           )}
 
-          <div className="mt-5 flex items-center justify-between text-sm font-semibold text-blue-950">
-            View vehicle
-            <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-blue-950 text-white transition-transform group-hover:translate-x-1">
+          {/* Footer: price (or DELIVERED for sold cars) + arrow, mockup layout */}
+          <div className="mt-5 flex items-center justify-between">
+            {isSold ? (
+              <span className="inline-flex items-center gap-2 font-mono text-sm font-bold uppercase tracking-[0.22em] text-[#C52228]">
+                <Check className="h-4 w-4" strokeWidth={3} />
+                Delivered
+              </span>
+            ) : (
+              <span className="text-2xl font-extrabold tracking-tight text-[#0D1B2A]">
+                £{formatNumber(car.price)}
+              </span>
+            )}
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#0D1B2A] text-white transition-all group-hover:translate-x-1 group-hover:bg-[#C52228]">
               <ArrowRight className="h-4 w-4" />
             </span>
           </div>
@@ -535,7 +557,7 @@ function SelectField({
       <select
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="h-12 w-full appearance-none rounded-md border border-stone-200 bg-[#FAF9F6] px-4 pr-10 text-sm capitalize outline-none transition focus:border-blue-950 focus:ring-1 focus:ring-blue-950"
+        className="h-12 w-full appearance-none rounded-md border border-stone-200 bg-[#F7F4EE] px-4 pr-10 text-sm capitalize outline-none transition focus:border-[#0D1B2A] focus:ring-1 focus:ring-[#0D1B2A]"
       >
         <option value="">{emptyLabel}</option>
         {options.map((option) => {

@@ -4,6 +4,7 @@ import CarCarousel from "@/components/CarCarousel";
 import Cu from "@/components/Cu";
 import WhyChooseUs from "@/components/WhyChooseUs";
 import AboutUs from "@/components/Aboutus";
+import TrustSections from "@/components/TrustSection";
 
 export const metadata: Metadata = {
   title: "Used Cars Leicester & Leicestershire | Car Dealer East Midlands | IRONS AUTO",
@@ -130,6 +131,7 @@ export default function HomePage() {
 
       {/* Hero */}
       <Banner />
+      
 
       {/* Featured stock */}
       <section
@@ -137,6 +139,7 @@ export default function HomePage() {
         className="max-w-400 mx-auto py-2"
       >
         <CarCarousel />
+        <TrustSections/>
       </section>
 
       <AboutUs />
